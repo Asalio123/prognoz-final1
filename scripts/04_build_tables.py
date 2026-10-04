@@ -19,11 +19,24 @@ HORIZONS = [1, 3, 6, 12]
 def load_all() -> pd.DataFrame:
     parts = []
     for f in sorted((ROOT / "outputs").glob("preds_*.parquet")):
+        if "_ces_part" in f.stem:  # честный CES добавляется отдельно ниже
+            continue
         df = pd.read_parquet(f)
-        if "model" not in df.columns:  # preds_stats.parquet уже длинный с model
+        if "model" not in df.columns:
             df["model"] = f.stem.replace("preds_", "")
         parts.append(df)
-    return pd.concat(parts, ignore_index=True)
+    df = pd.concat(parts, ignore_index=True)
+    df = df[df["model"] != "y"]  # 'y' = таргет из cv, не модель (артефакт melt)
+    # CES в первом прогоне ушёл 100% в fallback (баг utilsforecast 0.2.15) →
+    # честный CES живёт в preds_stats_ces_part*; из первых частей CES выкидываем
+    has_fixed_ces = any("ces" in f.stem for f in (ROOT / "outputs").glob("preds_stats_ces_part*.parquet"))
+    if has_fixed_ces:
+        bad = df["model"].eq("CES") & df["series_id"].notna()
+        src_fixed = pd.concat([pd.read_parquet(f) for f in sorted((ROOT / "outputs").glob("preds_stats_ces_part*.parquet"))])
+        src_fixed = src_fixed[src_fixed["model"] == "CES"]
+        df = pd.concat([df[~bad], src_fixed], ignore_index=True)
+        df = df.drop_duplicates(subset=["series_id", "origin", "horizon", "model"], keep="last")
+    return df
 
 
 def add_snaive(df: pd.DataFrame) -> pd.DataFrame:
