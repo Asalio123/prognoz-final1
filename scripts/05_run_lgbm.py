@@ -69,6 +69,8 @@ def build_features(panel: pd.DataFrame) -> pd.DataFrame:
         base["region_loo_lvl"] = loo_lvl_num / loo_den
         base["cutoff"] = c
         base["cutoff_month"] = (c % 12) + 1
+        for h in [1, 3, 6, 12]:
+            base[f"target_month_h{h}"] = ((c + h) % 12) + 1
         base["category"] = cat
         base["mtype"] = mtype
         base["series_id"] = sids
@@ -82,6 +84,8 @@ def main():
     panel = pd.read_parquet(ROOT / "data" / "panel" / "panel.parquet")
     panel["series_id"] = panel["territory_id"].astype(str) + "|" + panel["category"]
     feats, wide, meta = build_features(panel)
+    feats["category"] = feats["category"].astype("category")
+    feats["mtype"] = feats["mtype"].astype("category")
     print(f"фичи: {feats.shape}, {time.time()-t0:.0f}с")
 
     feat_cols = [f"lag{k}" for k in LAGS] + ["roll3", "roll6", "mom1", "yoy", "lvl_med",
@@ -107,14 +111,15 @@ def main():
             te = feats[feats["cutoff"] == cutoff]
             if ok.sum() < 1000 or len(te) == 0:
                 continue
-            dtrain = lgb.Dataset(tr.loc[ok, feat_cols], label=y_tr[ok],
+            fc = feat_cols + [f"target_month_h{h}"]
+            dtrain = lgb.Dataset(tr.loc[ok, fc], label=y_tr[ok],
                                  categorical_feature=["category", "mtype"], free_raw_data=False)
             params = dict(objective="l1", learning_rate=0.08, num_leaves=63,
                           feature_fraction=0.8, bagging_fraction=0.8, bagging_freq=1,
                           seed=SEED, verbose=-1, num_threads=8)
             m = lgb.train(params, dtrain, num_boost_round=400,
                           valid_sets=[dtrain], callbacks=[lgb.log_evaluation(0)])
-            p = m.predict(te[feat_cols])
+            p = m.predict(te[fc])
             preds.append(pd.DataFrame({"series_id": te["series_id"].values, "origin": o,
                                        "horizon": h, "y_pred": np.expm1(np.clip(p, 0, None))}))
         print(f"origin {o} готов, {time.time()-t0:.0f}с", flush=True)

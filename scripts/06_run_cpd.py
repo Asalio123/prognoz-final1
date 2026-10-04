@@ -44,19 +44,34 @@ def det_window(y, pen):
     return [b for b in bkps if b < len(y)]
 
 
-def det_bocpd(y, hazard=1/12, thresh=0.5):
-    """BOCPD (Adams–MacKay) через bayesian_changepoint_detection; брейк = P(change) > thresh."""
-    from bayesian_changepoint_detection.bayesian_changepoint_detection import online_changepoint_detection
-    from functools import partial
-    from bayesian_changepoint_detection.hazard_functions import constant_hazard
-    from bayesian_changepoint_detection.online_likelihoods import StudentT
-    R, _maxes = online_changepoint_detection(
-        y, partial(constant_hazard, 1 / (hazard * len(y) * 12)), StudentT(0.1, 0.01, 1, 0))
-    p_change = R[1, 1:]  # вероятность того, что run length = 0 в точке t
-    scores = p_change.max(axis=0) if p_change.ndim > 1 else p_change
-    # точки, где вероятность перезапуска выше порога
-    cands = np.where(np.diag(R[1:, :]) > thresh)[0] if False else np.where(scores > thresh)[0]
-    return sorted(set(int(c) for c in cands if 1 <= c < len(y)))
+def det_bocpd(y, hazard=1/12, q=0.995):
+    """Hand-rolled Gaussian BOCPD (Adams–MacKay): пакет с scipy.misc.comb сломан на scipy 1.16,
+    онлайн-StudentT из пакета не калибруется на 24 точках. Матрица run-length вероятностей,
+    брейк = P(run=0) > q-квантиль фона."""
+    n = len(y)
+    mu0, kappa, s2_0 = np.median(y[:6]), 1.0, (np.std(np.diff(y)) or 1.0) ** 2
+    logR = np.full((n + 1, n + 1), -np.inf)
+    logR[0, 0] = 0.0
+    H = hazard
+    # параметры predictive (Normal-Inverse-Gamma упрощение: Student-t с фикс. дисперсией)
+    def logpred(t, r):
+        # данные рана: y[t-r:t]
+        d = y[t - r: t]
+        m = len(d)
+        mu_p = (mu0 * kappa + d.sum()) / (kappa + m)
+        s2 = s2_0 * (1 + 1 / (kappa + m))
+        from scipy.stats import norm
+        return norm.logpdf(y[t], loc=mu_p, scale=np.sqrt(s2))
+    for t in range(1, n + 1):
+        growth = np.array([logR[t - 1, r] + logpred(t - 1, r) + np.log(1 - H) for r in range(t)])
+        cp = np.array([logR[t - 1, r] + logpred(t - 1, r) + np.log(H) for r in range(t)])
+        logR[t, :t] = growth
+        from scipy.special import logsumexp
+        logR[t, t] = logsumexp(cp)  # сброс рана = брейк перед t
+        logR[t] -= logsumexp(logR[t])
+    p_restart = np.exp([logR[t, t] for t in range(n + 1)])
+    bg = np.quantile(p_restart[1:], q)
+    return [t for t in range(1, n) if p_restart[t] > max(bg, 0.3)]
 
 
 def det_cusum(y, k=None, h_sigma=4.0):
@@ -117,18 +132,31 @@ def main():
     rng = np.random.default_rng(42)
     sub_idx = rng.choice(len(wide), size=400, replace=False)
     sub = wide.iloc[sub_idx]
-    pens = {"PELT": 1.0, "BinSeg": 1.0, "Window": 3.0}  # стартовые, калибруем по FAR
-    calib = {}
+    # калибровка под FAR-бюджет (R04: пороги диктуются бюджетом ДО измерения delay)
+    sub_mat = sub.to_numpy()
+    target = 1.2 / 1000
+    pens = {}
+    grid = {"PELT": [0.5, 1.0, 2.0, 4.0, 8.0, 16.0], "BinSeg": [0.5, 1.0, 2.0, 4.0, 8.0, 16.0],
+            "Window": [1.0, 3.0, 6.0, 12.0, 24.0, 48.0]}
     for name, fn in [("PELT", det_pelt), ("BinSeg", det_binseg), ("Window", det_window)]:
-        n_breaks = sum(len(fn(deseasonalize(row), pens[name])) for row in sub.to_numpy())
-        calib[name] = n_breaks / (len(sub) * 24)
-        print(f"{name}: FAR={calib[name]*1000:.1f} на 1000 МО-мес (цель ≤1)")
-    # CUSUM/BOCPD: пороги фиксированы конструкцией
-    for name in ["CUSUM", "BOCPD"]:
-        fn = METHODS[name]
-        n_breaks = sum(len(fn(deseasonalize(row))) for row in sub.to_numpy()[:200])
-        calib[name] = n_breaks / (200 * 24)
-        print(f"{name}: FAR={calib[name]*1000:.1f} на 1000 МО-мес")
+        for pen in grid[name]:
+            nb = sum(len(fn(deseasonalize(row), pen)) for row in sub_mat)
+            far = nb / (len(sub) * 24)
+            if far <= target:
+                pens[name] = pen
+                break
+        else:
+            pens[name] = grid[name][-1]
+        far_f = sum(len(fn(deseasonalize(row), pens[name])) for row in sub_mat) / (len(sub) * 24)
+        print(f"{name}: pen={pens[name]}, FAR={far_f*1000:.2f}/1000 (бюджет 1.2)", flush=True)
+    for hs in [4.0, 6.0, 8.0, 12.0]:
+        nb = sum(len(det_cusum(deseasonalize(row), h_sigma=hs)) for row in sub_mat[:200])
+        if nb / (200 * 24) <= target:
+            break
+    CUSUM_H = hs
+    print(f"CUSUM: h_sigma={CUSUM_H}, FAR={nb/(200*24)*1000:.2f}/1000", flush=True)
+    nb = sum(len(det_bocpd(deseasonalize(row))) for row in sub_mat[:100])
+    print(f"BOCPD: FAR={nb/(100*24)*1000:.2f}/1000", flush=True)
 
     # --- инъекционный стенд
     rows_out = []
@@ -139,10 +167,10 @@ def main():
                 z = inject(row, kind, tau, delta)
                 z_ds = deseasonalize(z)
                 for name, fn in METHODS.items():
-                    if name in ("PELT", "BinSeg"):
+                    if name in ("PELT", "BinSeg", "Window"):
                         found = fn(z_ds, pens[name])
-                    elif name == "Window":
-                        found = fn(z_ds, pens[name])
+                    elif name == "CUSUM":
+                        found = fn(z_ds, h_sigma=CUSUM_H)
                     else:
                         found = fn(z_ds)
                     tp, fp, fn_, delay = eval_detection(found, tau)
@@ -164,10 +192,10 @@ def main():
     for (tid, cat), row in wide.iterrows():
         y_ds = deseasonalize(row.to_numpy())
         for name, fn in METHODS.items():
-            if name in ("PELT", "BinSeg"):
+            if name in ("PELT", "BinSeg", "Window"):
                 bk = fn(y_ds, pens[name])
-            elif name == "Window":
-                bk = fn(y_ds, pens[name])
+            elif name == "CUSUM":
+                bk = fn(y_ds, h_sigma=CUSUM_H)
             else:
                 bk = fn(y_ds)
             for b in bk:

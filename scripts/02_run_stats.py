@@ -30,7 +30,9 @@ MODELS = [
 ]
 
 
-def main(chunk_id: int, n_chunks: int):
+def main(chunk_id: int, n_chunks: int, only: str = ""):
+    models = [m for m in MODELS if not only or only.lower() in type(m).__name__.lower()]
+    suffix = f"_{only.lower()}" if only else ""
     panel = pd.read_parquet(ROOT / "data" / "panel" / "panel.parquet")
     df = panel.rename(columns={"date": "ds"})[["territory_id", "category", "ds", "log_value", "value"]]
     df["unique_id"] = df["territory_id"].astype(str) + "|" + df["category"]
@@ -40,7 +42,7 @@ def main(chunk_id: int, n_chunks: int):
     df["ds"] = pd.PeriodIndex(df["ds"], freq="M").to_timestamp()
     sf_in = df[["unique_id", "ds", "log_value"]].rename(columns={"log_value": "y"}).sort_values(["unique_id", "ds"])
 
-    sf = StatsForecast(models=MODELS, freq="MS", n_jobs=1,
+    sf = StatsForecast(models=models, freq="MS", n_jobs=1,
                        fallback_model=SeasonalNaive(season_length=12))
     t0 = time.time()
     cv = sf.cross_validation(df=sf_in, h=12, step_size=1, n_windows=12, level=[])
@@ -60,10 +62,10 @@ def main(chunk_id: int, n_chunks: int):
     long = long[long["step"].isin([1, 3, 6, 12])]
     long["y_pred"] = np.expm1(long["y_pred_log"].clip(lower=0))
     long = long.rename(columns={"value": "y_true", "step": "horizon", "unique_id": "series_id"})
-    out = ROOT / "outputs" / f"preds_stats_part{chunk_id}.parquet"
+    out = ROOT / "outputs" / f"preds_stats{suffix}_part{chunk_id}.parquet"
     long[["series_id", "origin", "horizon", "y_true", "y_pred", "model"]].to_parquet(out)
     print(f"[chunk {chunk_id}] saved {out}, {time.time()-t0:.0f}с total", flush=True)
 
 
 if __name__ == "__main__":
-    main(int(sys.argv[1]), int(sys.argv[2]))
+    main(int(sys.argv[1]), int(sys.argv[2]), sys.argv[3] if len(sys.argv) > 3 else "")
