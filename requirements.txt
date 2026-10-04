@@ -1,0 +1,13 @@
+pandas==3.0.6
+numpy
+pyarrow
+statsforecast==2.0.1
+prophet==1.4.0
+lightgbm==4.7.0
+ruptures==1.1.10
+scipy
+scikit-learn
+matplotlib
+pyyaml
+openpyxl
+geopandas

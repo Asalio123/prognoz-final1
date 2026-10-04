@@ -1,0 +1,20 @@
+# ЗАМОРОЖЕНО 04.10.2026 ДО первого прогона (pre-registration выбора чемпиона, R03).
+# Правило выбора основной модели фиксируется до результатов — защита от data snooping.
+champion_selection:
+  rule: no_failing_slice
+  # 1) Отбраковка: модель выбывает, если НЕ beating Prophet-B (pooled RelMAE < 1.0) на co-primary горизонтах
+  # 2) Из оставшихся чемпион = максимум min_win_rate по разрезам
+  #    (разрезы: категория × квинтиль масштаба × тип МО × терциль волатильности)
+  # 3) Тай-брейк: лучший median nMAE на h=1
+  # 4) При ничьей — более простая модель (Occam, критерий К1)
+  headline_metrics:
+    - median_relmae_vs_seasonal_naive
+    - mae_ratio_vs_prophet_b   # < 1.0 = бьём честный Prophet
+  ensemble:
+    included_if: "ablation показывает ΔMAE <= -1% против лучшей одиночной модели (гейт записан до прогона)"
+    members_frozen_after: first_full_run
+prophet_honest_config_B:   # честный baseline: ручная сезонность, тот же CV-бюджет
+  yearly_seasonality: 4    # Fourier order 4 (не 10 — 20 регрессоров на 24 точки = переобучение)
+  seasonality_mode: multiplicative
+  changepoint_prior_scale_grid: [0.05, 0.5]
+  # Prophet-A = sklearn-style default — показываем обе версии; победа засчитывается против B
