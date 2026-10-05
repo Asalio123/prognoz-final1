@@ -49,6 +49,12 @@ def build_features(panel: pd.DataFrame) -> pd.DataFrame:
     sids = wide.index.to_numpy()
     cat = meta.set_index("series_id")["category"]
     mtype = meta.set_index("series_id")["mtype"]
+
+    # --- сезонные профили (только train-окно!): per-МО лог-отклонение календарного месяца
+    # от медианы ряда, со шринкажем к региональному профилю (k=2: 1-2 наблюдения на месяц
+    # в окне — шумные; E3: амплитуда декабря по МО 1.09–1.37, глобальных дамми мало).
+    cal_month = np.arange(24) % 12  # календарный месяц 0..11 для каждого месяца панели
+    wv = wide.to_numpy()
     for c in range(1, 24):  # cutoff = последний наблюдаемый месяц (0-indexed)
         base = pd.DataFrame(index=wide.index)
         ok = pd.Series(True, index=wide.index)
@@ -60,6 +66,9 @@ def build_features(panel: pd.DataFrame) -> pd.DataFrame:
         base["yoy"] = wide[c] - wide[c - 12] if c >= 12 else np.nan
         base["lvl_med"] = wide[[i for i in range(c + 1)]].median(axis=1)
         base["mom_std"] = mom[[i for i in range(1, c + 1)]].std(axis=1) if c >= 2 else np.nan
+        # текущий месяц относительно среднего года (спайк-детектор: декабрь = lag1 >> среднее)
+        yr = wide[[max(0, c - 11 + i) for i in range(min(12, c + 1))]].mean(axis=1)
+        base["lag1_vs_yearavg"] = wide[c] - yr
         # LOO-региональные
         r = reg
         loo_num = reg_mom_sum[c].reindex(r.values).to_numpy() - mom[c].to_numpy()
@@ -67,6 +76,23 @@ def build_features(panel: pd.DataFrame) -> pd.DataFrame:
         base["region_loo_mom"] = loo_num / loo_den
         loo_lvl_num = reg_lvl_sum[c].reindex(r.values).to_numpy() - wide[c].to_numpy()
         base["region_loo_lvl"] = loo_lvl_num / loo_den
+        # сезонные профили на train-окне [0..c]
+        train_cols = [i for i in range(c + 1)]
+        med_all = np.nanmedian(wv[:, train_cols], axis=1)
+        reg_med_all = pd.DataFrame(wv[:, train_cols]).groupby(reg.values).median().median(axis=1)
+        for h in [1, 3, 6, 12]:
+            tm = (c + h) % 12
+            mcols = [i for i in train_cols if cal_month[i] == tm]
+            mo_seas = np.nanmedian(wv[:, mcols], axis=1) - med_all if mcols else np.full(len(wide), np.nan)
+            # региональный профиль того же месяца (медиана по МО региона)
+            reg_mat = pd.DataFrame(wv[:, mcols]) if mcols else pd.DataFrame(np.nan, index=range(len(wide)), columns=[0])
+            reg_seas = reg_mat.groupby(reg.values).median().median(axis=1)
+            reg_seas_c = pd.DataFrame(wv[:, train_cols]).groupby(reg.values).median().median(axis=1)
+            reg_ratio = (reg_seas - reg_seas_c).reindex(reg.values).to_numpy()
+            n_obs = len(mcols)
+            k_shrink = 2.0
+            seas = (n_obs * np.nan_to_num(mo_seas, nan=0.0) + k_shrink * reg_ratio) / (n_obs + k_shrink)
+            base[f"seas_target_h{h}"] = seas
         base["cutoff"] = c
         base["cutoff_month"] = (c % 12) + 1
         for h in [1, 3, 6, 12]:
@@ -90,7 +116,7 @@ def main():
 
     feat_cols = [f"lag{k}" for k in LAGS] + ["roll3", "roll6", "mom1", "yoy", "lvl_med",
                                              "mom_std", "region_loo_mom", "region_loo_lvl",
-                                             "cutoff_month", "category", "mtype"]
+                                             "lag1_vs_yearavg", "cutoff_month", "category", "mtype"]
     # векторные таргеты: y_mat[h][i, c] = log_value ряда i в месяц c+h
     sid_pos = {s: i for i, s in enumerate(wide.index)}
     wvals = wide.to_numpy()
@@ -104,14 +130,14 @@ def main():
             test_m = cutoff + h
             if test_m > 23:
                 continue
-            tr_mask = (feats["cutoff"] + h <= cutoff) & (feats["cutoff"] >= max(1, cutoff - 11))
+            tr_mask = (feats["cutoff"] + h <= cutoff) & (feats["cutoff"] >= 1)
             tr = feats[tr_mask]
             y_tr = y_mat[h][tr["sidx"].to_numpy(), tr["cutoff"].to_numpy()]
             ok = ~np.isnan(y_tr)
             te = feats[feats["cutoff"] == cutoff]
             if ok.sum() < 1000 or len(te) == 0:
                 continue
-            fc = feat_cols + [f"target_month_h{h}"]
+            fc = feat_cols + [f"target_month_h{h}", f"seas_target_h{h}"]
             dtrain = lgb.Dataset(tr.loc[ok, fc], label=y_tr[ok],
                                  categorical_feature=["category", "mtype"], free_raw_data=False)
             params = dict(objective="l1", learning_rate=0.08, num_leaves=63,
