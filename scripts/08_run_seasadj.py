@@ -26,6 +26,7 @@ CAL = np.arange(24) % 12
 def main():
     t0 = time.time()
     panel = pd.read_parquet(ROOT / "data" / "panel" / "panel.parquet")
+    panel["series_id"] = panel["territory_id"].astype(str) + "|" + panel["category"]
     panel["month_idx"] = (pd.PeriodIndex(panel["date"], freq="M").year - 2023) * 12 + \
                          pd.PeriodIndex(panel["date"], freq="M").month - 1
     wide = panel.pivot_table(index="series_id", columns="month_idx", values="log_value").reindex(columns=range(24))
