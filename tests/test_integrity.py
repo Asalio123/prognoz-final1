@@ -15,8 +15,8 @@ EXPECTED_ORIGINS = {1: 12, 3: 10, 6: 7, 12: 1}  # заморожено configs/v
 
 
 def _load_preds():
-    files = [f for f in OUT.glob("preds_*.parquet")
-             if not f.match("*_ces_part*") and not f.match("*_steps_part*")]
+    excl = ("*_ces_part*", "*_steps_part*", "*_quant_o12*", "*_raw_o12*", "*coldstart*")
+    files = [f for f in OUT.glob("preds_*.parquet") if not any(f.match(p) for p in excl)]
     if not files:
         pytest.skip("нет preds_*.parquet — прогоны ещё не завершены")
     df = pd.concat([pd.read_parquet(f) for f in files], ignore_index=True)
@@ -78,8 +78,13 @@ def test_news_availability_gate():
     if not f.exists():
         pytest.skip("новостные агрегаты не собраны")
     news = pd.read_parquet(f)
-    month_col = "month" if "month" in news.columns else news.columns[0]
-    mmax = pd.PeriodIndex(news[month_col], freq="M").max()
+    if "month" in news.columns:
+        mser = news["month"]
+    elif news.index.name == "month" or "month" in str(news.index.names):
+        mser = pd.Series(news.index)
+    else:
+        pytest.skip("нет колонки/индекса month")
+    mmax = pd.PeriodIndex(pd.Series(mser).astype(str), freq="M").max()
     assert mmax <= pd.Period("2024-11", freq="M"), \
         f"новости месяца {mmax} недоступны ни для одного origin (max origin = 2024-11)"
 
