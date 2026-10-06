@@ -35,23 +35,27 @@ ORIGINS_H1 = list(range(18, 24))  # для DriftAdjSNaive
 ORIGINS_H3 = list(range(18, 22))
 
 
-def drift_adj_preds(panel: pd.DataFrame) -> pd.DataFrame:
+def drift_adj_preds(panel_full: pd.DataFrame, keep_ids: set) -> pd.DataFrame:
     """DriftAdjSNaive на sliding-сетке. Формула идентична 08_run_seasadj.py:
-    прогноз = y[t+h-1-12] + g, g = pooled медиана YoY (месяц t-1 против t-13)."""
-    panel = panel.copy()
-    panel["month_idx"] = (pd.PeriodIndex(panel["date"], freq="M").year - 2023) * 12 + \
-                         pd.PeriodIndex(panel["date"], freq="M").month - 1
-    wide = panel.pivot_table(index="series_id", columns="month_idx", values="log_value").reindex(columns=range(24))
-    wide_rub = panel.pivot_table(index="series_id", columns="month_idx", values="value").reindex(columns=range(24))
-    wv, wr = wide.to_numpy(), wide_rub.to_numpy()
+    прогноз = y[t+h-1-12] + g, g = pooled медиана YoY (месяц t-1 против t-13).
+    g считается по ПОЛНОЙ панели (как у чемпиона), не по чанку — иначе сдвиг константы."""
+    panel_full = panel_full.copy()
+    panel_full["month_idx"] = (pd.PeriodIndex(panel_full["date"], freq="M").year - 2023) * 12 + \
+                              pd.PeriodIndex(panel_full["date"], freq="M").month - 1
+    wide = panel_full.pivot_table(index="series_id", columns="month_idx", values="log_value").reindex(columns=range(24))
+    wide_rub = panel_full.pivot_table(index="series_id", columns="month_idx", values="value").reindex(columns=range(24))
+    wv = wide.to_numpy()
     truth = wide_rub.stack().rename("y_true").reset_index().rename(columns={"month_idx": "test_idx"})
+    keep = wide.index.isin(list(keep_ids))
+    wide_idx = wide.index[keep]
+    wv = wv[keep]
     preds = []
     for o, h in [(o, h) for o in ORIGINS_H1 for h in (1, 3) if o in (ORIGINS_H1 if h == 1 else ORIGINS_H3)]:
         c = o - 1
-        g = float(np.nanmedian(wv[:, c] - wv[:, c - 12]))  # c >= 17 всегда
+        g = float(np.nanmedian(wide.to_numpy()[:, c] - wide.to_numpy()[:, c - 12]))  # pooled, c >= 17
         tm = c + h
         p_log = wv[:, tm - 12] + g
-        preds.append(pd.DataFrame({"series_id": wide.index, "origin": o, "horizon": h,
+        preds.append(pd.DataFrame({"series_id": wide_idx, "origin": o, "horizon": h,
                                    "y_pred": np.expm1(np.clip(p_log, 0, None)),
                                    "model": "DriftAdjSNaive", "test_idx": tm}))
     pred = pd.concat(preds, ignore_index=True).merge(truth, on=["series_id", "test_idx"], how="left")
@@ -94,8 +98,8 @@ def main(chunk_id: int, n_chunks: int):
     long = long.rename(columns={"value": "y_true"})
     out = long[["series_id", "origin", "horizon", "y_true", "y_pred", "model"]]
 
-    # DriftAdjSNaive — векторно на этом же чанке
-    da = drift_adj_preds(panel[panel["series_id"].isin(my)])
+    # DriftAdjSNaive — векторно; g pooled по полной панели, прогнозы для рядов чанка
+    da = drift_adj_preds(panel, my)
     out = pd.concat([out, da], ignore_index=True)
 
     fout = ROOT / "outputs" / f"robustness_sliding18_part{chunk_id}.parquet"

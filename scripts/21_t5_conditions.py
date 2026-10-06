@@ -93,7 +93,7 @@ def load_matched(models_needed: list[str]) -> pd.DataFrame:
         df = df[df["model"] != "y"]
         df = df.drop_duplicates(["series_id", "origin", "horizon", "model"], keep="last")
         for (m, h), g in df.groupby(["model", "horizon"]):
-            key_sets.setdefault(h, {})[m] = set(zip(g["series_id"], g["origin"]))
+            key_sets.setdefault(h, {}).setdefault(m, set()).update(zip(g["series_id"], g["origin"]))
         if df["model"].isin(models_needed).any():
             keep_parts.append(df[df["model"].isin(models_needed)])
     inter = {h: set.intersection(*sets.values()) for h, sets in key_sets.items()}

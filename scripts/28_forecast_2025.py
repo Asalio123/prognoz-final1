@@ -151,8 +151,10 @@ def national_check(fc, panel):
                     "panel_yoy_actual_pct": (cur / prev - 1) * 100 if prev and cur else np.nan,
                     "official_yoy_pct": float(off[off_type].get(m, np.nan))
                     if off_type in off.columns else np.nan}
-            for model in (["DriftAdjSNaive", "SeasProfileHA"] if cat == "Все категории"
-                          else ["DriftAdjSNaive"]):
+            models = (["DriftAdjSNaive", "SeasProfileHA"] if cat == "Все категории"
+                      else ["DriftAdjSNaive"]) if str(m) >= "2025-01" else []
+            appended = False
+            for model in models:
                 r = fc_sum[(fc_sum["month"] == m) & (fc_sum["model"] == model)]
                 if len(r) and prev:
                     r = r.iloc[0]
@@ -162,6 +164,11 @@ def national_check(fc, panel):
                                  "fc_yoy_hi80_pct": (r["y_hi80"] / prev - 1) * 100,
                                  "fc_yoy_lo95_pct": (r["y_lo95"] / prev - 1) * 100,
                                  "fc_yoy_hi95_pct": (r["y_hi95"] / prev - 1) * 100})
+                    appended = True
+            if not appended:  # 2024: только факт панели и официальный ряд (контекст трекинга)
+                rows.append({**base, "fc_model": "", "fc_yoy_pct": np.nan,
+                             "fc_yoy_lo80_pct": np.nan, "fc_yoy_hi80_pct": np.nan,
+                             "fc_yoy_lo95_pct": np.nan, "fc_yoy_hi95_pct": np.nan})
     return pd.DataFrame(rows)
 
 
