@@ -110,7 +110,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--news", type=int, default=0)
     ap.add_argument("--tag", default="")
+    ap.add_argument("--seed", type=int, default=SEED)
     args_ns = ap.parse_args()
+    seed = args_ns.seed
     t0 = time.time()
     panel = pd.read_parquet(ROOT / "data" / "panel" / "panel.parquet")
     panel["series_id"] = panel["territory_id"].astype(str) + "|" + panel["category"]
@@ -163,7 +165,7 @@ def main():
                                  categorical_feature=["category", "mtype"], free_raw_data=False)
             params = dict(objective="l1", learning_rate=0.08, num_leaves=63,
                           feature_fraction=0.8, bagging_fraction=0.8, bagging_freq=1,
-                          seed=SEED, verbose=-1, num_threads=8)
+                          seed=seed, verbose=-1, num_threads=8)
             m = lgb.train(params, dtrain, num_boost_round=400,
                           valid_sets=[dtrain], callbacks=[lgb.log_evaluation(0)])
             p = m.predict(te[fc])
