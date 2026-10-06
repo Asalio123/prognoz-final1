@@ -87,10 +87,15 @@ def test_news_availability_gate():
     # симуляция join 05_run_lgbm.py: cutoff (месяц origin'а, 12..23) == месяц новостей
     cutoffs = pd.period_range("2023-12", periods=12, freq="M")  # origins 12..23
     usable = months[months.isin(cutoffs)]
-    assert (usable.asi8 <= cutoffs.max().value).all()
+    assert (usable.asi8 <= cutoffs.max().ordinal).all()
     # ни одна новость не позже своего cutoff при равенстве ключей — тривиально по построению;
     # реальный риск был бы месяц новостей > cutoff: его нет по конструкции merge на равенстве.
-    assert set(months) - set(cutoffs) <= {pd.Period("2024-12", freq="M")}  # дек-2024 не используется ни одним origin'ом
+    # инвариант: месяца новостей, попадающие в join-диапазон (cutoffs 2023-12..2024-11),
+    # все покрыты cutoff'ами; позже 2024-12 ничего нет; ранняя история (≤2023-11)
+    # легально существует — она нужна для expanding-нормировки, не для фичей.
+    joinable = months[months >= pd.Period("2023-12", freq="M")]
+    assert set(joinable) - set(cutoffs) <= {pd.Period("2024-12", freq="M")}, \
+        "месяц новостей в join-диапазоне без origin'а — проверить merge"
 
 
 def test_decision_json_exists_and_parseable():
