@@ -87,7 +87,7 @@ def test_news_availability_gate():
     # симуляция join 05_run_lgbm.py: cutoff (месяц origin'а, 12..23) == месяц новостей
     cutoffs = pd.PeriodIndex("2023-12", periods=12, freq="M")  # origins 12..23
     usable = months[months.isin(cutoffs)]
-    assert (usable <= cutoffs.max()).all()
+    assert (usable.asi8 <= cutoffs.max().value).all()
     # ни одна новость не позже своего cutoff при равенстве ключей — тривиально по построению;
     # реальный риск был бы месяц новостей > cutoff: его нет по конструкции merge на равенстве.
     assert set(months) - set(cutoffs) <= {pd.Period("2024-12", freq="M")}  # дек-2024 не используется ни одним origin'ом
