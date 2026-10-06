@@ -127,13 +127,19 @@ def main():
 
     news_cols = []
     if args_ns.news:
-        nm = pd.read_parquet(ROOT / "outputs" / "news_monthly.parquet").reset_index()
+        # v2 = таксономия после аудита rc0 (гео-мусор, вырожденные темы retired);
+        # иначе v1. Месяц новостей = месяц origin'а (легально: origin = конец месяца, D3 §3.1).
+        news_path = ROOT / "outputs" / "news_monthly_v2.parquet"
+        if not news_path.exists():
+            news_path = ROOT / "outputs" / "news_monthly.parquet"
+        nm = pd.read_parquet(news_path).reset_index()
         nm["midx"] = (pd.PeriodIndex(nm["month"], freq="M").year - 2023) * 12 + \
                      pd.PeriodIndex(nm["month"], freq="M").month - 1
         news_cols = [c for c in nm.columns if c.startswith(("share_", "z_"))]
         feats = feats.merge(nm[["midx"] + news_cols], left_on="cutoff", right_on="midx",
                             how="left").drop(columns="midx")
         feats[news_cols] = feats[news_cols].fillna(0.0)
+        print(f"news: {news_path.name}, колонок {len(news_cols)}", flush=True)
 
     feat_cols = [f"lag{k}" for k in LAGS] + ["roll3", "roll6", "mom1", "yoy", "lvl_med",
                                              "mom_std", "region_loo_mom", "region_loo_lvl",

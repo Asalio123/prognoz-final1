@@ -1,0 +1,23 @@
+{
+  "decision_log": "Реестр решений с датами. Предрегистрация ядра: 04.10 (configs/validation.yaml, champion.yaml, news_taxonomy.yaml — коммит e3aa46e до первого прогона). Аудит rc0: 06.10 (review_rc0/). Записано честно: что до чисел, что после.",
+  "registered_2026_10_04_before_runs": {
+    "validation": "expanding rolling-origin, min_train=12, origins 12..23, h={1,3,6,12} (12/10/7/1 фолдов)",
+    "primary_metric": "MAE в рублях (контракт); headline = median per-series RelMAE vs SeasonalNaive, co-primary h=1 и h=3; h=12 — secondary (1 фолд, математический предел панели)",
+    "champion_rule": "no_failing_slice: beating Prophet-B на co-primary + максимум min win rate по разрезам (категория × масштаб × тип МО × волатильность)",
+    "prophet_versions": "A = default (yearly молча off при <730 дней), B = yearly_seasonality=4 multiplicative; победа засчитывается против сильнейшей версии",
+    "news_decision_rule": "новостной слой в финальную модель ⟺ RelMAE<1 на h=1 ИЛИ DM p_Holm<0.10; иначе раздел остаётся с нулевым результатом",
+    "excluded_metrics": {"smape": "асимметрия (Goodwin–Lawton 1999; Hyndman–Koehler 2006)", "mape": "не определена при околонулевых тратах (445 МО Общепита <300₽)"},
+    "excluded_models": {"TimesFM 3.0": "non-commercial лицензия (п.10.1.2+10.4)", "Moirai-2": "CC-BY-NC веса", "TimeGPT": "проприетарный API (п.10.3)", "TBATS": "нестабилен на 2 сезонных циклах", "per-series ML": "доминирован статистикой на monthly (M3/M4)", "stacking": "2–3 origin'а не несут мета-обучение"}
+  },
+  "audit_rc0_2026_10_06": {
+    "found_and_fixed": [
+      "02_run_stats.py: сетка origins сломана (1 окно вместо 12) → переписана per-horizon сетка, перегон",
+      "Prophet-B: катастрофа локализована в origin 12 (train < 365.25 дн.) → честный B* = splice origin12→A (03b); заявленный тюнинг B не существовал — обещание снято с B1, комментарий в коде исправлен",
+      "Ensemble-median3: провалил собственный замороженный гейт (хуже лучшей одиночной) → исключён из финала по правилу, оставлен в таблице для прозрачности",
+      "CPD: десезонирование median-of-2 зеркалит брейки → модельное десезонирование; калибровка порогов отделена от измерения; BOCPD-рекурсия исправлена",
+      "Новости: burst×CPD считался на склейке категорий → пересчёт на правильном ряде; вырожденные темы (fx 37 заголовков/24 мес, sentiment 3) отфильтрованы; добавлены Wilcoxon/Holm",
+      "Радар: таргет загрязнён границей годов (62.6% онсетов в 2024-01 — артефакт 2-точечных медиан) → решение: честный ноль как результат, витрина снята с продажи"
+    ],
+    "reporting_convention": "все таблицы только matched cells (пересечение series×origin по моделям внутри горизонта), n_origins/n_series в каждой таблице"
+  }
+}

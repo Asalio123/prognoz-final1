@@ -31,8 +31,13 @@ MONTH0 = pd.Timestamp("2023-01-01")
 def prophet_config(version: str) -> dict:
     if version == "A":
         return {}  # sklearn-default; yearly_seasonality молча off при спане <730 дней
+    # B: yearly_seasonality=4 + multiplicative. changepoint_prior_scale=0.05 = дефолт
+    # Prophet (сетка из B1 фактически не прогонялась — зафиксировано аудитом rc0;
+    # см. отчёт §К2). rc0 показал: при origin=12 (train 334 дня < 365.25) yearly=4
+    # недоопределена и даёт катастрофу; честный B = splice origin 12 → A
+    # (scripts/03b_prophet_b_fixed.py).
     return dict(yearly_seasonality=4, seasonality_mode="multiplicative",
-                changepoint_prior_scale=0.05)  # медиана сетки {0.05, 0.5}; сетка — в отчёте
+                changepoint_prior_scale=0.05)
 
 
 def run_series(args):
