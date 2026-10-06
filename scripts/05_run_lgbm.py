@@ -106,6 +106,11 @@ def build_features(panel: pd.DataFrame) -> pd.DataFrame:
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--news", type=int, default=0)
+    ap.add_argument("--tag", default="")
+    args_ns = ap.parse_args()
     t0 = time.time()
     panel = pd.read_parquet(ROOT / "data" / "panel" / "panel.parquet")
     panel["series_id"] = panel["territory_id"].astype(str) + "|" + panel["category"]
@@ -114,15 +119,25 @@ def main():
     feats["mtype"] = feats["mtype"].astype("category")
     print(f"фичи: {feats.shape}, {time.time()-t0:.0f}с")
 
-    feat_cols = [f"lag{k}" for k in LAGS] + ["roll3", "roll6", "mom1", "yoy", "lvl_med",
-                                             "mom_std", "region_loo_mom", "region_loo_lvl",
-                                             "lag1_vs_yearavg", "cutoff_month", "category", "mtype"]
     # векторные таргеты: y_mat[h][i, c] = log_value ряда i в месяц c+h
     sid_pos = {s: i for i, s in enumerate(wide.index)}
     wvals = wide.to_numpy()
     y_mat = {h: np.hstack([wvals[:, h:], np.full((wvals.shape[0], h), np.nan)]) for h in HORIZONS}
     feats["sidx"] = feats["series_id"].map(sid_pos).to_numpy()
 
+    news_cols = []
+    if args_ns.news:
+        nm = pd.read_parquet(ROOT / "outputs" / "news_monthly.parquet").reset_index()
+        nm["midx"] = (pd.PeriodIndex(nm["month"], freq="M").year - 2023) * 12 + \
+                     pd.PeriodIndex(nm["month"], freq="M").month - 1
+        news_cols = [c for c in nm.columns if c.startswith(("share_", "z_"))]
+        feats = feats.merge(nm[["midx"] + news_cols], left_on="cutoff", right_on="midx",
+                            how="left").drop(columns="midx")
+        feats[news_cols] = feats[news_cols].fillna(0.0)
+
+    feat_cols = [f"lag{k}" for k in LAGS] + ["roll3", "roll6", "mom1", "yoy", "lvl_med",
+                                             "mom_std", "region_loo_mom", "region_loo_lvl",
+                                             "lag1_vs_yearavg", "cutoff_month", "category", "mtype"] + news_cols
     preds = []
     for o in ORIGINS:
         cutoff = o - 1  # последний наблюдаемый месяц
@@ -155,10 +170,11 @@ def main():
     truth = truth.rename(columns={"value": "y_true", "month_idx": "test_idx"})
     pred["test_idx"] = pred["origin"] + pred["horizon"] - 1
     pred = pred.merge(truth, on=["series_id", "test_idx"], how="left")
-    pred = pred.assign(model="LightGBM-direct")
+    pred = pred.assign(model="LightGBM-direct" + ("-news" if args_ns.news else "") + args_ns.tag)
+    suffix = ("_news" if args_ns.news else "") + args_ns.tag
     pred[["series_id", "origin", "horizon", "y_true", "y_pred", "model"]].to_parquet(
-        ROOT / "outputs" / "preds_lgbm.parquet")
-    print(f"saved outputs/preds_lgbm.parquet, {len(pred)} строк, всего {time.time()-t0:.0f}с")
+        ROOT / "outputs" / f"preds_lgbm{suffix}.parquet")
+    print(f"saved outputs/preds_lgbm{suffix}.parquet, {len(pred)} строк, всего {time.time()-t0:.0f}с")
 
 
 if __name__ == "__main__":
