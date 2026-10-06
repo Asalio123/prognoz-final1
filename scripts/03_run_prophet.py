@@ -9,7 +9,7 @@ import argparse
 import os
 import sys
 import time
-from multiprocessing import Pool
+from multiprocessing import get_context
 from pathlib import Path
 
 import numpy as np
@@ -86,7 +86,7 @@ def main():
 
     t0 = time.time()
     rows = []
-    with Pool(args.jobs) as pool:
+    with get_context('spawn').Pool(args.jobs) as pool:
         for i, res in enumerate(pool.imap_unordered(run_series, series, chunksize=4)):
             rows.extend(res)
             if (i + 1) % 500 == 0:
