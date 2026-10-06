@@ -14,11 +14,11 @@ import pandas as pd
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-EXT = Path("/Users/said/сбериндекс/data/external")
+EXT = ROOT / "data" / "external"   # симлинк data → ~/сбериндекс/data локально; на клоне — make data
 API = EXT / "sberindex_api"
 OUT = ROOT / "outputs"
 
-panel = pd.read_parquet("/Users/said/сбериндекс/data/panel/panel.parquet",
+panel = pd.read_parquet(ROOT / "data" / "panel" / "panel.parquet",
                         columns=["territory_id", "category", "date", "value"])
 panel["date"] = pd.PeriodIndex(panel["date"].astype(str), freq="M")
 
