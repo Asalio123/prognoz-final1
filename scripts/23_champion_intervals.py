@@ -265,6 +265,9 @@ def main():
             if not len(sub):
                 continue
             cov_rows.append(cov_row(sub, mdl, h, "overall", "all"))
+            sub1 = sub[sub.tier == 1]
+            if len(sub1):
+                cov_rows.append(cov_row(sub1, mdl, h, "overall_tier1", "anchor_only"))
             for o, g in sub.groupby("origin"):
                 cov_rows.append(cov_row(g, mdl, h, "origin", o))
             for cm, g in sub.groupby("cal_month"):
