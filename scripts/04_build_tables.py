@@ -78,7 +78,9 @@ def win_rate_vs_prophet(df: pd.DataFrame) -> pd.DataFrame:
     for m in wide.columns:
         if m == "Prophet-B":
             continue
-        out[m] = ((y - wide[m]).abs() < (y - wide["Prophet-B"]).abs()).groupby("horizon").mean()
+        a, b = (y - wide[m]).abs(), (y - wide["Prophet-B"]).abs()
+        ok = a.notna() & b.notna()  # честные пары: без NaN (напр. LGBM структурно без h=12)
+        out[m] = (a[ok] < b[ok]).groupby("horizon").mean()
     return pd.DataFrame(out).T.rename_axis("model").reset_index()
 
 
