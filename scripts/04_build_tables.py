@@ -25,7 +25,9 @@ from src.significance import (dm_test, paired_wilcoxon, region_cluster_bootstrap
 HORIZONS = [1, 3, 6, 12]
 # Старые файлы preds_stats_ces_part* (починка CES на 1-origin сетке) исключены:
 # честный CES входит в preds_stats_part* после перегона 06.10 (utilsforecast 0.2.16).
-EXCLUDE_GLOB = ["preds_stats_ces_part*", "preds_stats_steps_part*"]
+EXCLUDE_GLOB = ["preds_stats_ces_part*", "preds_stats_steps_part*",
+                "preds_chronos2_quant_o12*", "preds_chronos2_zs_raw_o12*",
+                "preds_coldstart*"]  # последние три — диагностика К4 (все шаги 1..12), не сетка
 
 
 def load_all() -> pd.DataFrame:

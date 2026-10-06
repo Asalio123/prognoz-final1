@@ -119,7 +119,8 @@ def f6_fact_vs_pred(df):
 def f2_heatmap(panel):
     """F2: heatmap месяц × категория — номинальный рост г/г по нац. медиане."""
     nat = panel.groupby(["category", "month_idx"])["value"].median().reset_index()
-    nat["month"] = pd.PeriodIndex("2023-01", freq="M") + nat["month_idx"]
+    months = pd.period_range("2023-01", periods=24, freq="M")
+    nat["month"] = nat["month_idx"].map(lambda i: months[i])
     piv = nat.pivot(index="category", columns="month", values="value")
     yoy = piv / piv.shift(12, axis=1) - 1
     yoy = yoy.iloc[:, 12:] * 100
@@ -146,6 +147,9 @@ def f3_cp_showcase(panel):
         (1, "Все категории", "Майкоп (Адыгея): спокойный ряд — правильное молчание детектора"),
     ]
     br = pd.read_parquet(breaks_f) if breaks_f.exists() else None
+    if br is not None and "series_id" not in br.columns:
+        br = br.copy()
+        br["series_id"] = br["territory_id"].astype(str) + "|" + br["category"].astype(str)
     fig, axes = plt.subplots(2, 2, figsize=(11, 6.5), sharex=False)
     for ax, (tid, cat, title) in zip(axes.ravel(), cases):
         s = panel[(panel.territory_id == tid) & (panel.category == cat)].sort_values("month_idx")
@@ -214,7 +218,8 @@ def f1_error_map(df):
     rel = (ps / psn).dropna().rename("relmae").reset_index().rename(columns={"series_id": "territory_id"})
     g = gpd.read_file(gpkg[0])
     tid_col = [c for c in g.columns if "terr" in c.lower() or c.lower() in ("tid", "id")][0]
-    g = g.merge(rel, left_on=g[tid_col], right_on="territory_id", how="left")
+    g["_tid"] = g[tid_col].astype(str).str.replace(r"\.0$", "", regex=True).astype(int)
+    g = g.merge(rel, left_on="_tid", right_on="territory_id", how="left")
     fig, ax = plt.subplots(figsize=(11, 6))
     g.plot(column="relmae", ax=ax, cmap="cividis", vmin=0.3, vmax=2.0,
            missing_kwds={"color": "#dddddd"}, legend=True,

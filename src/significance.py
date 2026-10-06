@@ -34,6 +34,8 @@ def dm_test(errors_a: pd.Series, errors_b: pd.Series, h: int) -> dict:
     mean_d = D.mean()
     # Newey-West дисперсия среднего: γ0 + 2·Σ_{k=1}^{h-1} w_k γ_k, веса Бартлетта
     def autocov(x, k):
+        if k == 0:
+            return np.mean((x - x.mean()) ** 2)
         return np.mean((x[k:] - x.mean()) * (x[:-k] - x.mean()))
     var = autocov(D, 0)
     for k in range(1, h):
