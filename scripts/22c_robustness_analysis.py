@@ -54,12 +54,12 @@ def per_series_ae(df: pd.DataFrame) -> pd.DataFrame:
 def summarize(df: pd.DataFrame, label_cols: dict) -> pd.DataFrame:
     """Сводка по df (уже подготовленному подмножеству одной схемы/среза/горизонта)."""
     ps = per_series_ae(df)
-    sn = ps[ps["model"] == "SeasonalNaive"].set_index("series_id")["ae"]
+    sn_all = ps[ps["model"] == "SeasonalNaive"]
     rows = []
     for (m, h), g in ps.groupby(["model", "horizon"]):
         g = g.dropna(subset=["ae"])
-        common = g["series_id"].map(lambda s: s in sn.index)
-        g = g[common]
+        sn = sn_all[sn_all["horizon"] == h].set_index("series_id")["ae"]
+        g = g[g["series_id"].isin(sn.index)]
         denom = sn.loc[g["series_id"]].sum()
         rows.append({**label_cols, "model": m, "horizon": h,
                      "mae_rub": g["ae"].mean(),

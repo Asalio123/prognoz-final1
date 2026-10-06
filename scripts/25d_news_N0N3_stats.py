@@ -36,6 +36,9 @@ CONFIGS = {
     "N2": "preds_lgbm_newsN2_v3.parquet",
     "N3": "preds_lgbm_newsN3_v3.parquet",
 }
+# парные сравнения соседних ступеней — прямые ответы на вопросы спеки:
+# N2 vs N1 = «помогает ли внутримесячное взвешивание», N3 vs N2 = «помогает ли дифференциация»
+PAIRWISE = [("N2", "N1"), ("N3", "N2")]
 
 
 def load(name):
@@ -44,40 +47,49 @@ def load(name):
     return df
 
 
+def compare(base_ae, cfg_ae, label_a, label_b, rows):
+    """base_ae/cfg_ae: df[series_id, origin, horizon, ae]. Пишет строки per h в rows."""
+    df = base_ae.merge(cfg_ae, on=["series_id", "origin", "horizon"], suffixes=("_a", "_b"))
+    for h in [1, 3, 6]:
+        sub = df[df.horizon == h]
+        o = sub.groupby("origin")[["ae_a", "ae_b"]].mean()
+        w = wilcoxon(o["ae_a"], o["ae_b"])
+        ea = sub.set_index(["origin", "series_id"])["ae_b"]
+        eb = sub.set_index(["origin", "series_id"])["ae_a"]
+        dm = dm_test(ea, eb, h)  # mean_diff < 0 = B лучше A
+        maea, maeb = sub["ae_a"].mean(), sub["ae_b"].mean()
+        rows.append(dict(config=label_b, vs=label_a, h=h, n_origins=len(o), n_rows=len(sub),
+                         mae_vs=maea, mae_cfg=maeb,
+                         relmae=maeb / maea,
+                         delta_pct=100 * (maeb / maea - 1),
+                         origin_mean_delta=(o["ae_b"] - o["ae_a"]).mean(),
+                         origins_improved=int(((o["ae_b"] - o["ae_a"]) < 0).sum()),
+                         wilcoxon_origin_p=w.pvalue,
+                         dm_hln_p=dm["p"]))
+        print(f"{label_b} vs {label_a} h={h}: RelMAE={maeb/maea:.4f} Δ={100*(maeb/maea-1):+.2f}% "
+              f"Wilcoxon p={w.pvalue:.4f} DM p={dm['p']:.4f} "
+              f"origins улучш. {int(((o['ae_b']-o['ae_a'])<0).sum())}/{len(o)}", flush=True)
+
+
 def main():
-    n0 = load("preds_lgbm.parquet")[["series_id", "origin", "horizon", "ae"]].rename(columns={"ae": "ae_n0"})
+    n0 = load("preds_lgbm.parquet")[["series_id", "origin", "horizon", "ae"]]
+    cfgs = {k: load(v)[["series_id", "origin", "horizon", "ae"]] for k, v in CONFIGS.items()}
     rows = []
-    for cfg, fname in CONFIGS.items():
-        nk = load(fname)[["series_id", "origin", "horizon", "ae"]].rename(columns={"ae": "ae_cfg"})
-        df = n0.merge(nk, on=["series_id", "origin", "horizon"], how="inner")
-        for h in [1, 3, 6]:
-            sub = df[df.horizon == h]
-            o = sub.groupby("origin")[["ae_n0", "ae_cfg"]].mean()
-            w = wilcoxon(o["ae_n0"], o["ae_cfg"])
-            ea = sub.set_index(["origin", "series_id"])["ae_cfg"]
-            eb = sub.set_index(["origin", "series_id"])["ae_n0"]
-            dm = dm_test(ea, eb, h)  # mean_diff < 0 = конфиг лучше N0
-            mae0, maec = sub["ae_n0"].mean(), sub["ae_cfg"].mean()
-            rows.append(dict(config=cfg, h=h, n_origins=len(o), n_rows=len(sub),
-                             mae_n0=mae0, mae_cfg=maec,
-                             relmae=maec / mae0,
-                             delta_pct=100 * (maec / mae0 - 1),
-                             origin_mean_delta=(o["ae_cfg"] - o["ae_n0"]).mean(),
-                             origins_improved=int(((o["ae_cfg"] - o["ae_n0"]) < 0).sum()),
-                             wilcoxon_origin_p=w.pvalue,
-                             dm_hln_p=dm["p"]))
-            print(f"{cfg} h={h}: RelMAE={maec/mae0:.4f} Δ={100*(maec/mae0-1):+.2f}% "
-                  f"Wilcoxon p={w.pvalue:.4f} DM p={dm['p']:.4f} "
-                  f"origins улучш. {int(((o['ae_cfg']-o['ae_n0'])<0).sum())}/{len(o)}", flush=True)
+    for cfg in CONFIGS:
+        compare(n0, cfgs[cfg], "N0", cfg, rows)
+    for a, b in PAIRWISE:
+        compare(cfgs[a], cfgs[b], a, b, rows)
 
     st = pd.DataFrame(rows)
-    # Holm внутри семейства {N1,N2,N3} per горизонт (первичный тест = Wilcoxon origin)
+    # Holm внутри семейства {N1,N2,N3} vs N0 per горизонт (первичный тест = Wilcoxon origin);
+    # парные ступенчатые сравнения — диагностические, в семейство Holm не входят
     st["holm_p"] = np.nan
+    main_rows = st.vs == "N0"
     for h in [1, 3, 6]:
-        sub = st[st.h == h]
-        adj = holm(dict(zip(sub["config"], sub["wilcoxon_origin_p"])))
-        st.loc[st.h == h, "holm_p"] = st.loc[st.h == h, "config"].map(adj)
-    st["decision_rule_pass"] = ((st.h == 1) & (st.relmae < 1)) | (st.holm_p < 0.10)
+        mask = main_rows & (st.h == h)
+        adj = holm(dict(zip(st.loc[mask, "config"], st.loc[mask, "wilcoxon_origin_p"])))
+        st.loc[mask, "holm_p"] = st.loc[mask, "config"].map(adj)
+    st["decision_rule_pass"] = main_rows & (((st.h == 1) & (st.relmae < 1)) | (st.holm_p < 0.10))
     st.to_csv(ROOT / "outputs" / "news_ablation_N0N3.csv", index=False)
     print(f"\nsaved outputs/news_ablation_N0N3.csv")
     print(st.to_string(index=False, float_format=lambda x: f"{x:.4f}"))
