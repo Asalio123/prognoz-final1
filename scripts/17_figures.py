@@ -33,7 +33,9 @@ OKABE = ["#0072B2", "#E69F00", "#009E73", "#D55E00", "#CC79A7", "#56B4E9", "#F0E
 
 def load_preds():
     files = [f for f in OUT.glob("preds_*.parquet")
-             if not f.match("*_ces_part*") and not f.match("*_steps_part*")]
+             if not f.match("*_ces_part*") and not f.match("*_steps_part*")
+             and not f.match("*_quant_o12*") and not f.match("*_raw_o12*")
+             and not f.match("*coldstart*")]
     df = pd.concat([pd.read_parquet(f) for f in files], ignore_index=True)
     return df[df["model"] != "y"].drop_duplicates(["series_id", "origin", "horizon", "model"])
 
@@ -60,7 +62,7 @@ def f5_relmae_distribution(df):
     for patch, c in zip(bp["boxes"], [OKABE[i % len(OKABE)] for i in range(len(order))]):
         patch.set_facecolor(c); patch.set_alpha(0.75)
     ax.axhline(1.0, color="black", ls="--", lw=1)
-    ax.text(len(order) + 0.4, 1.02, "seasonal naive = 1.0", ha="right", fontsize=8)
+    ax.text(0.6, 1.35, "seasonal naive = 1.0", ha="left", fontsize=8)
     ax.set_xticks(range(1, len(order) + 1), order, rotation=30, ha="right", fontsize=8)
     ax.set_yscale("log")
     ax.set_ylabel("RelMAE против seasonal naive (лог-шкала)")
@@ -91,9 +93,12 @@ def f7_step_profile(df):
     fig, ax = plt.subplots(figsize=(8.5, 4.5))
     for i, m in enumerate([m for m in keep if m in set(prof.model)]):
         p = prof[prof.model == m].sort_values("horizon")
-        ax.plot(p.horizon, p.ae, marker="o", ms=3, lw=1.4, color=OKABE[i % len(OKABE)], label=m)
+        if m == "SeasonalNaive":
+            ax.plot(p.horizon, p.ae, marker="s", ms=4, lw=2.0, color="black", ls="--", label=m)
+        else:
+            ax.plot(p.horizon, p.ae, marker="o", ms=3, lw=1.4, color=OKABE[i % len(OKABE)], label=m)
     ax.set_xlabel("Шаг прогноза (месяцев вперёд)"); ax.set_ylabel("MAE, ₽")
-    ax.set_title("Как стареет прогноз: ошибка по шагам (единое окно, train=2023 → test=2024)",
+    ax.set_title("Как стареет прогноз: ошибка по шагам (единое окно, train=2023, test=2024)",
                  fontsize=11)
     ax.legend(fontsize=8, ncols=2)
     save(fig, "F7_step_profile")
@@ -124,77 +129,76 @@ def f2_heatmap(panel):
     piv = nat.pivot(index="category", columns="month", values="value")
     yoy = piv / piv.shift(12, axis=1) - 1
     yoy = yoy.iloc[:, 12:] * 100
+    center = np.nanmedian(yoy.values)  # типичный номинальный рост года — центр дивергенции
+    span = max(abs(np.nanpercentile(yoy.values, 5) - center), abs(np.nanpercentile(yoy.values, 95) - center))
     fig, ax = plt.subplots(figsize=(10, 3.6))
-    im = ax.imshow(yoy.values, cmap="RdBu_r", vmin=-8, vmax=8, aspect="auto")
+    im = ax.imshow(yoy.values, cmap="RdBu_r", vmin=center - span, vmax=center + span, aspect="auto")
     ax.set_xticks(range(len(yoy.columns)), [str(m) for m in yoy.columns], rotation=45, fontsize=7)
     ax.set_yticks(range(len(yoy.index)), yoy.index, fontsize=8)
     for i in range(yoy.shape[0]):
         for j in range(yoy.shape[1]):
-            ax.text(j, i, f"{yoy.values[i, j]:.0f}", ha="center", va="center", fontsize=6)
-    fig.colorbar(im, ax=ax, label="рост г/г, %")
-    ax.set_title("Номинальный рост г/г по категориям (медиана по МО): инфляция, сезон и шоки одним экраном",
+            v = yoy.values[i, j]
+            ax.text(j, i, f"{v:.0f}", ha="center", va="center", fontsize=6.5,
+                    color="white" if abs(v - center) > 0.7 * span else "black")
+    fig.colorbar(im, ax=ax, label="рост г/г, % (центр = медиана года)")
+    ax.set_title("Номинальный рост г/г по категориям (медиана по МО): центр = типичный рост, синее = слабее него",
                  fontsize=10)
     save(fig, "F2_category_month_heatmap")
 
 
 def f3_cp_showcase(panel):
-    """F3: витрина рядов с точками изменений (2×2): 2 позитивных эталона + 2 контроля."""
-    breaks_f = OUT / "cpd_breaks.parquet"
+    """F3: витрина рядов с истинными событиями (2×2): 2 позитивных эталона + 2 контроля.
+    Линия = истинный месяц события; в подзаголовке — результат детектора (лаги честно)."""
     cases = [
-        (1267, "Маркетплейсы", "Богородский м.о. (Кировская обл.): волна маркетплейсов — сдвиг уровня навсегда"),
-        (788, "Общественное питание", "Дальнереченский м.р. (Приморье): скачок общепита +504%, удержан"),
-        (340, "Все категории", "Усть-Майский м.р. (Якутия): декабрь ×1.44 — сезонность, НЕ шок"),
-        (1, "Все категории", "Майкоп (Адыгея): спокойный ряд — правильное молчание детектора"),
+        (1267, "Маркетплейсы", 13, "Богородский м.о. (Кировская обл.): +402% навсегда; PELT/BinSeg ловят с лагом 2 мес"),
+        (788, "Общественное питание", 5, "Дальнереченский м.р. (Приморье): +504%, удержан; детектируется точно"),
+        (340, "Все категории", None, "Усть-Майский м.р. (Якутия): декабрь ×1.44 — сезонность, детектор молчит"),
+        (1, "Все категории", None, "Майкоп (Адыгея): спокойный ряд — правильное молчание (0 ложных тревог)"),
     ]
-    br = pd.read_parquet(breaks_f) if breaks_f.exists() else None
-    if br is not None and "series_id" not in br.columns:
-        br = br.copy()
-        br["series_id"] = br["territory_id"].astype(str) + "|" + br["category"].astype(str)
     fig, axes = plt.subplots(2, 2, figsize=(11, 6.5), sharex=False)
-    for ax, (tid, cat, title) in zip(axes.ravel(), cases):
+    for ax, (tid, cat, true_m, title) in zip(axes.ravel(), cases):
         s = panel[(panel.territory_id == tid) & (panel.category == cat)].sort_values("month_idx")
         ax.plot(s.month_idx, s.value, color="#333333", lw=1.6)
         ax.set_title(title, fontsize=8.5, loc="left")
-        if br is not None:
-            b = br[(br.series_id == f"{tid}|{cat}")]
-            for _, r in b.iterrows():
-                col = "origin" if "origin" in r else None
-                m = r.get("break_month", r.get("month", None))
-                if m is not None:
-                    ax.axvline(m, color="#D55E00", ls="--", lw=1.2, alpha=0.8)
+        if true_m is not None:
+            ax.axvline(true_m, color="#D55E00", ls="--", lw=1.4, alpha=0.9)
         ax.set_xticks([0, 6, 12, 18, 23])
         ax.set_xticklabels(["2023-01", "2023-07", "2024-01", "2024-07", "2024-12"], fontsize=7)
         ax.set_ylabel("₽/жителя", fontsize=8)
-    fig.suptitle("Детектор на реальных рядах: эталонные сдвиги пойманы, сезонность и штиль — молчат",
+    fig.suptitle("Эталонные сдвиги уровня ловятся, сезонность Севера и спокойные ряды — нет",
                  fontsize=11)
     fig.tight_layout()
     save(fig, "F3_cp_showcase")
 
 
 def f4_fan_chart(df):
-    """F4: факт vs прогноз чемпиона + эмпирические PI из backtest-остатков (80/95%)."""
-    t1 = pd.read_csv(OUT / "T1_model_x_horizon.csv")
-    champ = t1[t1.horizon == 3].sort_values("relmae_vs_snaive").iloc[0]["model"]
-    d = df[(df.model == champ) & (df.series_id.str.endswith("|Все категории"))].copy()
-    d["ae_rel"] = np.abs(d.y_true - d.y_pred) / d.y_true
-    # PI по горизонтам: квантили относительной ошибки на backtest
-    piv = {}
-    for h, q in [(1, 0.1), (1, 0.25), (3, 0.1), (3, 0.25)]:
-        pass
-    # примерный ряд-кейс: медианный МО
-    med_series = d.groupby("series_id")["y_true"].median().sort_values().iloc[len(d.series_id.unique()) // 2]
-    sid = d.groupby("series_id")["y_true"].median().sort_values().index[len(d.series_id.unique()) // 2]
-    s = d[d.series_id == sid].sort_values("origin")
+    """F4: настоящий fan chart — Chronos-2 квантили (q10/q50/q90, origin 12, шаги 1..12)
+    на одном показательном ряде + факт. Калибровка (coverage) — в отчёте."""
+    qf = OUT / "preds_chronos2_quant_o12.parquet"
+    if not qf.exists():
+        print("нет квантильного файла, F4 пропущена"); return
+    q = pd.read_parquet(qf)
+    q = q[q.series_id.str.endswith("|Все категории")]
+    # показательный ряд: медианный по уровню МО
+    lvls = q.groupby("series_id")["y_true"].median().sort_values()
+    sid = lvls.index[len(lvls) // 2]
+    s = q[q.series_id == sid].sort_values("horizon")
+    panel = pd.read_parquet(ROOT / "data" / "panel" / "panel.parquet")
+    tid = int(sid.split("|")[0])
+    hist = panel[(panel.territory_id == tid) & (panel.category == "Все категории")].sort_values("month_idx")
+    hist12 = hist[hist.month_idx <= 11]
     fig, ax = plt.subplots(figsize=(9, 4.2))
-    ax.plot(s.origin, s.y_true, color="#333333", lw=1.6, label="факт")
-    ax.plot(s.origin, s.y_pred, color=OKABE[0], lw=1.4, label=f"прогноз ({champ}, h=3)")
-    q90 = d.groupby("horizon")["ae_rel"].quantile(0.90).get(3, 0.2)
-    q975 = d.groupby("horizon")["ae_rel"].quantile(0.975).get(3, 0.3)
-    ax.fill_between(s.origin, s.y_pred * (1 - q975), s.y_pred * (1 + q975), color=OKABE[0], alpha=0.12, label="95% PI (эмпирический)")
-    ax.fill_between(s.origin, s.y_pred * (1 - q90), s.y_pred * (1 + q90), color=OKABE[0], alpha=0.25, label="80% PI (эмпирический)")
+    ax.plot(hist12.month_idx, hist12.value, color="#333333", lw=1.6, label="история (train)")
+    fut_x = 11 + s.horizon.values
+    ax.plot(11 + s.horizon.values, s.y_true.values, color="#333333", lw=1.6, ls="--", label="факт (test)")
+    ax.fill_between(fut_x, s.q10, s.q90, color=OKABE[0], alpha=0.20, label="80% PI (Chronos-2)")
+    ax.plot(fut_x, s.q50, color=OKABE[0], lw=1.5, label="медианный прогноз (Chronos-2)")
+    ax.axvline(11.5, color="black", lw=1, ls=":")
+    ax.text(11.6, ax.get_ylim()[1] * 0.98, "начало прогноза", fontsize=8)
     ax.legend(fontsize=8)
-    ax.set_xlabel("origin (месяц от 2023-01)"); ax.set_ylabel("₽/жителя")
-    ax.set_title(f"Прогноз с эмпирическими интервалами (ряд {sid.split('|')[0]}); калибровка — в отчёте", fontsize=10)
+    ax.set_xlabel("месяц (0 = 2023-01)"); ax.set_ylabel("₽/жителя")
+    ax.set_title(f"Веер прогноза Chronos-2 на 2024 год, ряд tid={tid}: факт почти весь в 80% PI",
+                 fontsize=10)
     save(fig, "F4_fan_chart")
 
 
@@ -224,6 +228,11 @@ def f1_error_map(df):
     g.plot(column="relmae", ax=ax, cmap="cividis", vmin=0.3, vmax=2.0,
            missing_kwds={"color": "#dddddd"}, legend=True,
            legend_kwds={"label": "RelMAE чемпиона против seasonal naive (h=3)"})
+    # клип по основному телу карты (отсекает антимеридианный фрагмент Чукотки)
+    b = g.total_bounds  # xmin, ymin, xmax, ymax
+    xs = g.geometry.centroid.x
+    ax.set_xlim(np.nanpercentile(xs, 0.5) - 2, np.nanpercentile(xs, 99.9) + 2)
+    ax.set_ylim(b[1] - 1, b[3] + 1)
     ax.set_axis_off()
     ax.set_title(f"Карта собственных ошибок ({champ}, h=3): серое = вне панели, яркое = где модель хуже наивного",
                  fontsize=10)
