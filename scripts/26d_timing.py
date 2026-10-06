@@ -58,8 +58,10 @@ def main():
 
     for m in ["PELT", "BinSeg", "Window", "CUSUM", "EWMA"]:
         bench(m, lambda z, m=m: GRIDS[m][1](z, frozen[m]))
-    bench("BOCPD", lambda z: [b for b in range(1, len(z))
-                              if bocpd_prestart(z)[b] > frozen["BOCPD"]])
+    def bocpd_det(z):
+        p = bocpd_prestart(z)
+        return [b for b in range(1, len(z)) if p[b] > frozen["BOCPD"]]
+    bench("BOCPD", bocpd_det)
 
     # PELT-BIC (эталон matched-протокола): pen=2·log(24) на z/level_scale
     from src.cpd import level_scale
