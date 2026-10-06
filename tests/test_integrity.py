@@ -85,7 +85,7 @@ def test_news_availability_gate():
     months = pd.PeriodIndex(pd.Series(mser).astype(str), freq="M")
     assert months.max() <= pd.Period("2024-12", freq="M"), "корпус новостей выходит за данные"
     # симуляция join 05_run_lgbm.py: cutoff (месяц origin'а, 12..23) == месяц новостей
-    cutoffs = pd.PeriodIndex("2023-12", periods=12, freq="M")  # origins 12..23
+    cutoffs = pd.period_range("2023-12", periods=12, freq="M")  # origins 12..23
     usable = months[months.isin(cutoffs)]
     assert (usable.asi8 <= cutoffs.max().value).all()
     # ни одна новость не позже своего cutoff при равенстве ключей — тривиально по построению;
