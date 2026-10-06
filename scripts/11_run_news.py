@@ -30,7 +30,12 @@ NEWS = ROOT / "data" / "external" / "news"
 
 def load_headlines() -> pd.DataFrame:
     rows = []
-    for f in NEWS.glob("headlines_*.jsonl"):
+    files = list(NEWS.glob("headlines_*.jsonl"))
+    if not files:
+        raise SystemExit(
+            f"Новостный корпус не найден в {NEWS}. Сначала: make news-corpus "
+            f"(краулер scripts/crawl_news_headlines.py, ~25–40 мин).")
+    for f in files:
         with open(f) as fh:
             rows.extend(json.loads(l) for l in fh if l.strip())
     df = pd.DataFrame(rows)

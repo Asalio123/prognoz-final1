@@ -1,18 +1,23 @@
 PY := .venv/bin/python
 N_CHUNKS := 6
 
-.PHONY: data panel stats prophet prophet-bfix lgbm cpd news radar ensemble tables report reproduce clean-outputs
+.PHONY: data panel news-corpus stats prophet prophet-bfix lgbm seasadj ensemble cpd downstream news news-cpd chronos timesfm radar tables figures test reproduce clean-outputs
 
-data:        ## скачать сырые данные с официальных URL (CC BY-SA 4.0, sha256)
+data:        ## скачать сырые данные СберИндекса с официальных URL (CC BY-SA 4.0, sha256)
 	$(PY) scripts/01_download_data.py
+
+news-corpus: ## новостный корпус заголовков Ъ/Ведомости 2023–24 (~25–40 мин)
+	mkdir -p data/external/news
+	$(PY) scripts/crawl_news_headlines.py
 
 panel: data  ## собрать чистую панель (полные 24-мес ряды, фильтр Общепит <300₽)
 	$(PY) -m src.panel
 
 stats:       ## стат-стек × полная сетка origins (h=1:12, h=3:10, h=6:7, h=12:1), 6 чанков
-	@for i in 0 1 2 3 4 5; do \
-		nice -n 10 $(PY) scripts/02_run_stats.py $$i $(N_CHUNKS) > outputs/logs/stats_grid_chunk$$i.log 2>&1 & \
-	done; wait
+	mkdir -p outputs/logs
+	@fail=0; for i in 0 1 2 3 4 5; do \
+		nice -n 10 $(PY) scripts/02_run_stats.py $$i $(N_CHUNKS) > outputs/logs/stats_grid_chunk$$i.log 2>&1 || fail=1 & \
+	done; wait; [ $$fail -eq 0 ] || { echo "STATS FAILED — см. outputs/logs/"; exit 1; }
 	@echo "stats done; логи outputs/logs/stats_grid_chunk*.log"
 
 prophet:     ## Prophet A (default) и B (yearly=4, multiplicative) на сетке origins
@@ -24,31 +29,34 @@ prophet-bfix: ## Prophet-B* = честный splice (origin 12 → A): yearly=4 
 
 lgbm:        ## глобальный LightGBM (direct-per-horizon, objective l1, log-таргет)
 	$(PY) scripts/05_run_lgbm.py
+	$(PY) scripts/05_run_lgbm.py --news 1 --tag _v2
 
-seasadj:     ## DriftAdjSNaive / SeasProfileHA (кандидаты с сезонными профилями)
+seasadj:     ## DriftAdjSNaive / SeasProfileHA (чемпионы по сезонным профилям и дрейфу)
 	$(PY) scripts/08_run_seasadj.py
 
 ensemble:    ## median-энсамбль (гейт включения — configs/decision.json)
 	$(PY) scripts/07_run_ensemble.py
 
-cpd:         ## CPD-стенд: калибровка порогов отдельно, измерение отдельно, фронтир F1×FAR
+cpd:         ## CPD-стенд: disjoint калибровка/измерение, фронтир, контролы
 	$(PY) scripts/06_run_cpd.py
 	$(PY) scripts/06b_cpd_frontier.py
+	$(PY) scripts/06c_cpd_controls.py
 
 downstream:  ## решающая метрика детекторов: ΔMAE при refit-от-брейка (каузальные брейки)
 	$(PY) scripts/13_downstream_dmae.py
 
-news:        ## новостные индексы + абляция новостей в LGBM
+news: news-corpus  ## новостные индексы + абляция со статистикой
 	$(PY) scripts/11_run_news.py
 	$(PY) scripts/16_news_ablation_stats.py
 
-news-cpd:    ## стыковка новости × CPD (burst × PELT на национальном ряду «Всего»)
+news-cpd:    ## стыковка новости × CPD (burst × PELT на нац. ряде «Всего»)
 	$(PY) scripts/15_run_news_cpd.py
 
-chronos:     ## Chronos-2 zero-shot (Apache-2.0), MPS
+chronos:     ## Chronos-2 zero-shot + ковариаты (Apache-2.0), MPS/CPU
 	$(PY) scripts/09_run_chronos.py
+	$(PY) scripts/18_run_chronos_cov.py
 
-timesfm:     ## TimesFM 2.5 zero-shot (Apache-2.0), CPU ~2.5 ч
+timesfm:     ## TimesFM 2.5 zero-shot (Apache-2.0), CPU ~2.5–3 ч
 	$(PY) scripts/10_run_timesfm.py
 
 radar:       ## панельный радар (результат rc0: честный ноль — см. отчёт §4)
@@ -57,11 +65,13 @@ radar:       ## панельный радар (результат rc0: чест�
 tables:      ## T1/T2/T3: matched cells, разрезы, значимость (DM/Wilcoxon/bootstrap/Holm)
 	$(PY) scripts/04_build_tables.py
 
-test:        ## минимальные тесты целостности (утечки, схемы, matched cells)
+figures:     ## 7 фигур отчёта в reports/figures/
+	$(PY) scripts/17_figures.py
+
+test:        ## тесты целостности (утечки, matched cells, схемы, новостный гейт)
 	$(PY) -m pytest tests/ -q
 
-reproduce: data panel stats prophet prophet-bfix seasadj lgbm ensemble chronos cpd downstream news news-cpd radar tables  ## полный прогон от сырых данных до таблиц (CPU, ~6–8 ч wall на 8 ядрах)
+# Полный прогон от сырых данных до таблиц и фигур. Реалистично: ~9–11 ч wall на 8 ядрах
+# (доминируют stats ~2.6 ч и prophet ~4.5–5 ч; timesfm ~3 ч CPU — можно закомментировать).
+reproduce: data panel news-corpus stats prophet prophet-bfix seasadj lgbm ensemble chronos cpd downstream news-cpd radar tables test figures
 	@echo "reproduce done"
-
-clean-outputs:  ## удалить outputs/preds_* (перед полной пересборкой)
-	rm -f outputs/preds_*.parquet

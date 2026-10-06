@@ -21,3 +21,4 @@ timesfm==3.0.2              # пакет 3.0.2; ВЕСА строго google/tim
 torch==2.14.1
 transformers==4.57.6        # <5: chronos несовместим с transformers 5
 holidays==0.105
+pytest==9.1.1
