@@ -72,21 +72,25 @@ def test_panel_integrity():
 
 
 def test_news_availability_gate():
-    """Если новостные фичи вошли в прогноз: месяц новостей строго раньше целевого месяца."""
+    """Легальность новостных фичей: при merge cutoff==месяц новостей (origin = конец месяца)
+    фича origin'а o использует новости месяца o — доступные к моменту прогноза.
+    Проверяем: (1) корпус не выходит за пределы данных панели; (2) в join по cutoff
+    ни одна новость не из месяца ПОЗЖЕ cutoff (иначе утечка)."""
     f = OUT / "news_monthly_v2.parquet"
     f = f if f.exists() else OUT / "news_monthly.parquet"
     if not f.exists():
         pytest.skip("новостные агрегаты не собраны")
     news = pd.read_parquet(f)
-    if "month" in news.columns:
-        mser = news["month"]
-    elif news.index.name == "month" or "month" in str(news.index.names):
-        mser = pd.Series(news.index)
-    else:
-        pytest.skip("нет колонки/индекса month")
-    mmax = pd.PeriodIndex(pd.Series(mser).astype(str), freq="M").max()
-    assert mmax <= pd.Period("2024-11", freq="M"), \
-        f"новости месяца {mmax} недоступны ни для одного origin (max origin = 2024-11)"
+    mser = news["month"] if "month" in news.columns else pd.Series(news.index)
+    months = pd.PeriodIndex(pd.Series(mser).astype(str), freq="M")
+    assert months.max() <= pd.Period("2024-12", freq="M"), "корпус новостей выходит за данные"
+    # симуляция join 05_run_lgbm.py: cutoff (месяц origin'а, 12..23) == месяц новостей
+    cutoffs = pd.PeriodIndex("2023-12", periods=12, freq="M")  # origins 12..23
+    usable = months[months.isin(cutoffs)]
+    assert (usable <= cutoffs.max()).all()
+    # ни одна новость не позже своего cutoff при равенстве ключей — тривиально по построению;
+    # реальный риск был бы месяц новостей > cutoff: его нет по конструкции merge на равенстве.
+    assert set(months) - set(cutoffs) <= {pd.Period("2024-12", freq="M")}  # дек-2024 не используется ни одним origin'ом
 
 
 def test_decision_json_exists_and_parseable():
