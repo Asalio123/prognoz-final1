@@ -39,9 +39,10 @@ PERIOD = 6
 
 
 def det_clasp(z: np.ndarray) -> list[int]:
-    found = ClaSPSegmentation(period_length=PERIOD, n_cps=1).fit_predict(
-        np.asarray(z, float))
-    return [int(b) for b in np.atleast_1d(found) if 0 < b < len(z)]
+    r = ClaSPSegmentation(period_length=PERIOD, n_cps=1).fit_predict(np.asarray(z, float))
+    # sktime 1.2: fit_predict возвращает DataFrame с колонкой "ilocs"
+    locs = r["ilocs"].to_numpy() if hasattr(r, "columns") else np.atleast_1d(r)
+    return [int(b) for b in np.atleast_1d(locs) if 0 < b < len(z)]
 
 
 def f1_row(method, recs, n):
@@ -90,7 +91,7 @@ def main():
             recs["PELT"].append(eval_detection(det_pelt(z, frozen["PELT"]), int(taus[j]), tol=2))
             recs["Window"].append(eval_detection(det_window(z, frozen["Window"]), int(taus[j]), tol=2))
         for m in recs:
-            rows.append(dict(method=m, kind=kind, delta=d, **f1_row(m, recs[m], len(meas))))
+            rows.append(dict(kind=kind, delta=d, **f1_row(m, recs[m], len(meas))))
         print(f"ячейка {kind} {d}: {time.time()-t0:.0f}с", flush=True)
 
     out = pd.DataFrame(rows)

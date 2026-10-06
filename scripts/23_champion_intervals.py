@@ -8,17 +8,21 @@
 - Конформность в log-пространстве: модели живут в log (см. 08_run_seasadj),
   |log1p(y) - log1p(yhat)| ~ относительная ошибка -> нормализация масштабом
   не нужна, интервалы автоматически гетероскедастичны по рядам.
-- Пулы per (модель, горизонт, origin, категория, календарный месяц цели)
-  с tiered fallback:
-    T1: anchor-режим (t>=12), тот же календарный месяц
-    T2: любой режим, тот же календарный месяц   (ловит декабрь: t=11)
-    T3: anchor-режим, все месяцы
-    T4: любой режим, все месяцы
-    T5: кросс-горизонт, тот же календарный месяц (для o=12,h=12)
-    T6: кросс-горизонт, все месяцы
-  Честная цена: декабрь-2023 (t=11) — единственный in-sample декабрь и он
-  до-anchor-режима => декабрьские интервалы консервативны (раскрыто в отчёте);
-  origin 12 целиком калибруется на fallback-режиме (t<=11) => консервативен.
+- Пулы per (модель, горизонт, origin, категория). Ключевой принцип: калибровочные
+  остатки должны быть ТОГО ЖЕ РЕЖИМА, что и тестовый прогноз. Все тестовые
+  прогнозы — anchor-режим (tm>=12), поэтому:
+    T1: anchor-режим, тот же h: t in [max(12,h), o-1]   (основной)
+    T2: fallback-режим, тот же h: t in [h, o-1]         (только origin 12)
+    T3: кросс-горизонт, любой режим                     (origin 12, h=12)
+  Календарный matching НЕ используется: при 24 месяцах он почти всегда
+  проваливается в единственный fallback-месяц раннего 2023, чьи остатки
+  (окно 1-3 мес, месячный шаг, без годового дрейфа) НЕСОПОСТАВИМО малы —
+  проверено эмпирически (давало coverage 36% при номинале 80% на h=1).
+  Anchor-остатки — это |YoY-ошибка|, их зависимость от календарного месяца
+  слабая (проверка в отчёте).
+  Честная цена: origin 12 калибруется на fallback-режиме (t<=11) — 12 месяцев
+  истории физически не содержат годового цикла; покрытие origin 12 показано
+  отдельно и не смешивается с headline-калибровкой (origins 13+).
 - Квантиль конформальный: k = ceil((n+1)*(1-alpha)), симметричные полосы
   вокруг точечного прогноза в log, обратно в рубли через expm1, lo>=0.
 
@@ -101,33 +105,23 @@ def wilson(p, n, z=1.959964):
     return ((c - m) / d, (c + m) / d)
 
 
-def select_pool(res_by_h, o, h, target_cal):
-    """Tiered выбор калибровочного пула. Возвращает (t_list, h_list, tier)."""
+def select_pool(o, h):
+    """Tiered выбор калибровочного пула. Возвращает (t_list, h_list, tier).
+
+    T1: anchor-режим того же h (t >= 12) — сопоставим с тестовым прогнозом.
+    T2: fallback-режим того же h (только origin 12 физически).
+    T3: кросс-горизонт (origin 12, h=12).
+    """
     t_max = o - 1
-    # T1: anchor-режим, тот же календарный месяц
-    ts = [t for t in range(12, t_max + 1) if t % 12 == target_cal and t - h >= 0]
-    if ts:
-        return ts, [h] * len(ts), 1
-    # T2: любой режим, тот же календарный месяц
-    ts = [t for t in range(h, t_max + 1) if t % 12 == target_cal]
-    if ts:
-        return ts, [h] * len(ts), 2
-    # T3: anchor-режим, все месяцы
     ts = [t for t in range(max(12, h), t_max + 1)]
     if ts:
-        return ts, [h] * len(ts), 3
-    # T4: любой режим, все месяцы, тот же h
+        return ts, [h] * len(ts), 1
     ts = [t for t in range(h, t_max + 1)]
     if ts:
-        return ts, [h] * len(ts), 4
-    # T5: кросс-горизонт, тот же календарный месяц
-    pairs = [(t, hp) for hp in HORIZONS for t in range(hp, t_max + 1) if t % 12 == target_cal]
-    if pairs:
-        return [p[0] for p in pairs], [p[1] for p in pairs], 5
-    # T6: кросс-горизонт, все месяцы
+        return ts, [h] * len(ts), 2
     pairs = [(t, hp) for hp in HORIZONS for t in range(hp, t_max + 1)]
     if pairs:
-        return [p[0] for p in pairs], [p[1] for p in pairs], 6
+        return [p[0] for p in pairs], [p[1] for p in pairs], 3
     return [], [], 0
 
 
@@ -166,6 +160,14 @@ def main():
 
     res, pred = build_residuals(wv, reg_values)
 
+    # --- диагностика: зависимость anchor-остатков от календарного месяца ---
+    # (обоснование отказа от cal-matching: |YoY-ошибка| ~ плоская по месяцам)
+    print("[diag] медиана |log-res| anchor-режима по месяцу остатка (t=12..22):")
+    for mdl in res:
+        r1 = res[mdl][1][:, 12:23]
+        med_by_cal = [np.nanmedian(r1[:, t - 12]) for t in range(12, 23)]
+        print(f"  {mdl:15s} h=1: " + " ".join(f"{v:.3f}" for v in med_by_cal))
+
     # --- регрессионный чек: as-of прогнозы == preds_seasadj.parquet ---
     ref = pd.read_parquet(ROOT / "outputs" / "preds_seasadj.parquet")
     h_map = {h: i for i, h in enumerate(HORIZONS)}
@@ -195,7 +197,7 @@ def main():
                 if tm > 23:
                     continue
                 target_cal = tm % 12
-                ts, hs, tier = select_pool(res[mdl], o, h, target_cal)
+                ts, hs, tier = select_pool(o, h)
                 y_log = pred[mdl][h][:, tm]
                 for cat in cats:
                     m = cat_of_series == cat
@@ -278,13 +280,33 @@ def main():
     # --- сравнение с Chronos-2 (его сетка = origin 12) ---
     chr_cov = pd.read_csv(ROOT / "outputs" / "chronos_quantile_coverage.csv")
     print("\n[Chronos-2 vs чемпионы] coverage 80% PI на origin 12 (matched):")
+    print("  NB: origin 12 у чемпионов — fallback-калибровка (tier>=2),")
+    print("  12 мес истории не содержат годового цикла — см. отчёт.")
     for h in HORIZONS:
         ch = chr_cov[chr_cov.horizon == h]["coverage_80PI"].iloc[0]
         mine_rows = [cov_row(df[(df.model == mdl) & (df.horizon == h) & (df.origin == 12)],
-                             mdl, h, "", "")[ "cov80"] for mdl in
+                             mdl, h, "", "")["cov80"] for mdl in
                      ["DriftAdjSNaive", "SeasProfileHA"]]
         print(f"  h={h:2d}: Chronos {ch:.3f} | DriftAdj {mine_rows[0]:.3f} | "
               f"SeasProfileHA {mine_rows[1]:.3f}")
+
+    # headline-калибровка: только tier-1 (anchor) ячейки, origins >= 13
+    print("\n[Champion headline] coverage 80/95 PI, только anchor-калибровка (tier 1):")
+    for h, mdl in CHAMPION_OF_H.items():
+        sub = df[(df.model == mdl) & (df.horizon == h) & (df.tier == 1)]
+        if len(sub):
+            r = cov_row(sub, mdl, h, "", "")
+            print(f"  h={h:2d} {mdl:15s}: cov80={r['cov80']:.3f} "
+                  f"[{r['cov80_lo']:.3f},{r['cov80_hi']:.3f}] "
+                  f"cov95={r['cov95']:.3f} (n={r['n_cells']})")
+
+    # покрытие по календарному месяцу цели (чемпион-of-record)
+    print("\n[cal-month] coverage80 чемпион-of-record по месяцу цели (tm):")
+    chd0 = pd.concat([df[(df.model == mdl) & (df.horizon == h)]
+                      for h, mdl in CHAMPION_OF_H.items()], ignore_index=True)
+    for tm, g in chd0.groupby("tm"):
+        print(f"  tm={tm:2d} (cal {tm%12:2d}): cov80={g['cov80'].mean():.3f} "
+              f"med_relw80={(g['w80']/g['y_pred']).median():.3f} n={len(g)}")
 
     # --- флаг «рискованный месяц» (чемпион-of-record по горизонту) ---
     ch_rows = []
