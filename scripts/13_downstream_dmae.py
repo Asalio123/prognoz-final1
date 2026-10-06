@@ -28,26 +28,17 @@ from statsforecast.models import AutoTheta
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from src.cpd import category_profiles, deseasonalize, det_window, mad_scale, K_SHRINK  # noqa: E402
+from src.cpd import stratified_measurement_idx as _strat_idx  # noqa: E402
 
 HORIZONS = [1, 3, 6]
 ORIGINS = list(range(12, 24))
 MIN_POST = 8          # post-break ряд короче → fallback на полный train (R04), честно помечается
 N_SERIES = 3000       # стратифицированная подвыборка (AutoTheta × origins × h — часы на полной)
-SEED = 42
+SEED = 7              # отличный от 42: downstream-выборка не совпадает с измерительной CPD
 
 
 def stratified_sample(wide, cats, n, seed):
-    """Страта = категория × квартиль медианного уровня ряда."""
-    rng = np.random.default_rng(seed)
-    med = np.nanmedian(wide, axis=1)
-    q = pd.qcut(pd.Series(med), 4, labels=False)
-    strata = pd.Series(cats) + "|" + pd.Series(q).astype(str)
-    idx = []
-    per = n // strata.nunique()
-    for _, group in strata.groupby(strata):
-        pool = np.where(strata == group[0])[0]
-        idx.extend(rng.choice(pool, size=min(per, len(pool)), replace=False))
-    return np.array(sorted(set(idx)))
+    return _strat_idx(wide, cats, n=n, seed=seed)
 
 
 def causal_last_break(y_raw, cat_prof, origin, pen):
