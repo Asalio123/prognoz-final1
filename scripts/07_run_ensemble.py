@@ -17,7 +17,11 @@ NAME = "Ensemble-median3"
 def main():
     parts = []
     for f in sorted((ROOT / "outputs").glob("preds_*.parquet")):
+        if "_steps_" in f.stem or "_ces_part" in f.stem:
+            continue  # step-профили и старые 1-origin CES-части — не члены ансамбля
         df = pd.read_parquet(f)
+        if "model" not in df.columns:
+            df["model"] = f.stem.replace("preds_", "")
         parts.append(df[df["model"].isin(MEMBERS)])
     df = pd.concat(parts, ignore_index=True)
     ens = (df.groupby(["series_id", "origin", "horizon"], as_index=False)
