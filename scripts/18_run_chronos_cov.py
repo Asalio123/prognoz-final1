@@ -99,7 +99,7 @@ def main():
         assert np.allclose(chk["loo_growth"], chk["loo_growth_t"], atol=1e-12), f"LOO leak at origin {o}"
     print("leak-gate LOO: OK (12 origins)", flush=True)
 
-    base_cols = ["series_id", "ts", "month_idx", "log_value", "region_loo_growth", "cbr_keyrate", "month_sin", "month_cos"]
+    base_cols = ["series_id", "ts", "month_idx", "log_value", "loo_growth", "cbr_keyrate", "month_sin", "month_cos"]
     preds = []
     for o in ORIGINS:
         hmax = N_MONTHS - o
