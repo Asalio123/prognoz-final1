@@ -124,7 +124,7 @@ body.notes #notes { display: block; }
   <p class="kicker">станция 2 016 МО · журнал регистрации · конкурс СберИндекса 2026 · трек <b>«Прогнозирование»</b></p>
   <h1 style="font-size: 64px; max-width: 1330px;">Сдвиг в тратах муниципалитета нельзя предсказать заранее. <span style="color: var(--neon);">Но его можно поймать за месяц</span></h1>
   <p style="margin-top: 30px; font-size: 23px; max-width: 1150px; line-height: 1.45;">Мы измерили эту границу на 2 016 муниципалитетах России — и поставили на ней рабочую точку: детектор с бюджетом ложных тревог, прогноз с калиброванными интервалами, форвард-2025, сверенный с официальным рядом Лаборатории.</p>
-  <svg viewBox="0 0 1330 120" style="width: 100%; margin-top: 34px;" preserveAspectRatio="none">
+  <svg viewBox="0 0 1330 150" style="width: 100%; margin-top: 44px;" preserveAspectRatio="none">
     <polyline fill="none" stroke="#14181D" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"
       points="0,80 58,70 116,57 174,74 232,70 290,68 348,61 406,60 464,72 522,67 580,64 638,39 696,77 754,62 812,49 870,53 928,51 986,47 1044,45 1102,55 1160,49 1218,49 1276,27"/>
     <circle cx="638" cy="39" r="4.5" fill="#C23127"/><text x="648" y="34" font-family="PT Mono" font-size="12.5" fill="#4A5261">дек-2023</text>
@@ -375,7 +375,7 @@ body.notes #notes { display: block; }
           <rect x="60" y="160" width="354" height="24" rx="4" fill="#2456A6"/>
           <text x="421" y="177" fill="#2456A6" font-weight="600">0.937</text>
           <text x="0" y="222" fill="#4A5261">Q1 (малые)</text>
-          <rect x="150" y="206" width="67" height="24" rx="4" fill="rgba(29,37,48,.18)"/>
+          <rect x="150" y="206" width="67" height="24" rx="4" fill="#C9CDD4"/>
           <rect x="150" y="206" width="117" height="24" rx="4" fill="none" stroke="#2456A6" stroke-width="1.5" stroke-dasharray="4 3"/>
           <text x="280" y="223" fill="#4A5261">0.734 → 0.833 после Mondrian</text>
         </g>
@@ -395,22 +395,22 @@ body.notes #notes { display: block; }
   <div class="ruler"><span class="num">08/13</span><span class="sec">детекция</span></div>
   <p class="kicker">детекция структурных изменений · <b>К3</b></p>
   <h1 class="slide-title">Бюджет ложных тревог задан до измерения: при 2/1000 лучший детектор ловит <span class="hl">5.6% сдвигов</span> — аргументированный выбор BOCPD</h1>
-  <div style="display: grid; grid-template-columns: 1fr 1.1fr; gap: 32px; margin-top: 24px; align-items: start;">
+  <div style="display: grid; grid-template-columns: 0.9fr 1.3fr; gap: 32px; margin-top: 24px; align-items: start;">
     <div>
       <svg viewBox="0 0 500 235" style="width: 100%;">
         <text x="0" y="16" font-family="IBM Plex Mono" font-size="13" fill="#4A5261">MATCHED-RATE F1 · инъекции level-сдвигов 3σ · равный бюджет всем</text>
         <!-- bars: BOCPD 0.668, Window 0.637, PELT/BinSeg 0.401, EWMA 0.381, CUSUM 0.277 ; x = 90 + v/0.75*374 -->
         <g font-family="IBM Plex Mono" font-size="13.5">
           <text x="0" y="52" fill="#1D2530" font-weight="600">BOCPD</text>
-          <rect x="90" y="36" width="333" height="22" rx="4" fill="#2456A6"/><text x="431" y="53" fill="#2456A6" font-weight="600">0.67</text>
+          <rect x="90" y="36" width="333" height="22" fill="#2456A6"/><text x="431" y="53" fill="#2456A6" font-weight="600">0.67</text>
           <text x="0" y="86" fill="#4A5261">Window</text>
-          <rect x="90" y="70" width="318" height="22" rx="4" fill="rgba(62,207,106,.5)"/><text x="416" y="87" fill="#4A5261">0.64</text>
+          <rect x="90" y="70" width="318" height="22" fill="#7A97C4"/><text x="416" y="87" fill="#4A5261">0.64</text>
           <text x="0" y="120" fill="#4A5261">PELT / BinSeg</text>
-          <rect x="90" y="104" width="200" height="22" rx="4" fill="rgba(29,37,48,.18)"/><text x="298" y="121" fill="#4A5261">0.40</text>
+          <rect x="90" y="104" width="200" height="22" rx="4" fill="#C9CDD4"/><text x="298" y="121" fill="#4A5261">0.40</text>
           <text x="0" y="154" fill="#4A5261">EWMA</text>
-          <rect x="90" y="138" width="190" height="22" rx="4" fill="rgba(29,37,48,.18)"/><text x="288" y="155" fill="#4A5261">0.38</text>
+          <rect x="90" y="138" width="190" height="22" rx="4" fill="#C9CDD4"/><text x="288" y="155" fill="#4A5261">0.38</text>
           <text x="0" y="188" fill="#4A5261">CUSUM</text>
-          <rect x="90" y="172" width="138" height="22" rx="4" fill="rgba(29,37,48,.18)"/><text x="236" y="189" fill="#4A5261">0.28</text>
+          <rect x="90" y="172" width="138" height="22" rx="4" fill="#C9CDD4"/><text x="236" y="189" fill="#4A5261">0.28</text>
         </g>
         <text x="0" y="222" font-family="IBM Plex Mono" font-size="12.5" fill="#4A5261">голосование «≥2 из 3» хуже BOCPD-одиночки в 10/10 ячеек</text>
       </svg>
@@ -437,17 +437,17 @@ body.notes #notes { display: block; }
   <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; margin-top: 44px;">
     <div style="padding: 0 36px 0 0; border-right: 1px solid var(--hairline);">
       <p class="mono" style="font-size: 13px; color: var(--muted); letter-spacing: .1em;">МЕХАНИЗМ 1 · ПРОСТРАНСТВО</p>
-      <div class="hero-num" style="font-size: 76px; margin-top: 14px;">1.08</div>
+      <div class="hero-num" style="font-size: 96px; margin-top: 18px;">1.08</div>
       <p style="font-size: 15.5px; margin-top: 10px; color: var(--ink);">лифт у соседей ≤ 80 км (p = 0.77; 42 404 пары). Лифт ≥ ×2.46 мы бы увидели с вероятностью 80% — сильного распространения нет</p>
     </div>
     <div style="padding: 0 36px; border-right: 1px solid var(--hairline);">
       <p class="mono" style="font-size: 13px; color: var(--muted); letter-spacing: .1em;">МЕХАНИЗМ 2 · ПАНЕЛЬНЫЙ РАДАР</p>
-      <div class="hero-num" style="font-size: 76px; margin-top: 14px;">0.049</div>
+      <div class="hero-num" style="font-size: 96px; margin-top: 18px;">0.049</div>
       <p style="font-size: 15.5px; margin-top: 10px; color: var(--ink);">PR-AUC против базы 0.048; топ-30 хуже случайного жребия (7/300 против ~14.5); фолд-артефакт границы годов показан отдельно</p>
     </div>
     <div style="padding-left: 36px;">
       <p class="mono" style="font-size: 13px; color: var(--muted); letter-spacing: .1em;">МЕХАНИЗМ 3 · REFIT ОТ БРЕЙКА</p>
-      <div class="hero-num" style="font-size: 76px; margin-top: 14px;">+1.1%</div>
+      <div class="hero-num" style="font-size: 96px; margin-top: 18px;">+1.1%</div>
       <p style="font-size: 15.5px; margin-top: 10px; color: var(--ink);">ΔMAE — хуже, не лучше; по доле побед 48.0%: нуль подтверждён с мощностью 80% (±14 п.п.)</p>
     </div>
   </div>
@@ -457,6 +457,7 @@ body.notes #notes { display: block; }
     <span class="chip">новостная интерпретация до закрытия месяца</span>
     <span class="chip">декабрьское расширение интервалов</span>
   </div>
+  <p class="mono" style="margin-top: 30px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--hairline); padding-top: 14px;">КОНТРОЛИ ПРОТОКОЛА: якутские декабри (ложная сезонная тревога) — 0.0% у PELT/BinSeg после предобработки · штиль-месяцы без событий — детектор молчит · авто-ажиотаж 2022 вне окна данных — заявлен явно</p>
   <p class="source"><span>scripts/12–14 · outputs/spatial_propagation.csv · radar_metrics.csv · контроли: 0.0% ложных тревог у PELT/BinSeg на якутских декабрях</span><span class="crit">К3 · К7</span></p>
 </section>
 
