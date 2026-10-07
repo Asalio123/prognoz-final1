@@ -65,6 +65,9 @@ radar:       ## панельный радар (результат rc0: чест�
 tables:      ## T1/T2/T3: matched cells, разрезы, значимость (DM/Wilcoxon/bootstrap/Holm)
 	$(PY) scripts/04_build_tables.py
 
+deck:        ## презентация: reports/presentation.html → presentation.pdf (локальные шрифты)
+	cd reports && node build_deck.mjs
+
 figures:     ## 7 фигур отчёта в reports/figures/
 	$(PY) scripts/17_figures.py
 

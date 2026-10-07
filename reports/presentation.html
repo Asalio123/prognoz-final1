@@ -4,25 +4,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>СберИндекс 2026 — Прогнозирование</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500;600;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap&subset=cyrillic" rel="stylesheet">
+<style>
+/* Локальные шрифты (офлайн-сборка PDF не ломается): Golos Text variable
+   (дисплей+тело, кириллица полная) + PT Mono (моно, полное покрытие →≤≥₽). */
+@font-face { font-family: 'Golos Text'; font-style: normal; font-weight: 400 900; font-display: block; src: url('fonts/golos-text-var.woff2') format('woff2'); }
+@font-face { font-family: 'PT Mono'; font-style: normal; font-weight: 400; font-display: block; src: url('fonts/pt-mono.woff2') format('woff2'); }
+</style>
 <style>
 :root {
-  /* Тёмная айдентика СберИндекса (sberindex.ru): emerald-black + неон #78FF4F */
+  /* Тёмные герои: титул, «честный ноль», финал — «Терминал» (emerald-black + неон) */
   --bg:        #0E1511;
   --panel:     #0A1710;
-  --surface:   rgba(255,255,255,.045);
+  --surface:   #122019;
   --ink:       #F2F7F3;
-  --muted:     #93A697;
+  --muted:     #C9D4CC;
   --neon:      #78FF4F;
   --green:     #3ECF6A;
   --copper:    #D8A24A;
   --hairline:  rgba(236,244,238,.16);
   --font-display: 'Golos Text', sans-serif;
-  --font-body:    'Inter', sans-serif;
-  --font-mono:    'IBM Plex Mono', monospace;
+  --font-body:    'Golos Text', sans-serif;
+  --font-mono:    'PT Mono', monospace;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Светлое ядро «Атлас» (та же система, что у деки Кластеризации): все слайды
+   с данными, методологией, таблицами и выводами — на бумаге, для печати и 65+. */
+.slide.lite {
+  --bg:        #F7F4EC;
+  --panel:     #FFFDF7;
+  --surface:   #FFFDF7;
+  --ink:       #1D2530;
+  --muted:     #4C5361;
+  --neon:      #2F6B4F;
+  --green:     #2F6B4F;
+  --copper:    #9A6700;
+  --hairline:  #D9D2BE;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { height: 100%; }
@@ -30,8 +46,9 @@ body { font-family: var(--font-body); background: #050B08; color: var(--ink); ov
 
 .slide {
   position: fixed; inset: 0; display: none; flex-direction: column;
-  padding: 64px 88px 96px 120px; background: var(--bg);
+  padding: 60px 88px 92px 120px; background: var(--bg);
 }
+.slide.lite { color: var(--ink); }
 .slide.active { display: flex; }
 .slide.active > * { animation: rise .35s var(--ease-out) both; }
 .slide.active > *:nth-child(2) { animation-delay: .06s; }
@@ -66,7 +83,7 @@ h1 .hl { color: var(--neon); }
 }
 .source .crit { font-family: var(--font-mono); white-space: nowrap; }
 
-.card { background: var(--surface); border: 1px solid var(--hairline); border-radius: 14px; padding: 24px 28px; }
+.card { background: var(--surface); border: 1px solid var(--hairline); border-radius: 6px; padding: 24px 28px; }
 .card h3 { font-family: var(--font-display); font-weight: 700; font-size: 20px; margin-bottom: 10px; }
 .card p, .card li { font-size: 15.5px; line-height: 1.5; }
 .card.ok { border-left: 3px solid var(--green); }
@@ -98,7 +115,7 @@ table.t .r { text-align: right; }
 
 .chip { display: inline-block; font-family: var(--font-mono); font-size: 14.5px; padding: 8px 16px; border: 1px solid var(--hairline); border-radius: 999px; color: var(--ink); }
 
-.fig-img { max-width: 100%; border: 1px solid var(--hairline); border-radius: 14px; }
+.fig-img { max-width: 100%; border: 1px solid var(--hairline); }
 
 #progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--neon); width: 0; transition: width .3s var(--ease-out); z-index: 10; }
 #notes { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: rgba(0,0,0,.88); color: #fff; padding: 1em 2em; font-size: 1rem; display: none; }
@@ -120,20 +137,17 @@ body.notes #notes { display: block; }
 
 <!-- 01 · ТИТУЛ (dark hero) -->
 <section class="slide" style="justify-content: center;" data-notes="Главный результат: на сводной категории обходим честный Prophet на всех горизонтах. Форвард проверен против официального ряда лаборатории.">
-  <div class="ruler"><span class="num">01/14</span><span class="sec">СберИндекс · 2026</span></div>
+  <div class="ruler"><span class="num">01/13</span><span class="sec">СберИндекс · 2026</span></div>
   <p class="kicker">конкурс СберИндекса 2026 · трек <b>«Прогнозирование»</b></p>
-  <h1 style="font-size: 74px; max-width: 1300px;">Прогноз потребления и точки излома в 2 016 муниципалитетах России</h1>
-  <div style="margin-top: 44px; padding: 20px 0; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); max-width: 1300px;">
-    <span class="mono" style="font-size: 21px; color: var(--neon);">RelMAE 0.324 против 0.460 у Prophet-B*</span>
-    <span style="font-size: 21px; color: var(--muted);"> — на сводной категории наши чемпионы точнее на всех четырёх горизонтах, Wilcoxon p = 1.4e-241</span>
-  </div>
-  <p style="margin-top: 32px; font-size: 19px; max-width: 1150px; color: var(--muted);">20 моделей · детекторы структурных сдвигов · 27 806 новостных заголовков · форвард-2025, сверенный с официальным рядом Лаборатории (MAE 1.48 п.п.)</p>
+  <h1 style="font-size: 68px; max-width: 1330px;">Сдвиг в тратах муниципалитета нельзя предсказать заранее. <span style="color: var(--neon);">Но его можно поймать за месяц</span></h1>
+  <p style="margin-top: 36px; font-size: 24px; max-width: 1180px; line-height: 1.45; color: var(--ink);">Мы измерили эту границу на 2 016 муниципалитетах России — и поставили на ней рабочую точку: детектор с бюджетом ложных тревог, прогноз с калиброванными интервалами, форвард-2025, сверенный с официальным рядом Лаборатории.</p>
+  <p style="margin-top: 34px; font-size: 18px; max-width: 1150px; color: var(--muted);">панель 2 016 МО × 24 мес × 6 категорий · 20 моделей · 6 методов детекции · 27 806 новостных заголовков · все правила заморожены до первого прогона</p>
   <p class="source"><span>панель 2 016 МО × 24 мес × 6 категорий · руб/жителя · Лаборатория СберИндекс, CC BY-SA 4.0</span><span class="crit">make reproduce · конфиги заморожены до прогонов (e3aa46e, 04.10)</span></p>
 </section>
 
 <!-- 02 · ДАННЫЕ (stats + sparkline) -->
-<section class="slide" data-notes="Данные лаборатории. Номинал не реал: +15.1% при ИПЦ 9.5% даёт реальные 5-6%, что совпадает с реальным рядом самой лаборатории — это внешняя валидация панели.">
-  <div class="ruler"><span class="num">02/14</span><span class="sec">данные</span></div>
+<section class="slide lite" data-notes="Данные лаборатории. Номинал не реал: +15.1% при ИПЦ 9.5% даёт реальные 5-6%, что совпадает с реальным рядом самой лаборатории — это внешняя валидация панели.">
+  <div class="ruler"><span class="num">02/13</span><span class="sec">данные</span></div>
   <p class="kicker">данные и задача · <b>К1</b></p>
   <h1 class="slide-title">Панель растёт +15.1% при ИПЦ 9.5% — реально +5–6%; агрегат трекает официальный ряд, <span class="hl">r = 0.955</span></h1>
   <div class="grid" style="grid-template-columns: 1.35fr 1fr 1fr 1fr; margin-top: 34px;">
@@ -152,10 +166,10 @@ body.notes #notes { display: block; }
     </div>
     <svg viewBox="0 0 1330 190" style="width: 100%; margin-top: 10px;" preserveAspectRatio="none">
       <!-- agg median series, min 20632 max 32496 -->
-      <polyline fill="none" stroke="#3ECF6A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"
+      <polyline fill="none" stroke="#2F6B4F" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"
         points="0,127 58,110 116,90 174,118 232,112 290,109 348,97 406,95 464,115 522,107 580,102 638,61 696,123 754,98 812,77 870,84 928,81 986,74 1044,71 1102,87 1160,77 1218,78 1276,42"/>
-      <circle cx="638" cy="61" r="5" fill="#D8A24A"/><text x="646" y="56" font-family="IBM Plex Mono" font-size="13" fill="#93A697">дек-2023</text>
-      <circle cx="1276" cy="42" r="5" fill="#D8A24A"/><text x="1208" y="34" font-family="IBM Plex Mono" font-size="13" fill="#93A697">дек-2024</text>
+      <circle cx="638" cy="61" r="5" fill="#9A6700"/><text x="646" y="56" font-family="IBM Plex Mono" font-size="13" fill="#4C5361">дек-2023</text>
+      <circle cx="1276" cy="42" r="5" fill="#9A6700"/><text x="1208" y="34" font-family="IBM Plex Mono" font-size="13" fill="#4C5361">дек-2024</text>
     </svg>
     <p style="font-size: 15px; color: var(--muted); margin-top: 6px;">Все величины — номинальные рубли; ценовой и объёмный сдвиги различаем по контексту ИПЦ, не по знаку ряда. Внешние ряды: ставка и ИПЦ ЦБ РФ, курс USD/RUB, производственный календарь.</p>
   </div>
@@ -163,77 +177,77 @@ body.notes #notes { display: block; }
 </section>
 
 <!-- 03 · АРХИТЕКТУРА (full-bleed SVG) -->
-<section class="slide" data-notes="Одна диаграмма: предрегистрация до прогонов, три стенда, форвард. Тёмная шина внизу — воспроизводимость.">
-  <div class="ruler"><span class="num">03/14</span><span class="sec">архитектура</span></div>
+<section class="slide lite" data-notes="Одна диаграмма: предрегистрация до прогонов, три стенда, форвард. Тёмная шина внизу — воспроизводимость.">
+  <div class="ruler"><span class="num">03/13</span><span class="sec">архитектура</span></div>
   <p class="kicker">архитектура решения · <b>К1</b></p>
   <h1 class="slide-title">Правила заморожены до первого прогона — <span class="hl">дальше только измерения</span>; методология полностью воспроизводима</h1>
   <svg viewBox="0 0 1330 505" style="width: 100%; margin-top: 26px;" font-family="IBM Plex Mono">
     <defs>
       <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
-        <path d="M0,0 L10,5 L0,10 z" fill="#93A697"/>
+        <path d="M0,0 L10,5 L0,10 z" fill="#4C5361"/>
       </marker>
     </defs>
-    <rect x="0" y="30" width="270" height="118" rx="12" fill="rgba(255,255,255,.05)" stroke="rgba(236,244,238,.16)"/>
-    <text x="20" y="62" font-size="15.5" font-weight="600" fill="#ECF4EE">Панель СберИндекс</text>
-    <text x="20" y="88" font-size="13.5" fill="#93A697">2 016 МО × 24 мес × 6 кат.</text>
-    <text x="20" y="108" font-size="13.5" fill="#93A697">+ ставка, ИПЦ, курс, календарь</text>
-    <text x="20" y="128" font-size="13.5" fill="#93A697">+ 27 806 заголовков</text>
-    <rect x="0" y="190" width="270" height="66" rx="12" fill="rgba(255,255,255,.05)" stroke="rgba(236,244,238,.16)"/>
-    <text x="20" y="218" font-size="15.5" font-weight="600" fill="#ECF4EE">log1p-таргет</text>
-    <text x="20" y="240" font-size="13.5" fill="#93A697">шум мультипликативен</text>
+    <rect x="0" y="30" width="270" height="118" rx="12" fill="#FFFDF7" stroke="#D9D2BE"/>
+    <text x="20" y="62" font-size="15.5" font-weight="600" fill="#1D2530">Панель СберИндекс</text>
+    <text x="20" y="88" font-size="13.5" fill="#4C5361">2 016 МО × 24 мес × 6 кат.</text>
+    <text x="20" y="108" font-size="13.5" fill="#4C5361">+ ставка, ИПЦ, курс, календарь</text>
+    <text x="20" y="128" font-size="13.5" fill="#4C5361">+ 27 806 заголовков</text>
+    <rect x="0" y="190" width="270" height="66" rx="12" fill="#FFFDF7" stroke="#D9D2BE"/>
+    <text x="20" y="218" font-size="15.5" font-weight="600" fill="#1D2530">log1p-таргет</text>
+    <text x="20" y="240" font-size="13.5" fill="#4C5361">шум мультипликативен</text>
 
-    <rect x="360" y="30" width="290" height="118" rx="12" fill="rgba(255,255,255,.05)" stroke="rgba(236,244,238,.16)"/>
-    <text x="380" y="62" font-size="15.5" font-weight="600" fill="#ECF4EE">Валидация expanding-origin</text>
-    <text x="380" y="88" font-size="13.5" fill="#93A697">origins = мес. 12..23</text>
-    <text x="380" y="108" font-size="13.5" fill="#93A697">фолды 12 / 10 / 7 / 1</text>
-    <text x="380" y="128" font-size="13.5" fill="#93A697">для h = 1 / 3 / 6 / 12</text>
-    <rect x="360" y="190" width="290" height="66" rx="12" fill="rgba(62,207,106,.10)" stroke="#3ECF6A"/>
-    <text x="380" y="218" font-size="15.5" font-weight="600" fill="#3ECF6A">Предрегистрация</text>
-    <text x="380" y="240" font-size="13.5" fill="#93A697">configs до прогонов · e3aa46e</text>
+    <rect x="360" y="30" width="290" height="118" rx="12" fill="#FFFDF7" stroke="#D9D2BE"/>
+    <text x="380" y="62" font-size="15.5" font-weight="600" fill="#1D2530">Валидация expanding-origin</text>
+    <text x="380" y="88" font-size="13.5" fill="#4C5361">origins = мес. 12..23</text>
+    <text x="380" y="108" font-size="13.5" fill="#4C5361">фолды 12 / 10 / 7 / 1</text>
+    <text x="380" y="128" font-size="13.5" fill="#4C5361">для h = 1 / 3 / 6 / 12</text>
+    <rect x="360" y="190" width="290" height="66" rx="12" fill="rgba(47,107,79,.10)" stroke="#2F6B4F"/>
+    <text x="380" y="218" font-size="15.5" font-weight="600" fill="#2F6B4F">Предрегистрация</text>
+    <text x="380" y="240" font-size="13.5" fill="#4C5361">configs до прогонов · e3aa46e</text>
 
-    <rect x="740" y="10" width="280" height="96" rx="12" fill="rgba(255,255,255,.05)" stroke="rgba(236,244,238,.16)"/>
-    <text x="760" y="42" font-size="15.5" font-weight="600" fill="#ECF4EE">20 моделей, 5 слоёв</text>
-    <text x="760" y="66" font-size="13.5" fill="#93A697">стат → Prophet A/B/B* → LGBM</text>
-    <text x="760" y="86" font-size="13.5" fill="#93A697">→ Chronos-2, TimesFM 2.5</text>
-    <rect x="740" y="126" width="280" height="96" rx="12" fill="rgba(255,255,255,.05)" stroke="rgba(236,244,238,.16)"/>
-    <text x="760" y="158" font-size="15.5" font-weight="600" fill="#ECF4EE">CPD-стенд, 6 методов</text>
-    <text x="760" y="182" font-size="13.5" fill="#93A697">калибровка ≠ измерение</text>
-    <text x="760" y="202" font-size="13.5" fill="#93A697">378 парных инъекций</text>
-    <rect x="740" y="242" width="280" height="96" rx="12" fill="rgba(255,255,255,.05)" stroke="rgba(236,244,238,.16)"/>
-    <text x="760" y="274" font-size="15.5" font-weight="600" fill="#ECF4EE">Новости, таксономия v3</text>
-    <text x="760" y="298" font-size="13.5" fill="#93A697">словарь, κ = 0.926</text>
-    <text x="760" y="318" font-size="13.5" fill="#93A697">гейт available_at ≤ конец O−1</text>
+    <rect x="740" y="10" width="280" height="96" rx="12" fill="#FFFDF7" stroke="#D9D2BE"/>
+    <text x="760" y="42" font-size="15.5" font-weight="600" fill="#1D2530">20 моделей, 5 слоёв</text>
+    <text x="760" y="66" font-size="13.5" fill="#4C5361">стат → Prophet A/B/B* → LGBM</text>
+    <text x="760" y="86" font-size="13.5" fill="#4C5361">→ Chronos-2, TimesFM 2.5</text>
+    <rect x="740" y="126" width="280" height="96" rx="12" fill="#FFFDF7" stroke="#D9D2BE"/>
+    <text x="760" y="158" font-size="15.5" font-weight="600" fill="#1D2530">CPD-стенд, 6 методов</text>
+    <text x="760" y="182" font-size="13.5" fill="#4C5361">калибровка ≠ измерение</text>
+    <text x="760" y="202" font-size="13.5" fill="#4C5361">378 парных инъекций</text>
+    <rect x="740" y="242" width="280" height="96" rx="12" fill="#FFFDF7" stroke="#D9D2BE"/>
+    <text x="760" y="274" font-size="15.5" font-weight="600" fill="#1D2530">Новости, таксономия v3</text>
+    <text x="760" y="298" font-size="13.5" fill="#4C5361">словарь, κ = 0.926</text>
+    <text x="760" y="318" font-size="13.5" fill="#4C5361">гейт available_at ≤ конец O−1</text>
 
-    <rect x="1110" y="30" width="220" height="150" rx="12" fill="rgba(62,207,106,.10)" stroke="#3ECF6A"/>
-    <text x="1130" y="62" font-size="15.5" font-weight="600" fill="#3ECF6A">Matched cells</text>
-    <text x="1130" y="88" font-size="13.5" fill="#93A697">Wilcoxon · DM · Holm</text>
-    <text x="1130" y="108" font-size="13.5" fill="#93A697">cluster bootstrap</text>
-    <text x="1130" y="128" font-size="13.5" fill="#93A697">Mondrian-conformal</text>
-    <text x="1130" y="148" font-size="13.5" fill="#93A697">интервалы</text>
-    <rect x="1110" y="222" width="220" height="66" rx="12" fill="rgba(255,255,255,.05)" stroke="rgba(236,244,238,.16)"/>
-    <text x="1130" y="250" font-size="15.5" font-weight="600" fill="#ECF4EE">Форвард 2025-H1</text>
-    <text x="1130" y="272" font-size="13.5" fill="#93A697">сверка с офиц. рядом</text>
+    <rect x="1110" y="30" width="220" height="150" rx="12" fill="rgba(47,107,79,.10)" stroke="#2F6B4F"/>
+    <text x="1130" y="62" font-size="15.5" font-weight="600" fill="#2F6B4F">Matched cells</text>
+    <text x="1130" y="88" font-size="13.5" fill="#4C5361">Wilcoxon · DM · Holm</text>
+    <text x="1130" y="108" font-size="13.5" fill="#4C5361">cluster bootstrap</text>
+    <text x="1130" y="128" font-size="13.5" fill="#4C5361">Mondrian-conformal</text>
+    <text x="1130" y="148" font-size="13.5" fill="#4C5361">интервалы</text>
+    <rect x="1110" y="222" width="220" height="66" rx="12" fill="#FFFDF7" stroke="#D9D2BE"/>
+    <text x="1130" y="250" font-size="15.5" font-weight="600" fill="#1D2530">Форвард 2025-H1</text>
+    <text x="1130" y="272" font-size="13.5" fill="#4C5361">сверка с офиц. рядом</text>
 
-    <line x1="270" y1="89" x2="352" y2="89" stroke="#93A697" stroke-width="1.5" marker-end="url(#arr)"/>
-    <line x1="270" y1="223" x2="352" y2="223" stroke="#93A697" stroke-width="1.5" marker-end="url(#arr)"/>
-    <line x1="650" y1="70" x2="732" y2="58" stroke="#93A697" stroke-width="1.5" marker-end="url(#arr)"/>
-    <line x1="650" y1="89" x2="732" y2="174" stroke="#93A697" stroke-width="1.5" marker-end="url(#arr)"/>
-    <line x1="650" y1="223" x2="732" y2="290" stroke="#93A697" stroke-width="1.5" marker-end="url(#arr)"/>
-    <line x1="1020" y1="58" x2="1102" y2="90" stroke="#93A697" stroke-width="1.5" marker-end="url(#arr)"/>
-    <line x1="1020" y1="174" x2="1102" y2="110" stroke="#93A697" stroke-width="1.5" marker-end="url(#arr)"/>
-    <line x1="1020" y1="290" x2="1102" y2="130" stroke="#93A697" stroke-width="1.5" marker-end="url(#arr)"/>
-    <line x1="1220" y1="180" x2="1220" y2="214" stroke="#93A697" stroke-width="1.5" marker-end="url(#arr)"/>
+    <line x1="270" y1="89" x2="352" y2="89" stroke="#4C5361" stroke-width="1.5" marker-end="url(#arr)"/>
+    <line x1="270" y1="223" x2="352" y2="223" stroke="#4C5361" stroke-width="1.5" marker-end="url(#arr)"/>
+    <line x1="650" y1="70" x2="732" y2="58" stroke="#4C5361" stroke-width="1.5" marker-end="url(#arr)"/>
+    <line x1="650" y1="89" x2="732" y2="174" stroke="#4C5361" stroke-width="1.5" marker-end="url(#arr)"/>
+    <line x1="650" y1="223" x2="732" y2="290" stroke="#4C5361" stroke-width="1.5" marker-end="url(#arr)"/>
+    <line x1="1020" y1="58" x2="1102" y2="90" stroke="#4C5361" stroke-width="1.5" marker-end="url(#arr)"/>
+    <line x1="1020" y1="174" x2="1102" y2="110" stroke="#4C5361" stroke-width="1.5" marker-end="url(#arr)"/>
+    <line x1="1020" y1="290" x2="1102" y2="130" stroke="#4C5361" stroke-width="1.5" marker-end="url(#arr)"/>
+    <line x1="1220" y1="180" x2="1220" y2="214" stroke="#4C5361" stroke-width="1.5" marker-end="url(#arr)"/>
 
-    <rect x="0" y="386" width="1330" height="92" rx="12" fill="rgba(120,255,79,.06)" stroke="rgba(236,244,238,.16)"/>
-    <text x="30" y="422" font-size="14" fill="#9DB3A3" letter-spacing="3">ВОСПРОИЗВОДИМОСТЬ</text>
-    <text x="30" y="452" font-size="14" fill="#ECF4EE">make reproduce (~9–11 ч) · MANIFEST.sha256 входов · decision.json — реестр гейтов · 5 сидов LGBM · tests 6/6</text>
+    <rect x="0" y="386" width="1330" height="92" rx="12" fill="rgba(47,107,79,.07)" stroke="#D9D2BE"/>
+    <text x="30" y="422" font-size="14" fill="#4C5361" letter-spacing="3">ВОСПРОИЗВОДИМОСТЬ</text>
+    <text x="30" y="452" font-size="14" fill="#1D2530">make reproduce (~9–11 ч) · MANIFEST.sha256 входов · decision.json — реестр гейтов · 5 сидов LGBM · tests 6/6</text>
   </svg>
   <p class="source"><span>configs/validation.yaml · champion.yaml · decision.json · reports/number_index.md (число → команда)</span><span class="crit">К1</span></p>
 </section>
 
 <!-- 04 · МОДЕЛИ (split: таблица + dumbbell) -->
-<section class="slide" data-notes="Два прочтения К2: на сводной категории бьём B* на всех горизонтах; на полном пуле подтверждаем силу B* измерением. Оба теста с именами.">
-  <div class="ruler"><span class="num">04/14</span><span class="sec">модели</span></div>
+<section class="slide lite" data-notes="Два прочтения К2: на сводной категории бьём B* на всех горизонтах; на полном пуле подтверждаем силу B* измерением. Оба теста с именами.">
+  <div class="ruler"><span class="num">04/13</span><span class="sec">модели</span></div>
   <p class="kicker">сравнение моделей · <b>К2</b></p>
   <h1 class="slide-title">Сводная категория: чемпионы точнее Prophet-B* на всех горизонтах — <span class="hl">минус 8–34% ошибки</span></h1>
   <div style="display: grid; grid-template-columns: 1.25fr 1fr; gap: 36px; margin-top: 26px; align-items: start;">
@@ -254,29 +268,29 @@ body.notes #notes { display: block; }
     </div>
     <div>
       <svg viewBox="0 0 480 300" style="width: 100%;">
-        <text x="0" y="16" font-family="IBM Plex Mono" font-size="13" fill="#93A697">НАШ ЧЕМПИОН vs PROPHET-B* — «ВСЕ КАТЕГОРИИ», RELMAE</text>
+        <text x="0" y="16" font-family="IBM Plex Mono" font-size="13" fill="#4C5361">НАШ ЧЕМПИОН vs PROPHET-B* — «ВСЕ КАТЕГОРИИ», RELMAE</text>
         <!-- rows: h=1,3,6,12 ; ours [0.324,0.361,0.422,0.513], B* [0.460,0.398,0.494,0.617] ; x: 0.3..0.65 -->
                   <g font-family="IBM Plex Mono" font-size="13.5">
-<text x="0" y="60" fill="#93A697">h=1</text>
-          <line x1="87" y1="55" x2="239" y2="55" stroke="#3ECF6A" stroke-width="2.5"/>
-          <circle cx="87" cy="55" r="7" fill="#3ECF6A"/><circle cx="239" cy="55" r="7" fill="#0E1511" stroke="#93A697" stroke-width="2"/>
-          <text x="63" y="42" fill="#3ECF6A" font-weight="600">0.324</text><text x="223" y="42" fill="#93A697">0.460</text>
-          <text x="0" y="130" fill="#93A697">h=3</text>
-          <line x1="128" y1="125" x2="170" y2="125" stroke="#3ECF6A" stroke-width="2.5"/>
-          <circle cx="128" cy="125" r="7" fill="#3ECF6A"/><circle cx="170" cy="125" r="7" fill="#0E1511" stroke="#93A697" stroke-width="2"/>
-          <text x="104" y="112" fill="#3ECF6A" font-weight="600">0.361</text><text x="154" y="112" fill="#93A697">0.398</text>
-          <text x="0" y="200" fill="#93A697">h=6</text>
-          <line x1="196" y1="195" x2="277" y2="195" stroke="#3ECF6A" stroke-width="2.5"/>
-          <circle cx="196" cy="195" r="7" fill="#3ECF6A"/><circle cx="277" cy="195" r="7" fill="#0E1511" stroke="#93A697" stroke-width="2"/>
-          <text x="172" y="182" fill="#3ECF6A" font-weight="600">0.422</text><text x="261" y="182" fill="#93A697">0.494</text>
-          <text x="0" y="270" fill="#93A697">h=12</text>
-          <line x1="298" y1="265" x2="414" y2="265" stroke="#3ECF6A" stroke-width="2.5"/>
-          <circle cx="298" cy="265" r="7" fill="#3ECF6A"/><circle cx="414" cy="265" r="7" fill="#0E1511" stroke="#93A697" stroke-width="2"/>
-          <text x="274" y="252" fill="#3ECF6A" font-weight="600">0.513</text><text x="398" y="252" fill="#93A697">0.617</text>
+<text x="0" y="60" fill="#4C5361">h=1</text>
+          <line x1="87" y1="55" x2="239" y2="55" stroke="#2F6B4F" stroke-width="2.5"/>
+          <circle cx="87" cy="55" r="7" fill="#2F6B4F"/><circle cx="239" cy="55" r="7" fill="#FFFDF7" stroke="#4C5361" stroke-width="2"/>
+          <text x="63" y="42" fill="#2F6B4F" font-weight="600">0.324</text><text x="223" y="42" fill="#4C5361">0.460</text>
+          <text x="0" y="130" fill="#4C5361">h=3</text>
+          <line x1="128" y1="125" x2="170" y2="125" stroke="#2F6B4F" stroke-width="2.5"/>
+          <circle cx="128" cy="125" r="7" fill="#2F6B4F"/><circle cx="170" cy="125" r="7" fill="#FFFDF7" stroke="#4C5361" stroke-width="2"/>
+          <text x="104" y="112" fill="#2F6B4F" font-weight="600">0.361</text><text x="154" y="112" fill="#4C5361">0.398</text>
+          <text x="0" y="200" fill="#4C5361">h=6</text>
+          <line x1="196" y1="195" x2="277" y2="195" stroke="#2F6B4F" stroke-width="2.5"/>
+          <circle cx="196" cy="195" r="7" fill="#2F6B4F"/><circle cx="277" cy="195" r="7" fill="#FFFDF7" stroke="#4C5361" stroke-width="2"/>
+          <text x="172" y="182" fill="#2F6B4F" font-weight="600">0.422</text><text x="261" y="182" fill="#4C5361">0.494</text>
+          <text x="0" y="270" fill="#4C5361">h=12</text>
+          <line x1="298" y1="265" x2="414" y2="265" stroke="#2F6B4F" stroke-width="2.5"/>
+          <circle cx="298" cy="265" r="7" fill="#2F6B4F"/><circle cx="414" cy="265" r="7" fill="#FFFDF7" stroke="#4C5361" stroke-width="2"/>
+          <text x="274" y="252" fill="#2F6B4F" font-weight="600">0.513</text><text x="398" y="252" fill="#4C5361">0.617</text>
         </g>
         <g font-family="IBM Plex Mono" font-size="12.5">
-          <circle cx="60" cy="292" r="6" fill="#3ECF6A"/><text x="72" y="296" fill="#93A697">наш чемпион</text>
-          <circle cx="220" cy="292" r="6" fill="#0E1511" stroke="#93A697" stroke-width="2"/><text x="232" y="296" fill="#93A697">Prophet-B*</text>
+          <circle cx="60" cy="292" r="6" fill="#2F6B4F"/><text x="72" y="296" fill="#4C5361">наш чемпион</text>
+          <circle cx="220" cy="292" r="6" fill="#FFFDF7" stroke="#4C5361" stroke-width="2"/><text x="232" y="296" fill="#4C5361">Prophet-B*</text>
         </g>
       </svg>
       <div class="card" style="margin-top: 8px;">
@@ -289,8 +303,8 @@ body.notes #notes { display: block; }
 </section>
 
 <!-- 05 · ЛОВУШКА ЭНСЕМБЛЯ (dark hero) -->
-<section class="slide" style="justify-content: center;" data-notes="Гейт предрегистрации спасает от post-hoc: на полной сетке энсембль выглядит на 22% лучше, на отложенных origins разворачивается в +46.5% вреда. Мы её не взяли.">
-  <div class="ruler"><span class="num">05/14</span><span class="sec">дисциплина</span></div>
+<section class="slide lite" style="justify-content: center;" data-notes="Гейт предрегистрации спасает от post-hoc: на полной сетке энсембль выглядит на 22% лучше, на отложенных origins разворачивается в +46.5% вреда. Мы её не взяли.">
+  <div class="ruler"><span class="num">05/13</span><span class="sec">дисциплина</span></div>
   <p class="kicker">предрегистрация на практике · <b>К1 · К2</b></p>
   <h1 class="slide-title" style="max-width: 1350px;">У нас была цифра на 22% лучше чемпиона. <span class="hl">Мы её не взяли</span></h1>
   <div style="display: flex; gap: 70px; margin-top: 52px; align-items: flex-end;">
@@ -309,8 +323,8 @@ body.notes #notes { display: block; }
 </section>
 
 <!-- 06 · FOUNDATION -->
-<section class="slide" data-notes="К4 — тай-брейк. Двусторонне: ковариаты и квантили работают, по MAE проигрыш везде, холодный старт не подтвердился, в энсембле помогает только на h=1 pooled.">
-  <div class="ruler"><span class="num">06/14</span><span class="sec">foundation</span></div>
+<section class="slide lite" data-notes="К4 — тай-брейк. Двусторонне: ковариаты и квантили работают, по MAE проигрыш везде, холодный старт не подтвердился, в энсембле помогает только на h=1 pooled.">
+  <div class="ruler"><span class="num">06/13</span><span class="sec">foundation</span></div>
   <p class="kicker">foundation-модели · <b>К4 · тай-брейк</b></p>
   <h1 class="slide-title">Chronos-2 и TimesFM 2.5 на 24 точках: <span class="hl">карта «где да, где нет»</span> — измерено в обе стороны</h1>
   <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top: 26px;">
@@ -338,16 +352,16 @@ body.notes #notes { display: block; }
   </div>
   <div style="margin-top: 22px; border-top: 1px solid var(--hairline); padding-top: 14px; font-size: 15px;">
     <span class="mono" style="color: var(--muted); font-size: 13px;">ПРАКТИЧЕСКИЙ ВЫВОД ДЛЯ ЛАБОРАТОРИИ: </span>
-    для месячных муниципальных панелей TSFM не закупать и не внедрять; ниша foundation — длинные высокочастотные ряды, где задействуется контекст 8192. Замер открыт и повторяем: ~16 мин на MPS
+    на месячных муниципальных панелях TSFM не окупаются — мы это измерили, замер открыт и повторяем (~16 мин на MPS). Их ниша — длинные высокочастотные ряды, где задействуется контекст 8192
   </div>
   <p class="source"><span>preds_chronos2_* · preds_timesfm25_zs_log · coldstart_chronos.csv · rc1_o3_tsfm_ensemble.csv · cost_timings.csv</span><span class="crit">К4 · вес 15% + тай-брейк</span></p>
 </section>
 
 <!-- 07 · МЕТРИКИ (list + coverage bars) -->
-<section class="slide" data-notes="MAE контрактная, показана в рублях. Каждая метрика с интерпретацией. Интервалы: Mondrian починил малые МО без роста ширины.">
-  <div class="ruler"><span class="num">07/14</span><span class="sec">метрики</span></div>
+<section class="slide lite" data-notes="MAE контрактная, показана в рублях. Каждая метрика с интерпретацией. Интервалы: Mondrian починил малые МО без роста ширины.">
+  <div class="ruler"><span class="num">07/13</span><span class="sec">метрики</span></div>
   <p class="kicker">метрики качества — полный анализ с интерпретацией всех метрик · <b>К6</b></p>
-  <h1 class="slide-title">MAE — контракт; интервалы валидны: <span class="hl">0.875–0.937 при номинале 0.80</span></h1>
+  <h1 class="slide-title">MAE — контракт: чемпион h=1 даёт <span class="hl">1 322 ₽</span> на «Все категории»; интервалы валидны: 0.875–0.937 при номинале 0.80</h1>
   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; margin-top: 26px; align-items: start;">
     <div>
       <ul class="tick">
@@ -359,27 +373,27 @@ body.notes #notes { display: block; }
     </div>
     <div>
       <svg viewBox="0 0 520 240" style="width: 100%;">
-        <text x="0" y="16" font-family="IBM Plex Mono" font-size="13" fill="#93A697">ПОКРЫТИЕ 80% PI, SPLIT-CONFORMAL (ANCHOR-СЕТКА)</text>
+        <text x="0" y="16" font-family="IBM Plex Mono" font-size="13" fill="#4C5361">ПОКРЫТИЕ 80% PI, SPLIT-CONFORMAL (ANCHOR-СЕТКА)</text>
         <!-- nominal line at 0.80; scale 0.6..1.0 → x = 60 + (v-0.6)/0.4*420 -->
-        <line x1="270" y1="34" x2="270" y2="205" stroke="#D8A24A" stroke-width="1.5" stroke-dasharray="5 4"/>
-        <text x="276" y="48" font-family="IBM Plex Mono" font-size="12.5" fill="#D8A24A">номинал 0.80 · шкала от 0.60</text>
+        <line x1="270" y1="34" x2="270" y2="205" stroke="#9A6700" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <text x="276" y="48" font-family="IBM Plex Mono" font-size="12.5" fill="#9A6700">номинал 0.80 · шкала от 0.60</text>
         <g font-family="IBM Plex Mono" font-size="13.5">
-          <text x="0" y="72" fill="#93A697">h = 1</text>
-          <rect x="60" y="56" width="289" height="24" rx="4" fill="#3ECF6A"/>
-          <text x="356" y="73" fill="#3ECF6A" font-weight="600">0.875</text>
-          <text x="0" y="124" fill="#93A697">h = 3</text>
-          <rect x="60" y="108" width="330" height="24" rx="4" fill="#3ECF6A"/>
-          <text x="397" y="125" fill="#3ECF6A" font-weight="600">0.914</text>
-          <text x="0" y="176" fill="#93A697">h = 6</text>
-          <rect x="60" y="160" width="354" height="24" rx="4" fill="#3ECF6A"/>
-          <text x="421" y="177" fill="#3ECF6A" font-weight="600">0.937</text>
-          <text x="0" y="222" fill="#93A697">Q1 (малые)</text>
-          <rect x="150" y="206" width="67" height="24" rx="4" fill="rgba(236,244,238,.22)"/>
-          <rect x="150" y="206" width="117" height="24" rx="4" fill="none" stroke="#3ECF6A" stroke-width="1.5" stroke-dasharray="4 3"/>
-          <text x="280" y="223" fill="#93A697">0.734 → 0.833 после Mondrian</text>
+          <text x="0" y="72" fill="#4C5361">h = 1</text>
+          <rect x="60" y="56" width="289" height="24" rx="4" fill="#2F6B4F"/>
+          <text x="356" y="73" fill="#2F6B4F" font-weight="600">0.875</text>
+          <text x="0" y="124" fill="#4C5361">h = 3</text>
+          <rect x="60" y="108" width="330" height="24" rx="4" fill="#2F6B4F"/>
+          <text x="397" y="125" fill="#2F6B4F" font-weight="600">0.914</text>
+          <text x="0" y="176" fill="#4C5361">h = 6</text>
+          <rect x="60" y="160" width="354" height="24" rx="4" fill="#2F6B4F"/>
+          <text x="421" y="177" fill="#2F6B4F" font-weight="600">0.937</text>
+          <text x="0" y="222" fill="#4C5361">Q1 (малые)</text>
+          <rect x="150" y="206" width="67" height="24" rx="4" fill="rgba(29,37,48,.18)"/>
+          <rect x="150" y="206" width="117" height="24" rx="4" fill="none" stroke="#2F6B4F" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="280" y="223" fill="#4C5361">0.734 → 0.833 после Mondrian</text>
         </g>
       </svg>
-      <p style="font-size: 14.5px; color: var(--muted); margin-top: 8px;">Mondrian-калибровка «категория × квинтиль масштаба» починила недопокрытие малых МО без роста ширины (−3.1%). Декабрь-2024: 0.831. Честная граница: h=12 декабрь не чинится (0.683 — дисперсия сезонного профиля, не масштаб).</p>
+      <p style="font-size: 14.5px; color: var(--muted); margin-top: 8px;">Mondrian-калибровка «категория × квинтиль масштаба» починила недопокрытие малых МО без роста ширины (−3.1%). Декабрь-2024: 0.831. Граница: h=12 декабрь не чинится (0.683 — дисперсия сезонного профиля, не масштаб).</p>
     </div>
   </div>
   <div style="margin-top: 26px; border-top: 1px solid var(--hairline); padding-top: 14px; font-size: 15px;">
@@ -390,37 +404,37 @@ body.notes #notes { display: block; }
 </section>
 
 <!-- 08 · ДЕТЕКЦИЯ (bars + 2-panel showcase) -->
-<section class="slide" data-notes="Бюджет ложных тревог задан до измерения recall. BOCPD лидирует на matched-rate; голосование хуже одиночки 10/10. Refit не помогает — детектор это мониторинг.">
-  <div class="ruler"><span class="num">08/14</span><span class="sec">детекция</span></div>
+<section class="slide lite" data-notes="Бюджет ложных тревог задан до измерения recall. BOCPD лидирует на matched-rate; голосование хуже одиночки 10/10. Refit не помогает — детектор это мониторинг.">
+  <div class="ruler"><span class="num">08/13</span><span class="sec">детекция</span></div>
   <p class="kicker">детекция структурных изменений · <b>К3</b></p>
   <h1 class="slide-title">Бюджет ложных тревог задан до измерения: при 2/1000 лучший детектор ловит <span class="hl">5.6% сдвигов</span> — аргументированный выбор BOCPD</h1>
   <div style="display: grid; grid-template-columns: 1fr 1.1fr; gap: 32px; margin-top: 24px; align-items: start;">
     <div>
       <svg viewBox="0 0 500 235" style="width: 100%;">
-        <text x="0" y="16" font-family="IBM Plex Mono" font-size="13" fill="#93A697">MATCHED-RATE F1 · инъекции level-сдвигов 3σ · равный бюджет всем</text>
+        <text x="0" y="16" font-family="IBM Plex Mono" font-size="13" fill="#4C5361">MATCHED-RATE F1 · инъекции level-сдвигов 3σ · равный бюджет всем</text>
         <!-- bars: BOCPD 0.668, Window 0.637, PELT/BinSeg 0.401, EWMA 0.381, CUSUM 0.277 ; x = 90 + v/0.75*374 -->
         <g font-family="IBM Plex Mono" font-size="13.5">
-          <text x="0" y="52" fill="#ECF4EE" font-weight="600">BOCPD</text>
-          <rect x="90" y="36" width="333" height="22" rx="4" fill="#3ECF6A"/><text x="431" y="53" fill="#3ECF6A" font-weight="600">0.67</text>
-          <text x="0" y="86" fill="#93A697">Window</text>
-          <rect x="90" y="70" width="318" height="22" rx="4" fill="rgba(62,207,106,.5)"/><text x="416" y="87" fill="#93A697">0.64</text>
-          <text x="0" y="120" fill="#93A697">PELT / BinSeg</text>
-          <rect x="90" y="104" width="200" height="22" rx="4" fill="rgba(236,244,238,.22)"/><text x="298" y="121" fill="#93A697">0.40</text>
-          <text x="0" y="154" fill="#93A697">EWMA</text>
-          <rect x="90" y="138" width="190" height="22" rx="4" fill="rgba(236,244,238,.22)"/><text x="288" y="155" fill="#93A697">0.38</text>
-          <text x="0" y="188" fill="#93A697">CUSUM</text>
-          <rect x="90" y="172" width="138" height="22" rx="4" fill="rgba(236,244,238,.22)"/><text x="236" y="189" fill="#93A697">0.28</text>
+          <text x="0" y="52" fill="#1D2530" font-weight="600">BOCPD</text>
+          <rect x="90" y="36" width="333" height="22" rx="4" fill="#2F6B4F"/><text x="431" y="53" fill="#2F6B4F" font-weight="600">0.67</text>
+          <text x="0" y="86" fill="#4C5361">Window</text>
+          <rect x="90" y="70" width="318" height="22" rx="4" fill="rgba(62,207,106,.5)"/><text x="416" y="87" fill="#4C5361">0.64</text>
+          <text x="0" y="120" fill="#4C5361">PELT / BinSeg</text>
+          <rect x="90" y="104" width="200" height="22" rx="4" fill="rgba(29,37,48,.18)"/><text x="298" y="121" fill="#4C5361">0.40</text>
+          <text x="0" y="154" fill="#4C5361">EWMA</text>
+          <rect x="90" y="138" width="190" height="22" rx="4" fill="rgba(29,37,48,.18)"/><text x="288" y="155" fill="#4C5361">0.38</text>
+          <text x="0" y="188" fill="#4C5361">CUSUM</text>
+          <rect x="90" y="172" width="138" height="22" rx="4" fill="rgba(29,37,48,.18)"/><text x="236" y="189" fill="#4C5361">0.28</text>
         </g>
-        <text x="0" y="222" font-family="IBM Plex Mono" font-size="12.5" fill="#93A697">голосование «≥2 из 3» хуже BOCPD-одиночки в 10/10 ячеек</text>
+        <text x="0" y="222" font-family="IBM Plex Mono" font-size="12.5" fill="#4C5361">голосование «≥2 из 3» хуже BOCPD-одиночки в 10/10 ячеек</text>
       </svg>
       <ul class="tick" style="margin-top: 10px;">
-        <li>Калибровка порогов и измерение — на разных рядах (11 304 / 378 парных инъекций); recall 5.6% [CI 3.7–8.3] — честная цена бюджета; на средней зоне (FAR ~15/1000) recall 47%</li>
+        <li>Калибровка порогов и измерение — на разных рядах (11 304 / 378 парных инъекций); recall 5.6% [CI 3.7–8.3] — измеренная цена бюджета; на средней зоне (FAR ~15/1000) recall 47%</li>
         <li>Рабочая точка — из рамки «цена ложной тревоги против цены пропуска» (L_FP : L_FN): при 24 192 МО-мес в год бюджет 2/1000 ≈ 48 ложных тревог в год — порог диктуется бюджетом до измерения recall, не наоборот</li>
         <li>Январская ловушка: наивная нормировка метит январь как «шок» у двух третей панели — наша предобработка (ridge+Huber) снимает её до 0.0% у PELT/BinSeg</li>
       </ul>
     </div>
     <div>
-      <img class="fig-img" src="figures/deck_F3.png" style="width: 100%;">
+      <img class="fig-img" src="figures/F3_cp_showcase.png" style="width: 100%;">
       <p class="mono" style="font-size: 12.5px; color: var(--muted); margin-top: 6px;">СЛЕВА: Богородский м.о. · Маркетплейсы (+402%) · СПРАВА: Дальнереченский м.р. · Общепит (+504%)</p>
       <p style="font-size: 14.5px; color: var(--muted); margin-top: 8px;">Эталонные сдвиги уровня ловятся с лагом 0–2 мес (пунктир — брейки PELT/BinSeg): Богородский +402%, Дальнереченский +504%. Refit-от-брейка прогноз не улучшает (ΔMAE +1.1%; доля побед 48.0% — нуль при мощности 80%): детектор — мониторинг и интерпретация, не сброс обучения.</p>
     </div>
@@ -430,7 +444,7 @@ body.notes #notes { display: block; }
 
 <!-- 09 · ЧЕСТНЫЙ НОЛЬ (dark триптих без карточек) -->
 <section class="slide" data-notes="Главный отрицательный результат: три механизма измерены и отвергнуты с посчитанной мощностью. Закрыто целое направление мёртвой работы.">
-  <div class="ruler"><span class="num">09/14</span><span class="sec">честные границы</span></div>
+  <div class="ruler"><span class="num">09/13</span><span class="sec">честные границы</span></div>
   <p class="kicker">раннее выявление шоков · <b>К3 · К7</b></p>
   <h1 class="slide-title" style="font-size: 48px;">Забегающего предупреждения на месячной панели <span class="hl">не существует</span> — три механизма измерены и отвергнуты</h1>
   <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; margin-top: 44px;">
@@ -460,8 +474,8 @@ body.notes #notes { display: block; }
 </section>
 
 <!-- 10 · НОВОСТИ -->
-<section class="slide" data-notes="К5: механизм и в прогноз, и в детекцию. Прогнозный слой монотонно вредит и исключён по замороженному гейту; словарь κ=0.926; burst×CPD — структура без значимости (p=0.84 честно).">
-  <div class="ruler"><span class="num">10/14</span><span class="sec">новости</span></div>
+<section class="slide lite" data-notes="К5: механизм и в прогноз, и в детекцию. Прогнозный слой монотонно вредит и исключён по замороженному гейту; словарь κ=0.926; burst×CPD — структура без значимости (p=0.84 честно).">
+  <div class="ruler"><span class="num">10/13</span><span class="sec">новости</span></div>
   <p class="kicker">новостные данные · <b>К5</b></p>
   <h1 class="slide-title">27 806 заголовков: в прогнозе слой монотонно вредит — <span class="hl">исключён по замороженному гейту</span></h1>
   <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-top: 26px; align-items: stretch;">
@@ -498,8 +512,8 @@ body.notes #notes { display: block; }
 </section>
 
 <!-- 11 · ИНТЕРПРЕТАЦИЯ (3 находки + sparkline) -->
-<section class="slide" data-notes="Поимённые находки по триаде. Богородский +402% удержан до конца панели. Четыре сезонных календаря. Номинал-реал калибровка.">
-  <div class="ruler"><span class="num">11/14</span><span class="sec">интерпретация</span></div>
+<section class="slide lite" data-notes="Поимённые находки по триаде. Богородский +402% удержан до конца панели. Четыре сезонных календаря. Номинал-реал калибровка.">
+  <div class="ruler"><span class="num">11/13</span><span class="sec">интерпретация</span></div>
   <p class="kicker">интерпретация на реальных примерах · <b>К7</b></p>
   <h1 class="slide-title">Три находки с именами — <span class="hl">каждая проверена независимым механизмом</span></h1>
   <div class="grid" style="grid-template-columns: 1.15fr 1fr 1fr; margin-top: 26px; align-items: stretch;">
@@ -508,10 +522,10 @@ body.notes #notes { display: block; }
       <div class="stat-num" style="font-size: 48px; color: var(--green);">+402%</div>
       <p style="margin: 8px 0; font-size: 15px;">Богородский м.о. (Кировская обл.), 2024-02: 308 → 1545 ₽/жителя, уровень удержан до конца панели (доля 2.5% → 13.4%). Дальнереченский (Приморье): +504%, 19 мес.</p>
       <svg viewBox="0 0 400 90" style="width: 100%; margin-top: 4px;">
-        <polyline fill="none" stroke="#ECF4EE" stroke-width="1.8" stroke-linejoin="round"
+        <polyline fill="none" stroke="#1D2530" stroke-width="1.8" stroke-linejoin="round"
           points="0,52 17,58 34,54 52,64 69,63 86,66 103,64 120,58 138,66 155,45 172,55 190,58 207,67 224,34 241,32 259,20 276,28 293,23 310,22 328,19 345,20 362,15 379,12"/>
-        <circle cx="224" cy="34" r="4" fill="#3ECF6A"/>
-        <text x="215" y="82" font-family="IBM Plex Mono" font-size="11.5" fill="#3ECF6A">2024-02</text>
+        <circle cx="224" cy="34" r="4" fill="#2F6B4F"/>
+        <text x="215" y="82" font-family="IBM Plex Mono" font-size="11.5" fill="#2F6B4F">2024-02</text>
       </svg>
       <p style="font-size: 13.5px; color: var(--muted); margin-top: 4px;">Доверие: PELT/BinSeg ловят с лагом 0–2 мес; сумма категорий ≤ «Все категории» — переключение канала, не артефакт суммы</p>
     </div>
@@ -536,8 +550,8 @@ body.notes #notes { display: block; }
 </section>
 
 <!-- 12 · ФОРВАРД (hero + fan SVG) -->
-<section class="slide" data-notes="Продуктовый артефакт: форвард выдержал сверку с официальным рядом; Prophet-B* в том же форварде хуже вдвое. Общепит — провал, показан.">
-  <div class="ruler"><span class="num">12/14</span><span class="sec">форвард 2025</span></div>
+<section class="slide lite" data-notes="Продуктовый артефакт: форвард выдержал сверку с официальным рядом; Prophet-B* в том же форварде хуже вдвое. Общепит — провал, показан.">
+  <div class="ruler"><span class="num">12/13</span><span class="sec">форвард 2025</span></div>
   <p class="kicker">форвард 2025-H1 — проверка за пределами train · <b>К1 · К2</b></p>
   <h1 class="slide-title">Прогноз на 2025-H1 против официального ряда: <span class="hl">MAE 1.48 п.п.</span>, у Prophet-B* — 2.83</h1>
   <div style="display: grid; grid-template-columns: 380px 1fr; gap: 40px; margin-top: 28px; align-items: start;">
@@ -548,86 +562,66 @@ body.notes #notes { display: block; }
     </div>
     <div>
       <svg viewBox="0 0 780 330" style="width: 100%;">
-        <text x="0" y="16" font-family="IBM Plex Mono" font-size="13" fill="#93A697">РОСТ г/г, % · 2025-01…06 · ФАКТ vs ПРОГНОЗ vs PROPHET-B*</text>
+        <text x="0" y="16" font-family="IBM Plex Mono" font-size="13" fill="#4C5361">РОСТ г/г, % · 2025-01…06 · ФАКТ vs ПРОГНОЗ vs PROPHET-B*</text>
         <!-- y: 0..26% → y = 300 - v/26*270 ; x: 6 months -->
         <!-- PI80 band lo [5.30,4.69,4.08,3.58,3.09,2.59] hi [21.92,22.63,23.35,23.94,24.54,25.14] -->
-        <polygon fill="rgba(62,207,106,.12)" stroke="none"
+        <polygon fill="rgba(47,107,79,.12)" stroke="none"
           points="70,72.4 190,65.1 310,57.5 430,51.4 550,45.2 670,38.9 670,273.1 550,267.9 430,262.8 310,257.6 190,251.3 70,244.9"/>
         <!-- forecast const 13.31 -->
-        <line x1="70" y1="161.8" x2="670" y2="161.8" stroke="#3ECF6A" stroke-width="2.5"/>
+        <line x1="70" y1="161.8" x2="670" y2="161.8" stroke="#2F6B4F" stroke-width="2.5"/>
         <!-- Prophet-B* [24.43,14.11,15.58,15.40,10.99,15.34] -->
-        <polyline fill="none" stroke="#D8A24A" stroke-width="2" stroke-dasharray="6 4"
+        <polyline fill="none" stroke="#9A6700" stroke-width="2" stroke-dasharray="6 4"
           points="70,46.3 190,153.5 310,138.2 430,140.1 550,185.8 670,140.7"/>
         <!-- fact [15.58,12.44,14.55,15.06,15.06,14.32] -->
-        <polyline fill="none" stroke="#ECF4EE" stroke-width="2.8" stroke-linejoin="round"
+        <polyline fill="none" stroke="#1D2530" stroke-width="2.8" stroke-linejoin="round"
           points="70,138.2 190,170.8 310,148.9 430,143.6 550,143.6 670,151.3"/>
-        <g font-family="IBM Plex Mono" font-size="12.5" fill="#93A697">
+        <g font-family="IBM Plex Mono" font-size="12.5" fill="#4C5361">
           <text x="52" y="322">янв</text><text x="172" y="322">фев</text><text x="292" y="322">мар</text><text x="412" y="322">апр</text><text x="532" y="322">май</text><text x="652" y="322">июн</text>
         </g>
         <g font-family="IBM Plex Mono" font-size="13">
-          <line x1="430" y1="52" x2="460" y2="52" stroke="#ECF4EE" stroke-width="2.8"/><text x="466" y="56" fill="#ECF4EE">факт (офиц. ряд)</text>
-          <line x1="430" y1="72" x2="460" y2="72" stroke="#3ECF6A" stroke-width="2.5"/><text x="466" y="76" fill="#3ECF6A">наш прогноз (+13.3%)</text>
-          <line x1="430" y1="92" x2="460" y2="92" stroke="#D8A24A" stroke-width="2" stroke-dasharray="6 4"/><text x="466" y="96" fill="#D8A24A">Prophet-B*</text>
-          <rect x="600" y="38" width="14" height="14" fill="rgba(62,207,106,.12)"/><text x="620" y="50" fill="#93A697">80% PI</text>
+          <line x1="430" y1="52" x2="460" y2="52" stroke="#1D2530" stroke-width="2.8"/><text x="466" y="56" fill="#1D2530">факт (офиц. ряд)</text>
+          <line x1="430" y1="72" x2="460" y2="72" stroke="#2F6B4F" stroke-width="2.5"/><text x="466" y="76" fill="#2F6B4F">наш прогноз (+13.3%)</text>
+          <line x1="430" y1="92" x2="460" y2="92" stroke="#9A6700" stroke-width="2" stroke-dasharray="6 4"/><text x="466" y="96" fill="#9A6700">Prophet-B*</text>
+          <rect x="600" y="38" width="14" height="14" fill="rgba(47,107,79,.12)"/><text x="620" y="50" fill="#4C5361">80% PI</text>
         </g>
       </svg>
-      <p style="font-size: 14.5px; color: var(--muted);">Прогноз константен по конструкции (сезонный наивный + pooled-дрейф = базовый тренд без новых шоков). Честные границы: Общепит — провал (офиц. +46–59% г/г, MAE 39.4 п.п.) — показан; чемпион h=12 SeasProfileHA на форварде проваливается — форвард строит DriftAdjSNaive.</p>
+      <p style="font-size: 14.5px; color: var(--muted);">Прогноз константен по конструкции (сезонный наивный + pooled-дрейф = базовый тренд без новых шоков). Границы: Общепит — провал (офиц. +46–59% г/г, MAE 39.4 п.п.) — показан; чемпион h=12 SeasProfileHA на форварде проваливается — форвард строит DriftAdjSNaive.</p>
     </div>
   </div>
   <p class="source"><span>outputs/forecast_2025H1.parquet · forecast_2025_check.csv · rc1_o7_forward_*.csv</span><span class="crit">К1 · К2</span></p>
 </section>
 
-<!-- 13 · ОГРАНИЧЕНИЯ → 36 МЕСЯЦЕВ -->
-<section class="slide" data-notes="Ограничения названы первыми; каждое связано с тем, что его снимает.">
-  <div class="ruler"><span class="num">13/14</span><span class="sec">границы → дальше</span></div>
-  <p class="kicker">ограничения и следующий шаг · <b>К1</b></p>
-  <h1 class="slide-title">24 месяца — один годовой цикл. <span class="hl">Цену этого мы назвали первыми</span></h1>
-  <div style="display: grid; grid-template-columns: 1fr 60px 1fr; gap: 0; margin-top: 30px; align-items: stretch;">
+<!-- 13 · ФИНАЛ: ГРАНИЦЫ + ВОСПРОИЗВОДИМОСТЬ (dark hero) -->
+<section class="slide" style="justify-content: center;" data-notes="Границы названы первыми; каждая связана с тем, что её снимает. Всё восстанавливается одной командой.">
+  <div class="ruler"><span class="num">13/13</span><span class="sec">границы · воспроизводимость</span></div>
+  <p class="kicker">ограничения · воспроизводимость · <b>К1</b></p>
+  <h1 class="slide-title">24 месяца — один годовой цикл, и цену этого мы назвали первыми. <span class="hl">Всё восстанавливается одной командой</span></h1>
+  <div style="display: grid; grid-template-columns: 1.25fr 1fr; gap: 40px; margin-top: 30px; align-items: start;">
     <div class="card">
-      <h3>Ограничения (декларируем сами)</h3>
+      <h3>Чего мы не обещаем — и почему</h3>
       <ul class="tick copper">
-        <li>h=12 — ровно один origin: временная обобщаемость ограничена переходом 2023→2024</li>
-        <li>Один полный годовой цикл в train max — yearly-сезонность Prophet на грани порога 730 дней; DM на 7–12 фолдах имеет MDE порядка самого эффекта</li>
-        <li>Прямая ML-модель на h=12 структурно невозможна — ноль легальных train-строк</li>
-        <li>Прогноз за пределами 2024 — экстраполяция; победитель прошлого не гарантирует будущее</li>
+        <li><b>Забегающего предупреждения шоков</b> на месячной сетке — его там нет, это измерено тремя механизмами (слайд 9)</li>
+        <li><b>Временной статистики h=12</b>: один origin = один переход 2023→2024; мощность — только кросс-секция из 2 016 парных ошибок</li>
+        <li><b>Точности МО-уровня на 2025</b>: валидации не существует — данных нет; форвард проверен только на агрегате</li>
+        <li><b>TSFM на месячных панелях</b> и универсальной модели: разные горизонты — разные победители</li>
       </ul>
+      <p style="margin-top: 12px; font-size: 15px; color: var(--muted);">С 36 месяцами: 2+ origin'а на h=12, честная yearly-сезонность, вторая граница годов для январских эффектов, окна для refit-от-брейка.</p>
     </div>
-    <div style="display: flex; align-items: center; justify-content: center; font-size: 34px; color: var(--muted);">→</div>
-    <div class="card ok">
-      <h3>Что дадут 36 месяцев</h3>
-      <ul class="tick">
-        <li>2+ origin'а на h=12 → настоящая временная статистика длинного горизонта (сейчас мощность — только кросс-секция из 2 016 парных ошибок)</li>
-        <li>Честная идентификация yearly-сезонности и её дрейфа</li>
-        <li>Вторая граница годов — проверка январских эффектов вне единственного фолда + Mondrian-пулы интервалов на двух циклах</li>
-        <li>Окна для refit-от-брейка, достаточные для оценки downstream-ценности (сейчас — подтверждённый нуль)</li>
-        <li>Недельная сетка МО-данных — перепроверка тезиса «предупреждения не существует» тем же замороженным протоколом</li>
-      </ul>
+    <div>
+      <div style="border: 1px solid var(--hairline); border-radius: 6px; padding: 26px 30px;">
+        <span class="mono" style="font-size: 30px; color: var(--neon);">make reproduce</span>
+        <span class="mono" style="font-size: 15px; color: var(--muted);"> · ~9–11 ч wall · от сырых данных до таблиц и фигур</span>
+      </div>
+      <div style="margin-top: 18px; display: flex; gap: 12px; flex-wrap: wrap;">
+        <span class="chip">MANIFEST.sha256 входов</span>
+        <span class="chip">number_index.md — число → команда</span>
+        <span class="chip">decision.json — гейты</span>
+        <span class="chip">tests 6/6</span>
+        <span class="chip">LGBM 5 сидов ±0.009</span>
+      </div>
+      <p style="margin-top: 22px; font-size: 16.5px; color: var(--muted);">Публичный репозиторий — ссылка в заявке. Отчёт: reports/methodology.md · презентация: reports/presentation.pdf</p>
     </div>
   </div>
-  <div style="margin-top: 26px; border-top: 1px solid var(--hairline); padding-top: 14px; font-size: 15px;">
-    <span class="mono" style="color: var(--muted); font-size: 13px;">ЧЕГО НЕ ОБЕЩАЕМ: </span>
-    предупреждения шоков на месячной сетке (его там нет — измерено) · точности МО-уровня на 2025 (валидации не существует — данных нет) · TSFM на месячных панелях (проигрывают) · универсальной модели (разные горизонты — разные победители)
-  </div>
-  <p class="source"><span>reports/methodology.md · раздел «Ограничения» и «Что дадут 36 месяцев»</span><span class="crit">К1</span></p>
-</section>
-
-<!-- 14 · ФИНАЛ (dark) -->
-<section class="slide" style="justify-content: center;" data-notes="Финал: одна команда восстанавливает всё. Ссылка на репозиторий — в заявке.">
-  <div class="ruler"><span class="num">14/14</span><span class="sec">воспроизводимость</span></div>
-  <p class="kicker">код · конфиги · каждое число · <b>К1</b></p>
-  <h1 style="font-size: 56px; max-width: 1250px;">Всё, что вы видели, восстанавливается одной командой</h1>
-  <div style="margin-top: 44px; display: inline-block; border: 1px solid var(--hairline); border-radius: 14px; padding: 28px 36px;">
-    <span class="mono" style="font-size: 30px; color: var(--neon);">make reproduce</span>
-    <span class="mono" style="font-size: 16px; color: var(--muted);"> · ~9–11 ч wall · от сырых данных до таблиц и фигур</span>
-  </div>
-  <div style="margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap;">
-    <span class="chip">MANIFEST.sha256 входов</span>
-    <span class="chip">number_index.md — число → команда</span>
-    <span class="chip">decision.json — гейты и журнал аудита</span>
-    <span class="chip">tests 6/6</span>
-    <span class="chip">LGBM 5 сидов ±0.009</span>
-  </div>
-  <p style="margin-top: 40px; font-size: 19px; color: var(--muted); max-width: 1150px;">Публичный репозиторий — ссылка в заявке. Отчёт: reports/methodology.md · презентация: reports/presentation.pdf</p>
   <p class="source"><span>СберИндекс 2026 · трек «Прогнозирование» · данные Лаборатории СберИндекс, CC BY-SA 4.0</span><span class="crit">К1</span></p>
 </section>
 
