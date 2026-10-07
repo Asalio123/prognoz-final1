@@ -19,10 +19,13 @@ const page = await browser.newPage({ viewport: { width: 1600, height: 900 } });
 await page.goto('file://' + join(HERE, 'presentation.html'), { waitUntil: 'networkidle' });
 await page.evaluate(() => document.fonts.ready);
 await page.waitForTimeout(600);
+const light = process.argv.includes('--light');
+if (light) await page.evaluate(() =>
+  document.querySelectorAll('.slide').forEach(s => s.classList.add('lite')));
 await page.pdf({
-  path: join(HERE, 'presentation.pdf'),
+  path: join(HERE, light ? 'presentation_print.pdf' : 'presentation.pdf'),
   width: '1600px', height: '900px',
   printBackground: true, margin: { top: 0, bottom: 0, left: 0, right: 0 },
 });
-console.log('presentation.pdf собран');
+console.log(light ? 'presentation_print.pdf собран (все слайды светлые)' : 'presentation.pdf собран');
 await browser.close();
