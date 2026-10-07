@@ -101,3 +101,32 @@
 - Ограничения — без чисел.
 
 Разделы/заявления без явного числа-источника: отсутствуют (все твёрдые числа трассированы).
+
+---
+
+# rc1-дополнение (07.10.2026): новые числа дня
+
+| Число | Где | Источник | Статус |
+|---|---|---|---|
+| Покрытие 80% PI 0.875/0.914/0.937 (h=1/3/6, anchor tier-1) | §2 интервалы, Находка 4 | `make`-скрипт `scripts/23_champion_intervals.py` (Mondrian-пулы категория×квинтиль2023) → `outputs/intervals_coverage.csv` (slice overall_tier1) | OK (перегенерено 07.10; V1 пересчитал из parquet — совпало) |
+| Q1 малые МО 0.734 → 0.833 | §2, Находка 4 | `intervals_coverage.csv` slice scale_quintile=Q1, DriftAdj h=1 | OK (0.8329) |
+| Медианная ширина −3.1% (1957→1896 ₽) | §2 | review_rc1/O5 (rc1_o5_coverage_by_variant.csv) | OK |
+| Декабрь-2024 покрытие 0.831 | §2, Находка 4 | `23_champion_intervals.py` вывод cal-month tm=23 (0.8312) | OK |
+| Флаги риска: декабрь 82.6% (9647/11682) vs 35.5% | §2, Находка 4 | stdout `scripts/23_champion_intervals.py` (блок «Рискованный месяц») | OK |
+| ноябрь-2024 второй пик 70.6% | Находка 4 | stdout `23_champion_intervals.py` (per_month 21: 0.706) | OK |
+| Chronos |Δ| 0.134/0.112 vs наши 0.045/0.013 (h=6/12, origin 12) | §2 | `chronos_quantile_coverage.csv` + `intervals_coverage.csv` (origin 12) | OK |
+| Форвард Общепит: MAE 39.4 п.п., 2/6 в PI80 | §2 форвард | `outputs/rc1_o7_forward_by_category.csv` | OK |
+| Форвард Prophet-B*: 2.83 (агрегат) / 4.25 (Продовольствие) п.п. | §2 форвард | `scripts/rc1_o7_prophet_forward.py` → review_rc1/O7 | OK |
+| Энсембли rc1: гейт не пройден; 50/50 full-grid −22% → holdout +46.5% | §2 F2.5а | `outputs/rc1_o1_*.csv` | OK |
+| MCS-90 h=1: 8 моделей из 26, B* внутри; дно p<0.001 | §2 F2.5а | `outputs/rc1_o1_mcs*.csv` (block bootstrap 73 региона, 1000 реплик) | OK |
+| Walk-forward селектор: закрывает 5.6–7.5% разрыва к оракулу; Маркетплейсы 0.419 vs 0.281 | §2 F2.5б | `outputs/rc1_o2_*.csv` | OK |
+| CPD голосование: 10/10 проигрыш BOCPD (F1 0.271 vs 0.303) | §3 F3.1б | `outputs/rc1_o4_ensemble_matched.csv` | OK |
+| BOCPD∩Window = 0 из 534 брейков | §3 F3.1б | `outputs/rc1_o4_realpanel_votes.csv` | OK |
+| MDE spatial: лифт ≥×2.46 (BOCPD) / ≥×1.61 (CUSUM) при мощности 80% | §4 F4.2, Находка 6 | `outputs/rc1_o4_mde.csv` | OK |
+| Refit: доля побед 48.0% (n=98), MDE ±14 п.п. | §3 F3.3, Находка 6 | `outputs/rc1_o4_mde.csv` + `downstream_dmae_v2.csv` | OK |
+| burst×CPD: observed 3, симметричный нуль mean 3.69, p=0.84 (100k reps); MDE ≥8 совпадений для p<0.05 | §6 | `outputs/news_cpd_perm_v2.txt` (перегенерирован 07.10 после фикса окна) + Poisson(3.69) | OK |
+| Linlin: чемпионы стабильны k∈[1;10]; сдвиг τ=0.67 при k=2: −20…−34% pooled h=1–3 | §1 | `outputs/rc1_o8_linlin.csv`, `rc1_o8_shift.csv` | OK |
+| Маркетплейсы +54%/год (медиана), ×3.6 к pooled-дрейфу | §2, Находка 2 | `outputs/rc1_s6_verification.csv` (годовые суммы 54.0/54.2%) | OK |
+| Офиц. реальный ряд 4.6–6.7% (Jul–Dec 2024) | Находка 1 | `outputs/external_real_growth.csv` | OK |
+| Wilcoxon h=1 p=1.4e-241 (raw 3.43e-242 × Holm-4) | §2 T1 | `outputs/T3_significance.csv` + Holm×4 (V1: напечатанное ранее 1.7e-241 было ×5 — исправлено) | OK |
+| CI recall 5.6%: Wilson [3.7–8.3] | §3 F3.1 | пересчёт 21/378 (V1; ранее [3.8–7.6] не воспроизводилось — исправлено) | OK |

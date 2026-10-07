@@ -20,6 +20,9 @@ Burst detection на новостных потоках (expanding z, min-count �
 (плато нечувствительности); pen=2 добавляет 2021-11, 2025-08, 2026-06 (вне окна).
 Реальный ряд (робастность): CP пересекаются с номинальным {2023-02, 2023-07,
 2024-05, 2024-10} + 2023-12.
+Исправление rc1 (07.10.2026, аудит O6): нуль-модель пермутаций считала
+совпадение точным месяцем, observed — окном ±1; асимметрия занижала нуль
+в ~(2k+1) раза. Стало: симметричное окно ±1 в обеих ветках.
 Выход: outputs/news_cpd_matrix_v2.csv, outputs/news_cpd_perm_v2.txt
 """
 import sys
@@ -31,7 +34,7 @@ import ruptures as rpt
 
 ROOT = Path(__file__).resolve().parents[1]
 PEN = 5.0  # плато нечувствительности 5–10 на номинальном ряде (см. docstring)
-N_REPS = 10_000  # R07 §4: circular-shift ×10 000 (было 500 — расход со спекой)
+N_REPS = 100_000  # 100k для стабильного p (rc1)
 WINDOW = ("2023-01", "2024-12")
 
 
@@ -81,6 +84,9 @@ def main():
     print(piv.to_string())
 
     # circular-shift пермутация: сдвигаем burst-метки, каждый rep от ИСТИННЫХ burst'ов
+    # rc1-фикс (07.10, аудит O6): нуль-модель должна считать совпадение ТЕМ ЖЕ
+    # окном ±1 мес, что и observed — иначе нуль занижен в ~(2k+1) раза
+    # (асимметрия давала ложные p=0.13 при симметричном p≈0.84).
     rng = np.random.default_rng(42)
     obs = int((mx.cp & mx.burst).sum())
     n_m = len(all_months)
@@ -94,7 +100,11 @@ def main():
         for t in topics:
             sub = mx[mx.topic == t]
             for m, cp in zip(sub["month"], sub["cp"]):
-                if cp and m in shifted_bursts[t]:
+                if not cp:
+                    continue
+                i = pos[m]
+                near = {all_months[j] for j in range(max(0, i - 1), min(n_m, i + 2))}
+                if shifted_bursts[t] & near:
                     cnt += 1
         null.append(cnt)
     null = np.array(null)
@@ -103,8 +113,10 @@ def main():
         f.write(f"series: consumer-spending-growth, type=Всего, Номинальное, 2018-12..2026-08 (93 мес)\n")
         f.write(f"PELT l2 pen={PEN} (плато 5–10); CP все: {sorted(cp_all)}\n")
         f.write(f"CP в окне: {sorted(cps)}; темы: {topics}\n")
-        f.write(f"observed CP∧burst: {obs}\nnull mean: {null.mean():.2f}, p(circular-shift, {N_REPS} reps) = {p:.4f}\n")
-    print(f"\nCP∧burst наблюдаемо: {obs}, null {null.mean():.2f}, p={p:.4f} ({N_REPS} reps)")
+        f.write(f"observed CP∧burst: {obs} (окно ±1 мес)\n")
+        f.write(f"null mean: {null.mean():.2f} (симметричное окно ±1, фикс rc1/O6), "
+                f"p(circular-shift, {N_REPS} reps) = {p:.4f}\n")
+    print(f"\nCP∧burst наблюдаемо: {obs}, null {null.mean():.2f}, p={p:.4f} ({N_REPS} reps, симметричное окно ±1)")
 
 
 if __name__ == "__main__":

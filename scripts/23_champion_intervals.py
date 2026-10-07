@@ -8,9 +8,10 @@
 - Конформность в log-пространстве: модели живут в log (см. 08_run_seasadj),
   |log1p(y) - log1p(yhat)| ~ относительная ошибка -> нормализация масштабом
   не нужна, интервалы автоматически гетероскедастичны по рядам.
-- Пулы per (модель, горизонт, origin, категория). Ключевой принцип: калибровочные
-  остатки должны быть ТОГО ЖЕ РЕЖИМА, что и тестовый прогноз. Все тестовые
-  прогнозы — anchor-режим (tm>=12), поэтому:
+- Пулы per (модель, горизонт, origin, категория × квинтиль масштаба МО)
+  — Mondrian-группы: квинтиль по медиане 2023, строго до всех тестовых целей.
+  Ключевой принцип: калибровочные остатки должны быть ТОГО ЖЕ РЕЖИМА, что и
+  тестовый прогноз. Все тестовые прогнозы — anchor-режим (tm>=12), поэтому:
     T1: anchor-режим, тот же h: t in [max(12,h), o-1]   (основной)
     T2: fallback-режим, тот же h: t in [h, o-1]         (только origin 12)
     T3: кросс-горизонт, любой режим                     (origin 12, h=12)
@@ -160,6 +161,17 @@ def main():
 
     res, pred = build_residuals(wv, reg_values)
 
+    # --- Mondrian-группы: категория × квинтиль масштаба (rc1/O5) ---
+    # Квинтиль масштаба — по медиане 2023 (месяцы 0..11): строго раньше
+    # любой тестовой цели (min tm = 12), утечки нет. Недопокрытие малых МО
+    # жило внутри категорий (|log-остатки| малых МО систематически больше);
+    # единый квантиль на категорию их резал. Пулы (категория × квинтиль)
+    # чинят Q1 0.735 -> 0.833 без роста ширины (-3%), см. review_rc1/O5.
+    scale_2023 = np.nanmedian(wr[:, :12], axis=1)
+    quint_2023 = pd.qcut(pd.Series(scale_2023, index=series_ids), 5,
+                         labels=["Q1", "Q2", "Q3", "Q4", "Q5"]).astype(str).to_numpy()
+    grp_of_series = np.array([f"{c}|{q}" for c, q in zip(cat_of_series, quint_2023)])
+
     # --- диагностика: зависимость anchor-остатков от календарного месяца ---
     # (обоснование отказа от cal-matching: |YoY-ошибка| ~ плоская по месяцам)
     print("[diag] медиана |log-res| anchor-режима по месяцу остатка (t=12..22):")
@@ -189,7 +201,7 @@ def main():
     # --- интервалы ---
     rows = []
     pool_stats = []
-    cats = np.unique(cat_of_series)
+    groups = np.unique(grp_of_series)
     for mdl in res:
         for h in HORIZONS:
             for o in ORIGINS:
@@ -199,8 +211,9 @@ def main():
                 target_cal = tm % 12
                 ts, hs, tier = select_pool(o, h)
                 y_log = pred[mdl][h][:, tm]
-                for cat in cats:
-                    m = cat_of_series == cat
+                for grp in groups:
+                    m = grp_of_series == grp
+                    cat = grp.split("|")[0]
                     if not ts:
                         q80 = q95 = np.nan
                         n_pool = 0
@@ -211,7 +224,8 @@ def main():
                         q80, n_pool = conf_quant(pool, 0.20)
                         q95, _ = conf_quant(pool, 0.05)
                     pool_stats.append({"model": mdl, "horizon": h, "origin": o,
-                                       "category": cat, "tier": tier, "n_pool": n_pool,
+                                       "category": cat, "mondrian_group": grp,
+                                       "tier": tier, "n_pool": n_pool,
                                        "q80_log": q80, "q95_log": q95})
                     yp = np.expm1(np.clip(y_log[m], 0, None))
                     if np.isnan(q80):
@@ -242,8 +256,8 @@ def main():
     df["cov95"] = (df["y_true"] >= df["lo95"]) & (df["y_true"] <= df["hi95"])
     df["w80"] = df["hi80"] - df["lo80"]
     df["w95"] = df["hi95"] - df["lo95"]
-    scale = pd.Series(np.nanmedian(wr, axis=1), index=series_ids)
-    qs = pd.qcut(scale, 5, labels=["Q1", "Q2", "Q3", "Q4", "Q5"])
+    # квинтиль масштаба — по 2023 (та же разметка, что и в Mondrian-пулах)
+    qs = pd.Series(quint_2023, index=series_ids)
     df["scale_quintile"] = df["series_id"].map(qs).astype(str)
 
     def cov_row(sub, mdl, h, stype, sval):

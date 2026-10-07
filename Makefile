@@ -73,5 +73,8 @@ test:        ## тесты целостности (утечки, matched cells, 
 
 # Полный прогон от сырых данных до таблиц и фигур. Реалистично: ~9–11 ч wall на 8 ядрах
 # (доминируют stats ~2.6 ч и prophet ~4.5–5 ч; timesfm ~3 ч CPU — можно закомментировать).
-reproduce: data panel news-corpus stats prophet prophet-bfix seasadj lgbm ensemble chronos cpd downstream news-cpd radar tables test figures
+reproduce: data panel news-corpus stats prophet prophet-bfix seasadj lgbm ensemble chronos timesfm cpd downstream news news-cpd radar tables test figures
 	@echo "reproduce done"
+
+smoke: data panel test  ## быстрый контур без прогонов (тесты умеют skip без outputs)
+	@echo "smoke done"

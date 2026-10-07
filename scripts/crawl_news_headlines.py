@@ -12,7 +12,8 @@ import datetime as dt
 import urllib.request
 from pathlib import Path
 
-OUT = Path("/Users/said/сбериндекс/data/external/news")
+ROOT = Path(__file__).resolve().parents[1]
+OUT = ROOT / "data" / "external" / "news"  # data — симлинк на корневое хранилище
 OUT.mkdir(parents=True, exist_ok=True)
 DAYS = [dt.date(2023, 1, 1) + dt.timedelta(days=i) for i in range(731)]  # 2023-01-01..2024-12-31
 
