@@ -17,7 +17,7 @@
 
 | Критерий | Файл-доказательство |
 |---|---|
-| К1 Методология, воспроизводимость | `Makefile` (одна команда `make reproduce`), `configs/MANIFEST.sha256`, `configs/decision.json` (предрегистрация + журнал аудита), `reports/number_index.md` (число → команда), `tests/` |
+| К1 Методология, воспроизводимость | `Makefile` (одна команда `make reproduce`), `configs/MANIFEST.sha256`, `configs/decision.json` (журнал решений и аудита rc0/rc1/rc2), `reports/number_index.md` (число → команда), `tests/` |
 | К2 Сравнение моделей | `reports/methodology.md` §2; `outputs/T1_model_x_horizon.csv` (matched, 20 моделей × 4 горизонта), `outputs/T3_significance.csv` (DM / Wilcoxon / Holm / bootstrap) |
 | К3 Точки структурных изменений | `reports/methodology.md` §3; `outputs/cpd_frontier_v2.csv` (фронтир F1×FAR), downstream-метрика ΔMAE (`scripts/13_downstream_dmae.py`) |
 | К4 Foundation-модели | `reports/methodology.md` §5: Chronos-2 и TimesFM 2.5 (обе Apache-2.0; NC-лицензии исключены по п.10.3/п.10.1.2 Положения), ковариаты, холодный старт, калибровка квантилей, абляция энсембля ±TSFM — преимущества и ограничения измерены |
@@ -70,7 +70,7 @@ make smoke   # данные → чистая панель → тесты цел�
 | `data/external/isdayoff_*.txt` — производственный календарь | isdayoff.ru | открытые данные | 2023–2024 |
 | `data/external/news/headlines_{kommersant,vedomosti}.jsonl` — 27 806 заголовков | kommersant.ru, vedomosti.ru — факты и даты публикаций, не объект авторского права | — | сборка `scripts/crawl_news_headlines.py`, sha256 в `configs/MANIFEST.sha256` |
 
-Целостность входов: `configs/MANIFEST.sha256` (проверяется автоматически при загрузке). Реестр решений и предрегистрация: `configs/validation.yaml`, `configs/champion.yaml`, `configs/news_taxonomy.yaml`, `configs/decision.json` (с журналом аудита rc0 от 06.10 и rc1 от 07.10).
+Целостность входов: `configs/MANIFEST.sha256` (проверяется автоматически при загрузке). Реестр решений и предрегистрация: `configs/validation.yaml`, `configs/champion.yaml`, `configs/news_taxonomy.yaml`, `configs/decision.json` (журнал аудита rc0 06.10 · rc1 07.10 · rc2 09.10).
 
 ## Структура
 

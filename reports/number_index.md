@@ -9,7 +9,7 @@
 | 2 | 24 месяца (2023-01–2024-12) | §0 | `panel.month_idx.nunique()` | OK | 24, min=0, max=23 |
 | 3 | 6 категорий | §0 | `panel.category.nunique()` | OK | 6 |
 | 4 | Из 2 190 МО исключены 174 | §0 | `pd.read_parquet('data/raw/hackathon/hackathonlicence/consumption.parquet').territory_id.nunique()` | OK | raw=2190, panel=2016, разница=174 |
-| 5 | медиана < 300 ₽/мес → 414 МО исключены | §0 | `(2016 − T2_slice_category[T2.category=='Общественное питание'].n_series.iloc[0])` | OK | 2016−1602=414. NB: configs/decision.json:16 и validation.yaml комментарий говорят «445» — конфиги устарели, в тексте 414 правильно |
+| 5 | медиана < 300 ₽/мес → 414 МО исключены | §0 | `(2016 − T2_slice_category[T2.category=='Общественное питание'].n_series.iloc[0])` | OK | 2016−1602=414. NB: конфиги приведены к 414 в rc2 (09.10, ccec423) — расхождение закрыто |
 | 6 | 27 806 заголовков | §0, §6 | `wc -l data/external/news/headlines_*.jsonl` | OK | 14620+13186=27806 |
 | 7 | +15.1–15.6% номинальный рост | §0 | вычисление из panel (см. строку 9) | **PARTIAL** | median=15.12%, pooled=15.12%, mean=14.80%. Верхняя граница 15.6 не воспроизводится ни одной агрегацией (max YoY=19.0 по месяцам, но это не «рост панели»). PHANTOM для «15.6» |
 | 8 | ИПЦ 9.5% | §0 | внешний факт ЦБ РФ (2024) | EXTERNAL | — |

@@ -34,7 +34,7 @@ lgbm:        ## глобальный LightGBM (direct-per-horizon, objective l1,
 seasadj:     ## DriftAdjSNaive / SeasProfileHA (чемпионы по сезонным профилям и дрейфу)
 	$(PY) scripts/08_run_seasadj.py
 
-ensemble:    ## median-энсамбль (гейт включения — configs/decision.json)
+ensemble:    ## median-энсамбль (гейт включения — configs/champion.yaml)
 	$(PY) scripts/07_run_ensemble.py
 
 cpd:         ## CPD-стенд: disjoint калибровка/измерение, фронтир, контролы
@@ -56,7 +56,7 @@ chronos:     ## Chronos-2 zero-shot + ковариаты (Apache-2.0), MPS/CPU
 	$(PY) scripts/09_run_chronos.py
 	$(PY) scripts/18_run_chronos_cov.py
 
-timesfm:     ## TimesFM 2.5 zero-shot (Apache-2.0), CPU ~2.5–3 ч
+timesfm:     ## TimesFM 2.5 zero-shot (Apache-2.0), CPU ~3.3 ч
 	$(PY) scripts/10_run_timesfm.py
 
 radar:       ## панельный радар (результат rc0: честный ноль — см. отчёт §4)
