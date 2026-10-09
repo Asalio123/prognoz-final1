@@ -36,6 +36,8 @@ make data        # скачивание с официальных URL + пров
 make reproduce   # полный контур: данные → панель → все прогоны → таблицы → фигуры → тесты
 ```
 
+Платформа: разработано на macOS; на Linux для `make data` нужны `bsdtar` и `curl` (Debian/Ubuntu: `apt install libarchive-tools curl`).
+
 По времени: `make reproduce` — **~9–11 ч wall на 8 ядрах CPU** (доминируют стат-сетка ~2.6 ч и Prophet ~4.5–5 ч; TimesFM ~3 ч CPU можно закомментировать в таргете `reproduce`).
 
 Быстрый контур (~10–15 мин, без полного прогона):
