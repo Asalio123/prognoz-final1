@@ -93,7 +93,7 @@ table.t { border-collapse: collapse; width: 100%; font-size: 16.5px; }
 table.t th { font-family: var(--font-mono); font-size: 12.5px; font-weight: 400; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 9px 12px; border-bottom: 1.5px solid var(--ink); }
 table.t td { padding: 10px 12px; border-bottom: 1px solid var(--hairline); font-variant-numeric: tabular-nums; }
 table.t tr:last-child td { border-bottom: none; }
-table.t .win { color: var(--green); font-weight: 600; }
+table.t .win { color: var(--sber); font-weight: 600; }
 table.t .r { text-align: right; }
 
 .tag { display: inline-block; font-family: var(--font-mono); font-size: 12px; font-weight: 400; letter-spacing: .08em; padding: 4px 10px; border-radius: 3px; text-transform: uppercase; }
@@ -124,6 +124,10 @@ body.notes #notes { display: block; }
   <p class="kicker">станция 2 016 МО · журнал регистрации · конкурс СберИндекса 2026 · трек <b>«Прогнозирование»</b></p>
   <h1 style="font-size: 64px; max-width: 1330px;">Сдвиг в тратах муниципалитета нельзя предсказать заранее. <span style="color: var(--neon);">Но его можно поймать за месяц</span></h1>
   <p style="margin-top: 30px; font-size: 23px; max-width: 1150px; line-height: 1.45;">Мы измерили эту границу на 2 016 муниципалитетах России — и поставили на ней рабочую точку: детектор с бюджетом ложных тревог, прогноз с калиброванными интервалами, форвард-2025, сверенный с официальным рядом Лаборатории.</p>
+  <div style="margin-top: 26px; padding: 14px 0; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); max-width: 1330px;">
+    <span class="mono" style="font-size: 17.5px; color: var(--sber); font-weight: 600;">RelMAE 0.324 против 0.460 у Prophet-B*</span>
+    <span style="font-size: 16.5px; color: var(--muted);"> — сводная категория, все четыре горизонта · Wilcoxon p = 1.4e-241 · форвард-2025: MAE 1.48 п.п. против официального ряда</span>
+  </div>
   <svg viewBox="0 0 1330 150" style="width: 100%; margin-top: 44px;" preserveAspectRatio="none">
     <polyline fill="none" stroke="#14181D" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"
       points="0,80 58,70 116,57 174,74 232,70 290,68 348,61 406,60 464,72 522,67 580,64 638,39 696,77 754,62 812,49 870,53 928,51 986,47 1044,45 1102,55 1160,49 1218,49 1276,27"/>
@@ -259,24 +263,24 @@ body.notes #notes { display: block; }
         <!-- rows: h=1,3,6,12 ; ours [0.324,0.361,0.422,0.513], B* [0.460,0.398,0.494,0.617] ; x: 0.3..0.65 -->
                   <g font-family="IBM Plex Mono" font-size="13.5">
 <text x="0" y="60" fill="#4A5261">h=1</text>
-          <line x1="87" y1="55" x2="239" y2="55" stroke="#2456A6" stroke-width="2.5"/>
-          <circle cx="87" cy="55" r="7" fill="#2456A6"/><circle cx="239" cy="55" r="7" fill="#FFFFFF" stroke="#4A5261" stroke-width="2"/>
-          <text x="63" y="42" fill="#2456A6" font-weight="600">0.324</text><text x="223" y="42" fill="#4A5261">0.460</text>
+          <line x1="87" y1="55" x2="239" y2="55" stroke="#1E9E42" stroke-width="2.5"/>
+          <circle cx="87" cy="55" r="7" fill="#1E9E42"/><circle cx="239" cy="55" r="7" fill="#FFFFFF" stroke="#4A5261" stroke-width="2"/>
+          <text x="63" y="42" fill="#1E9E42" font-weight="600">0.324</text><text x="223" y="42" fill="#4A5261">0.460</text>
           <text x="0" y="130" fill="#4A5261">h=3</text>
-          <line x1="128" y1="125" x2="170" y2="125" stroke="#2456A6" stroke-width="2.5"/>
-          <circle cx="128" cy="125" r="7" fill="#2456A6"/><circle cx="170" cy="125" r="7" fill="#FFFFFF" stroke="#4A5261" stroke-width="2"/>
-          <text x="104" y="112" fill="#2456A6" font-weight="600">0.361</text><text x="154" y="112" fill="#4A5261">0.398</text>
+          <line x1="128" y1="125" x2="170" y2="125" stroke="#1E9E42" stroke-width="2.5"/>
+          <circle cx="128" cy="125" r="7" fill="#1E9E42"/><circle cx="170" cy="125" r="7" fill="#FFFFFF" stroke="#4A5261" stroke-width="2"/>
+          <text x="104" y="112" fill="#1E9E42" font-weight="600">0.361</text><text x="154" y="112" fill="#4A5261">0.398</text>
           <text x="0" y="200" fill="#4A5261">h=6</text>
-          <line x1="196" y1="195" x2="277" y2="195" stroke="#2456A6" stroke-width="2.5"/>
-          <circle cx="196" cy="195" r="7" fill="#2456A6"/><circle cx="277" cy="195" r="7" fill="#FFFFFF" stroke="#4A5261" stroke-width="2"/>
-          <text x="172" y="182" fill="#2456A6" font-weight="600">0.422</text><text x="261" y="182" fill="#4A5261">0.494</text>
+          <line x1="196" y1="195" x2="277" y2="195" stroke="#1E9E42" stroke-width="2.5"/>
+          <circle cx="196" cy="195" r="7" fill="#1E9E42"/><circle cx="277" cy="195" r="7" fill="#FFFFFF" stroke="#4A5261" stroke-width="2"/>
+          <text x="172" y="182" fill="#1E9E42" font-weight="600">0.422</text><text x="261" y="182" fill="#4A5261">0.494</text>
           <text x="0" y="270" fill="#4A5261">h=12</text>
-          <line x1="298" y1="265" x2="414" y2="265" stroke="#2456A6" stroke-width="2.5"/>
-          <circle cx="298" cy="265" r="7" fill="#2456A6"/><circle cx="414" cy="265" r="7" fill="#FFFFFF" stroke="#4A5261" stroke-width="2"/>
-          <text x="274" y="252" fill="#2456A6" font-weight="600">0.513</text><text x="398" y="252" fill="#4A5261">0.617</text>
+          <line x1="298" y1="265" x2="414" y2="265" stroke="#1E9E42" stroke-width="2.5"/>
+          <circle cx="298" cy="265" r="7" fill="#1E9E42"/><circle cx="414" cy="265" r="7" fill="#FFFFFF" stroke="#4A5261" stroke-width="2"/>
+          <text x="274" y="252" fill="#1E9E42" font-weight="600">0.513</text><text x="398" y="252" fill="#4A5261">0.617</text>
         </g>
         <g font-family="IBM Plex Mono" font-size="12.5">
-          <circle cx="60" cy="292" r="6" fill="#2456A6"/><text x="72" y="296" fill="#4A5261">наш чемпион</text>
+          <circle cx="60" cy="292" r="6" fill="#1E9E42"/><text x="72" y="296" fill="#4A5261">наш чемпион</text>
           <circle cx="220" cy="292" r="6" fill="#FFFFFF" stroke="#4A5261" stroke-width="2"/><text x="232" y="296" fill="#4A5261">Prophet-B*</text>
         </g>
       </svg>
