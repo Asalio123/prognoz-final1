@@ -79,5 +79,11 @@ test:        ## тесты целостности (утечки, matched cells, 
 reproduce: data panel news-corpus stats prophet prophet-bfix seasadj lgbm ensemble chronos timesfm cpd downstream news news-cpd radar tables test figures
 	@echo "reproduce done"
 
+# Аудит-расширения rc1 (не входят в reproduce): форвард-2025 — scripts/28_forecast_2025.py;
+# Mondrian-интервалы — rc1_o5_mondrian.py; энсембли-holdout — rc1_o1_*.py; селектор — rc1_o2_*;
+# TSFM-энсембль/квантили — rc1_o3_*; голосование/MDE — rc1_o4_*; пространство — 14;
+# matched-rate/NAB/ClaSP/тайминги — 26*; лестница цены — 27; linlin — rc1_o8_*;
+# форвард-таблицы — rc1_o7_*; внешняя валидация — 24. Запуск поверх готового outputs/.
+
 smoke: data panel test  ## быстрый контур без прогонов (тесты умеют skip без outputs)
 	@echo "smoke done"
