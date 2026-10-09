@@ -83,7 +83,7 @@ repo-forecast/
 ├── scripts/            # шаги пайплайна (нумерованы в порядке выполнения; rc1_* — аудит-раунд 07.10)
 ├── tests/              # тесты целостности: утечки, matched cells, схемы, новостный гейт
 ├── reports/            # methodology.md (главный отчёт), presentation.pdf, number_index.md, figures/
-├── outputs/            # результаты прогонов (не версионируются, воспроизводятся make reproduce)
+├── outputs/            # результаты прогонов (не версионируются; ядро — make reproduce, аудит-слой — scripts/rc1_* и 14, 19–28)
 └── data/               # НЕ в репозитории: raw/ (make data), panel/, external/
 ```
 
