@@ -83,6 +83,8 @@ h1 .hl { color: var(--neon); }
 .grid { display: grid; gap: 22px; }
 .mono { font-family: var(--font-mono); }
 .muted { color: var(--muted); }
+.gloss { font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+.gloss b { color: var(--ink); font-weight: 400; }
 
 ul.tick { list-style: none; }
 ul.tick li { padding-left: 20px; position: relative; margin-bottom: 9px; font-size: 15.5px; line-height: 1.5; }
@@ -120,13 +122,14 @@ body.notes #notes { display: block; }
 
 <!-- 01 · ТИТУЛ (dark hero) -->
 <section class="slide" style="justify-content: center;" data-notes="Главный результат: на сводной категории обходим честный Prophet на всех горизонтах. Форвард проверен против официального ряда лаборатории.">
-  <div class="ruler"><span class="num">01/13</span><span class="sec">СберИндекс · 2026</span></div>
+  <div class="ruler"><span class="num">01/14</span><span class="sec">СберИндекс · 2026</span></div>
   <p class="kicker">станция 2 016 МО · журнал регистрации · конкурс СберИндекса 2026 · трек <b>«Прогнозирование»</b></p>
   <h1 style="font-size: 64px; max-width: 1330px;">Сдвиг в тратах муниципалитета нельзя предсказать заранее. <span style="color: var(--neon);">Но его можно поймать за месяц</span></h1>
   <p style="margin-top: 30px; font-size: 23px; max-width: 1150px; line-height: 1.45;">Мы измерили эту границу на 2 016 муниципалитетах России — и поставили на ней рабочую точку: детектор с бюджетом ложных тревог, прогноз с калиброванными интервалами, форвард-2025, сверенный с официальным рядом Лаборатории.</p>
   <div style="margin-top: 26px; padding: 14px 0; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); max-width: 1330px;">
     <span class="mono" style="font-size: 17.5px; color: var(--sber); font-weight: 600;">RelMAE 0.324 против 0.460 у Prophet-B*</span>
     <span style="font-size: 16.5px; color: var(--muted);"> — сводная категория, все четыре горизонта · Wilcoxon p = 1.4e-241 · форвард-2025: MAE 1.48 п.п. против официального ряда</span>
+    <div class="gloss" style="margin-top: 6px;">RelMAE = ошибка модели в долях от наивного прогноза «как год назад»: 0.324 = втрое точнее наивного · p — значимость парного теста по 2 016 рядам · п.п. — процентные пункты годового роста</div>
   </div>
   <svg viewBox="0 0 1330 150" style="width: 100%; margin-top: 44px;" preserveAspectRatio="none">
     <polyline fill="none" stroke="#14181D" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"
@@ -136,12 +139,32 @@ body.notes #notes { display: block; }
     <text x="0" y="112" font-family="PT Mono" font-size="12" fill="#4A5261">ЛЕНТА РЕГИСТРАТОРА: МЕДИАННЫЕ РАСХОДЫ ПО МО, «ВСЕ КАТЕГОРИИ», 24 МЕС · декабрьские пики ×1.19…×1.46 · тренд +15.1%/год</text>
   </svg>
   <p style="margin-top: 26px; font-size: 17px; max-width: 1150px; color: var(--muted);">панель 2 016 МО × 24 мес × 6 категорий · 20 моделей · 6 методов детекции · 27 806 новостных заголовков · правила и гейты заморожены до первого прогона</p>
-  <p class="source"><span>панель 2 016 МО × 24 мес × 6 категорий · руб/жителя · Лаборатория СберИндекс, CC BY-SA 4.0</span><span class="crit">make reproduce · конфиги заморожены до прогонов (e3aa46e, 04.10)</span></p>
+  <p class="source"><span>панель 2 016 МО × 24 мес × 6 категорий · руб/жителя · Лаборатория СберИндекс, CC BY-SA 4.0</span><span class="crit">make reproduce · конфиги заморожены до прогонов (e3aa46e, 04.10)</span></p></section>
+
+<!-- 02 · МАРШРУТ ИССЛЕДОВАНИЯ (процесс как актив: гипотеза → проверка → итог) -->
+<section class="slide" data-notes="Процесс — актив: семь гипотез, каждая проверена измерением; три себя не подтвердили — это тоже результат. Отказы себе названы.">
+  <div class="ruler"><span class="num">02/14</span><span class="sec">маршрут</span></div>
+  <p class="kicker">маршрут исследования · <b>процесс</b> · гипотеза → проверка → итог</p>
+  <h1 class="slide-title">Семь гипотез — каждая проверена измерением; <span class="hl">три себя не подтвердили</span>, и это часть результата</h1>
+  <table class="t" style="margin-top: 20px; font-size: 14.5px;">
+    <thead><tr><th style="width: 27%;">Гипотеза</th><th style="width: 31%;">Как проверяли</th><th>Что вышло</th></tr></thead>
+    <tbody>
+      <tr><td>Годовой дрейф +15% ломает сезонный наивный прогноз</td><td>поправка на общий дрейф панели; сетка валидации заморожена до прогонов</td><td><span class="tag ok">да</span> чемпион сводной категории — точнее Prophet-B* на всех 4 горизонтах <span class="muted">(слайд 5)</span></td></tr>
+      <tr><td>Prophet силён — если его настроить честно</td><td>три конфигурации; в исходном коде найдена ловушка: на спане &lt; 730 дней yearly-сезонность молча выключена</td><td><span class="tag ok">да</span> B* — сильнейшая версия; победу засчитываем только против неё</td></tr>
+      <tr><td>Foundation-модели выиграют на коротких рядах</td><td>Chronos-2 и TimesFM 2.5 без обучения на наших данных + ковариаты</td><td><span class="tag no">не совсем</span> по ошибке — проигрыш везде; работают ковариаты и интервалы <span class="muted">(слайд 7)</span></td></tr>
+      <tr><td>Новости улучшат прогноз</td><td>27 806 заголовков; слои подключаем по одному и меряем ошибку</td><td><span class="tag no">нет</span> вред монотонный (+11 → +21%) — слой исключён по замороженному гейту <span class="muted">(слайд 11)</span></td></tr>
+      <tr><td>Шок можно предсказать заранее</td><td>три механизма: соседи по дорогам, панельный радар, переобучение от брейка</td><td><span class="tag no">нет</span> все три отвергнуты измерением; работает детекция за 0–1 мес <span class="muted">(слайд 10)</span></td></tr>
+      <tr><td>Энсембль на 22% лучше чемпиона <span class="muted">(нашёлся задним числом)</span></td><td>проверка на отложенных месяцах; состав — только по ранним</td><td><span class="tag no">ловушка</span> вне выборки — +46.5% вреда: цифру не взяли <span class="muted">(слайд 6)</span></td></tr>
+      <tr><td>Прогноз переживёт выход за пределы train</td><td>форвард-2025 против официального ряда Лаборатории</td><td><span class="tag ok">да</span> MAE 1.48 п.п., факт в полосе 6/6 месяцев; провал Общепита показан <span class="muted">(слайд 13)</span></td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top: 18px; font-size: 14px; color: var(--muted);"><b style="color: var(--ink);">Сознательные отказы:</b> победа над дефолтным Prophet (ловушку документируем, не используем) · sMAPE (асимметрична — исключена с обоснованием) · TimesFM 3.0 / Moirai-2 / TimeGPT (запрещены лицензиями) · энсембль «−22%» (post-hoc).</p>
+  <p class="source"><span>configs/validation.yaml · champion.yaml · decision.json — заморожены коммитом e3aa46e до первого прогона (04.10)</span><span class="crit">процесс · К1</span></p>
 </section>
 
 <!-- 02 · ДАННЫЕ (stats + sparkline) -->
 <section class="slide" data-notes="Данные лаборатории. Номинал не реал: +15.1% при ИПЦ 9.5% даёт реальные 5-6%, что совпадает с реальным рядом самой лаборатории — это внешняя валидация панели.">
-  <div class="ruler"><span class="num">02/13</span><span class="sec">данные</span></div>
+  <div class="ruler"><span class="num">03/14</span><span class="sec">данные</span></div>
   <p class="kicker">данные и задача · <b>К1</b></p>
   <h1 class="slide-title">Панель растёт +15.1% при ИПЦ 9.5% — реально +5–6%; агрегат трекает официальный ряд, <span class="hl">r = 0.955</span></h1>
   <div style="margin-top: 30px; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--hairline); padding: 18px 0 16px; display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 26px;">
@@ -169,9 +192,10 @@ body.notes #notes { display: block; }
 
 <!-- 03 · АРХИТЕКТУРА (full-bleed SVG) -->
 <section class="slide" data-notes="Одна диаграмма: предрегистрация до прогонов, три стенда, форвард. Тёмная шина внизу — воспроизводимость.">
-  <div class="ruler"><span class="num">03/13</span><span class="sec">архитектура</span></div>
+  <div class="ruler"><span class="num">04/14</span><span class="sec">архитектура</span></div>
   <p class="kicker">архитектура решения · <b>К1</b></p>
   <h1 class="slide-title">Правила валидации и гейты заморожены до первого прогона — <span class="hl">дальше только измерения</span>; методология полностью воспроизводима</h1>
+  <p class="gloss" style="margin-top: 10px;">origin — месяц отсечения: обучение строго на прошлом, тест — в будущем; expanding — окно обучения растёт · matched cells — все модели сравнены на одном пересечении ячеек</p>
   <svg viewBox="0 0 1330 505" style="width: 100%; margin-top: 26px;" font-family="IBM Plex Mono">
     <defs>
       <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
@@ -238,7 +262,7 @@ body.notes #notes { display: block; }
 
 <!-- 04 · МОДЕЛИ (split: таблица + dumbbell) -->
 <section class="slide" data-notes="Два прочтения К2: на сводной категории бьём B* на всех горизонтах; на полном пуле подтверждаем силу B* измерением. Оба теста с именами.">
-  <div class="ruler"><span class="num">04/13</span><span class="sec">модели</span></div>
+  <div class="ruler"><span class="num">05/14</span><span class="sec">модели</span></div>
   <p class="kicker">сравнение моделей · <b>К2</b></p>
   <h1 class="slide-title">Сводная категория: чемпионы точнее Prophet-B* на всех горизонтах — <span class="hl">минус 8–34% ошибки</span></h1>
   <div style="display: grid; grid-template-columns: 1.25fr 1fr; gap: 36px; margin-top: 26px; align-items: start;">
@@ -252,7 +276,7 @@ body.notes #notes { display: block; }
           <tr><td class="mono">h = 12</td><td>SeasProfileHA</td><td class="win r">0.513</td><td class="r">0.617</td><td class="win r">−22%</td><td class="r muted">1</td></tr>
         </tbody>
       </table>
-      <p style="margin-top: 12px; font-size: 14px;" class="muted">Парный Wilcoxon по 2 016 рядам: p от 1.4e-241 до 4.9e-14 (Holm). DM по 7–12 origin'ам незначим — его мощность на сетке мизерная; оба теста в отчёте с именами.</p>
+      <p style="margin-top: 12px; font-size: 14px;" class="muted">RelMAE — ошибка модели в долях от сезонного наивного («прогноз = как год назад») на тех же ячейках: 0.324 = втрое точнее наивного. Парный Wilcoxon по 2 016 рядам: p от 1.4e-241 до 4.9e-14 (Holm). DM по 7–12 origin'ам незначим — его мощность на сетке мизерная; оба теста в отчёте с именами.</p>
       <div class="card ok" style="margin-top: 14px;">
         <p style="font-size: 15px;"><b>Второе прочтение критерия.</b> На полном пуле 6 категорий сильнейшая — Prophet-B* (0.457/0.412/0.521/0.626): подтверждаем измерением. Честная B* решает: дефолтный Prophet на спане &lt; 730 дней молча выключает yearly-сезонность (forecaster.py:1187) — ловушку документируем, не используем.</p>
       </div>
@@ -295,7 +319,7 @@ body.notes #notes { display: block; }
 
 <!-- 05 · ЛОВУШКА ЭНСЕМБЛЯ (dark hero) -->
 <section class="slide" style="justify-content: center;" data-notes="Гейт предрегистрации спасает от post-hoc: на полной сетке энсембль выглядит на 22% лучше, на отложенных origins разворачивается в +46.5% вреда. Мы её не взяли.">
-  <div class="ruler"><span class="num">05/13</span><span class="sec">дисциплина</span></div>
+  <div class="ruler"><span class="num">06/14</span><span class="sec">дисциплина</span></div>
   <p class="kicker">предрегистрация на практике · <b>К1 · К2</b></p>
   <h1 class="slide-title" style="max-width: 1350px;">У нас была цифра на 22% лучше чемпиона. <span class="hl">Мы её не взяли</span></h1>
   <div style="display: flex; gap: 70px; margin-top: 52px; align-items: flex-end;">
@@ -309,13 +333,13 @@ body.notes #notes { display: block; }
       <div class="stat-cap" style="max-width: 460px;">та же конструкция на отложенных origins (состав — только по ранним): рейтинги моделей режимно неоднородны, «выигрыш» — подгонка под часть выборки</div>
     </div>
   </div>
-  <p style="margin-top: 48px; font-size: 19px; max-width: 1250px; color: var(--ink);">Гейт включения энсембля заморожен в decision.json до прогонов: ΔMAE ≤ −1% против лучшей одиночной на co-primary горизонтах. Ни одна из 8 проверенных конструкций его не прошла. MCS-90 на h=1: чемпион статистически неотличим от 7 ближайших соперников из 26 — поэтому выбор опирается на замороженное правило, а не точечную разность.</p>
+  <p style="margin-top: 48px; font-size: 19px; max-width: 1250px; color: var(--ink);">Гейт включения энсембля заморожен в decision.json до прогонов: ΔMAE ≤ −1% против лучшей одиночной на co-primary горизонтах. Ни одна из 8 проверенных конструкций его не прошла. MCS-90 (семейство моделей, статистически неотличимых от лучшей) на h=1: чемпион статистически неотличим от 7 ближайших соперников из 26 — поэтому выбор опирается на замороженное правило, а не точечную разность.</p>
   <p class="source"><span>outputs/rc1_o1_*.csv · block bootstrap по 73 регионам, 1000 реплик · scripts/rc1_o1_*.py</span><span class="crit">К1 · К2 · гейт: configs/decision.json</span></p>
 </section>
 
 <!-- 06 · FOUNDATION -->
 <section class="slide" data-notes="К4 — тай-брейк. Двусторонне: ковариаты и квантили работают, по MAE проигрыш везде, холодный старт не подтвердился, в энсембле помогает только на h=1 pooled.">
-  <div class="ruler"><span class="num">06/13</span><span class="sec">foundation</span></div>
+  <div class="ruler"><span class="num">07/14</span><span class="sec">foundation</span></div>
   <p class="kicker">foundation-модели · <b>К4 · тай-брейк</b></p>
   <h1 class="slide-title">Chronos-2 и TimesFM 2.5 на 24 точках: <span class="hl">карта «где да, где нет»</span> — измерено в обе стороны</h1>
   <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top: 26px;">
@@ -323,7 +347,7 @@ body.notes #notes { display: block; }
       <h3><span class="tag ok">да</span>&nbsp; Что работает</h3>
       <ul class="tick">
         <li><b>Ковариаты</b> (региональный LOO-прирост + ставка ЦБ, строго past-only): ΔRelMAE −0.04/−0.08/−0.08 на h=1/3/6, win rate 60–64%</li>
-        <li><b>Квантили из коробки</b> валидны на h≥2: покрытие 94% при номинале 80%</li>
+        <li><b>Квантили из коробки</b> валидны на h≥2: покрытие 94% при номинале 80% (обещали 4 из 5 случаев — получили 94 из 100)</li>
         <li><b>В энсембле</b>: 50/50 с DriftAdj → −24.5% pooled MAE на h=1 (p&lt;1e-25)</li>
         <li><b>Скорость</b>: вся панель Chronos-2 — ~16 мин на MPS</li>
       </ul>
@@ -331,7 +355,7 @@ body.notes #notes { display: block; }
     <div class="card no">
       <h3><span class="tag no">нет</span>&nbsp; Что не подтвердилось</h3>
       <ul class="tick copper">
-        <li><b>По MAE проигрыш везде</b>: zero-shot Chronos-2 (0.515) — 12-я из 20 на h=1; с ковариатами (0.472) — 6-я; Prophet-B* 0.457</li>
+        <li><b>По MAE проигрыш везде</b>: zero-shot (модель вообще не обучали на наших данных) Chronos-2 (0.515) — 12-я из 20 на h=1; с ковариатами (0.472) — 6-я; Prophet-B* 0.457</li>
         <li><b>Холодный старт</b> (9 новых МО): паритет с Naive, RelMAE 1.03</li>
         <li><b>Квантили узки на h=1</b> (60%); h=12 ковариаты не спасают; тот же бленд на h≥6 и «Все категории» <b>вредит</b> (+8…51%)</li>
       </ul>
@@ -350,7 +374,7 @@ body.notes #notes { display: block; }
 
 <!-- 07 · МЕТРИКИ (list + coverage bars) -->
 <section class="slide" data-notes="MAE контрактная, показана в рублях. Каждая метрика с интерпретацией. Интервалы: Mondrian починил малые МО без роста ширины.">
-  <div class="ruler"><span class="num">07/13</span><span class="sec">метрики</span></div>
+  <div class="ruler"><span class="num">08/14</span><span class="sec">метрики</span></div>
   <p class="kicker">метрики качества — полный анализ с интерпретацией всех метрик · <b>К6</b></p>
   <h1 class="slide-title">MAE — контракт: чемпион h=1 даёт <span class="hl">1 322 ₽</span> на «Все категории»; интервалы валидны: 0.875–0.937 при номинале 0.80</h1>
   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; margin-top: 26px; align-items: start;">
@@ -384,7 +408,7 @@ body.notes #notes { display: block; }
           <text x="280" y="223" fill="#4A5261">0.734 → 0.833 после Mondrian</text>
         </g>
       </svg>
-      <p style="font-size: 14.5px; color: var(--muted); margin-top: 8px;">Mondrian-калибровка «категория × квинтиль масштаба» починила недопокрытие малых МО без роста ширины (−3.1%). Декабрь-2024: 0.831. Граница: h=12 декабрь не чинится (0.683 — дисперсия сезонного профиля, не масштаб).</p>
+      <p style="font-size: 14.5px; color: var(--muted); margin-top: 8px;">Полосы посчитаны из прошлых ошибок самой модели (split-conformal), без предположений о форме шума. Mondrian-калибровка «категория × квинтиль масштаба» починила недопокрытие малых МО без роста ширины (−3.1%). Декабрь-2024: 0.831. Граница: h=12 декабрь не чинится (0.683 — дисперсия сезонного профиля, не масштаб).</p>
     </div>
   </div>
   <div style="margin-top: 26px; border-top: 1px solid var(--hairline); padding-top: 14px; font-size: 15px;">
@@ -396,13 +420,13 @@ body.notes #notes { display: block; }
 
 <!-- 08 · ДЕТЕКЦИЯ (bars + 2-panel showcase) -->
 <section class="slide" data-notes="Бюджет ложных тревог задан до измерения recall. BOCPD лидирует на matched-rate; голосование хуже одиночки 10/10. Refit не помогает — детектор это мониторинг.">
-  <div class="ruler"><span class="num">08/13</span><span class="sec">детекция</span></div>
+  <div class="ruler"><span class="num">09/14</span><span class="sec">детекция</span></div>
   <p class="kicker">детекция структурных изменений · <b>К3</b></p>
   <h1 class="slide-title">Бюджет ложных тревог задан до измерения: при 2/1000 лучший детектор ловит <span class="hl">5.6% сдвигов</span> — аргументированный выбор BOCPD</h1>
   <div style="display: grid; grid-template-columns: 0.9fr 1.3fr; gap: 32px; margin-top: 24px; align-items: start;">
     <div>
       <svg viewBox="0 0 500 235" style="width: 100%;">
-        <text x="0" y="16" font-family="IBM Plex Mono" font-size="13" fill="#4A5261">MATCHED-RATE F1 · инъекции level-сдвигов 3σ · равный бюджет всем</text>
+        <text x="0" y="16" font-family="IBM Plex Mono" font-size="13" fill="#4A5261">MATCHED-RATE F1 · равный бюджет срабатываний всем</text>
         <!-- bars: BOCPD 0.668, Window 0.637, PELT/BinSeg 0.401, EWMA 0.381, CUSUM 0.277 ; x = 90 + v/0.75*374 -->
         <g font-family="IBM Plex Mono" font-size="13.5">
           <text x="0" y="52" fill="#1D2530" font-weight="600">BOCPD</text>
@@ -417,11 +441,13 @@ body.notes #notes { display: block; }
           <rect x="90" y="172" width="138" height="22" rx="4" fill="#C9CDD4"/><text x="236" y="189" fill="#4A5261">0.28</text>
         </g>
         <text x="0" y="222" font-family="IBM Plex Mono" font-size="12.5" fill="#4A5261">голосование «≥2 из 3» хуже BOCPD-одиночки в 10/10 ячеек</text>
+      
       </svg>
+      <p class="gloss" style="margin-top: 6px;">BOCPD — байесовский онлайн-детектор: вероятность сдвига после каждой точки</p>
       <ul class="tick" style="margin-top: 10px;">
-        <li>Калибровка порогов и измерение — на разных рядах (11 304 / 378 парных инъекций); recall 5.6% [CI 3.7–8.3] — измеренная цена бюджета; на средней зоне (FAR ~15/1000) recall 47%</li>
-        <li>Рабочая точка — из рамки «цена ложной тревоги против цены пропуска» (L_FP : L_FN): при 24 192 МО-мес в год бюджет 2/1000 ≈ 48 ложных тревог в год — порог диктуется бюджетом до измерения recall, не наоборот</li>
-        <li>Январская ловушка: наивная нормировка метит январь как «шок» у двух третей панели — наша предобработка (ridge+Huber) снимает её до 0.0% у PELT/BinSeg</li>
+        <li>Калибровка порогов и измерение — на разных рядах (11 304 / 378 парных инъекций: в реальные ряды внесены известные сдвиги — смотрим, кто их ловит); recall 5.6% [CI 3.7–8.3] — измеренная цена бюджета; на средней зоне (FAR ~15/1000) recall 47%</li>
+        <li>Рабочая точка — из рамки «цена ложной тревоги против цены пропуска» (L_FP : L_FN): при 24 192 МО-мес в год бюджет 2/1000 ≈ 48 ложных (≈ час разбора каждая) против ≈15 пойманных ≈ 3:1 — порог диктуется бюджетом до измерения recall</li>
+        <li>Январская ловушка: наивная нормировка метит январь как «шок» у двух третей панели — наша предобработка снимает её до 0.0% у PELT/BinSeg</li>
       </ul>
     </div>
     <div>
@@ -435,24 +461,24 @@ body.notes #notes { display: block; }
 
 <!-- 09 · ЧЕСТНЫЙ НОЛЬ (dark триптих без карточек) -->
 <section class="slide" data-notes="Главный отрицательный результат: три механизма измерены и отвергнуты с посчитанной мощностью. Закрыто целое направление мёртвой работы.">
-  <div class="ruler"><span class="num">09/13</span><span class="sec">честные границы</span></div>
+  <div class="ruler"><span class="num">10/14</span><span class="sec">честные границы</span></div>
   <p class="kicker">раннее выявление шоков · <b>К3 · К7</b></p>
   <h1 class="slide-title" style="font-size: 48px;">Забегающего предупреждения на месячной панели <span class="hl">не существует</span> — три механизма измерены и отвергнуты</h1>
   <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; margin-top: 44px;">
     <div style="padding: 0 36px 0 0; border-right: 1px solid var(--hairline);">
       <p class="mono" style="font-size: 13px; color: var(--muted); letter-spacing: .1em;">МЕХАНИЗМ 1 · ПРОСТРАНСТВО</p>
       <div class="hero-num" style="font-size: 96px; margin-top: 18px;">1.08</div>
-      <p style="font-size: 15.5px; margin-top: 10px; color: var(--ink);">лифт у соседей ≤ 80 км (p = 0.77; 42 404 пары). Лифт ≥ ×2.46 мы бы увидели с вероятностью 80% — сильного распространения нет</p>
+      <p style="font-size: 15.5px; margin-top: 10px; color: var(--ink);">лифт у соседей ≤ 80 км = 1.08 — сдвиги рядом лишь на 8% чаще случайного (p = 0.77; 42 404 пары). Лифт ≥ ×2.46 мы бы увидели с вероятностью 80% — сильного распространения нет</p>
     </div>
     <div style="padding: 0 36px; border-right: 1px solid var(--hairline);">
       <p class="mono" style="font-size: 13px; color: var(--muted); letter-spacing: .1em;">МЕХАНИЗМ 2 · ПАНЕЛЬНЫЙ РАДАР</p>
       <div class="hero-num" style="font-size: 96px; margin-top: 18px;">0.049</div>
-      <p style="font-size: 15.5px; margin-top: 10px; color: var(--ink);">PR-AUC против базы 0.048; топ-30 хуже случайного жребия (7/300 против ~14.5); фолд-артефакт границы годов показан отдельно</p>
+      <p style="font-size: 15.5px; margin-top: 10px; color: var(--ink);">PR-AUC 0.049 ≈ доле самих событий 0.048 — радар не точнее жребия; топ-30 хуже случайного (7/300 против ~14.5); фолд-артефакт границы годов показан отдельно</p>
     </div>
     <div style="padding-left: 36px;">
       <p class="mono" style="font-size: 13px; color: var(--muted); letter-spacing: .1em;">МЕХАНИЗМ 3 · REFIT ОТ БРЕЙКА</p>
       <div class="hero-num" style="font-size: 96px; margin-top: 18px;">+1.1%</div>
-      <p style="font-size: 15.5px; margin-top: 10px; color: var(--ink);">ΔMAE — хуже, не лучше; по доле побед 48.0%: нуль подтверждён с мощностью 80% (±14 п.п.)</p>
+      <p style="font-size: 15.5px; margin-top: 10px; color: var(--ink);">переобучение прогноза от брейка (refit): ΔMAE +1.1% — хуже, не лучше; по доле побед 48.0%: нуль подтверждён с мощностью 80% (±14 п.п.)</p>
     </div>
   </div>
   <div style="margin-top: 44px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
@@ -467,7 +493,7 @@ body.notes #notes { display: block; }
 
 <!-- 10 · НОВОСТИ -->
 <section class="slide" data-notes="К5: механизм и в прогноз, и в детекцию. Прогнозный слой монотонно вредит и исключён по замороженному гейту; словарь κ=0.926; burst×CPD — структура без значимости (p=0.84 честно).">
-  <div class="ruler"><span class="num">10/13</span><span class="sec">новости</span></div>
+  <div class="ruler"><span class="num">11/14</span><span class="sec">новости</span></div>
   <p class="kicker">новостные данные · <b>К5</b></p>
   <h1 class="slide-title">27 806 заголовков: в прогнозе слой монотонно вредит — <span class="hl">исключён по замороженному гейту</span></h1>
   <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-top: 26px; align-items: stretch;">
@@ -475,14 +501,14 @@ body.notes #notes { display: block; }
       <h3>Механизм</h3>
       <ul class="tick">
         <li>6 тематических индексов: цены, курс, ставка, санкции, настроения, ЧС — каждый с экономическим каналом</li>
-        <li>Типизированный словарь с мультилейблом — читается глазами, без эмбеддингов; macro-κ = <b>0.926</b> (ручная валидация, n=50)</li>
+        <li>Типизированный словарь с мультилейблом — читается глазами, без эмбеддингов; κ = согласие словаря с независимой ручной разметкой: <b>0.926</b> из 1.0 (n=50)</li>
         <li>Анти-утечка: новость доступна ≤ последнего дня месяца origin−1, тест-гейт; версии таксономии в git</li>
       </ul>
     </div>
     <div class="card no">
       <h3>Прогноз: исход «вредит»</h3>
       <ul class="tick copper">
-        <li>Абляция N0→N3: <span class="mono">+10.8 / +15.9 / +20.7%</span> ΔMAE (h=1) — монотонно хуже</li>
+        <li>Слои новостей по одному (абляция N0→N3): <span class="mono">+10.8 / +15.9 / +20.7%</span> ΔMAE (h=1) — монотонно хуже</li>
         <li>Гейт decision.json не пройден → слой не в финале; критерий оценивает способ, не знак</li>
         <li>Черновая v1-таксономия давала −6.1% — после чистки «польза» исчезла: артефакт гео-мусора, задокументировано</li>
       </ul>
@@ -505,7 +531,7 @@ body.notes #notes { display: block; }
 
 <!-- 11 · ИНТЕРПРЕТАЦИЯ (3 находки + sparkline) -->
 <section class="slide" data-notes="Поимённые находки по триаде. Богородский +402% удержан до конца панели. Четыре сезонных календаря. Номинал-реал калибровка.">
-  <div class="ruler"><span class="num">11/13</span><span class="sec">интерпретация</span></div>
+  <div class="ruler"><span class="num">12/14</span><span class="sec">интерпретация</span></div>
   <p class="kicker">интерпретация на реальных примерах · <b>К7</b></p>
   <h1 class="slide-title">Три находки с именами — <span class="hl">каждая проверена независимым механизмом</span></h1>
   <div class="grid" style="grid-template-columns: 1.15fr 1fr 1fr; margin-top: 26px; align-items: stretch;">
@@ -543,13 +569,13 @@ body.notes #notes { display: block; }
 
 <!-- 12 · ФОРВАРД (hero + fan SVG) -->
 <section class="slide" data-notes="Продуктовый артефакт: форвард выдержал сверку с официальным рядом; Prophet-B* в том же форварде хуже вдвое. Общепит — провал, показан.">
-  <div class="ruler"><span class="num">12/13</span><span class="sec">форвард 2025</span></div>
+  <div class="ruler"><span class="num">13/14</span><span class="sec">форвард 2025</span></div>
   <p class="kicker">форвард 2025-H1 — проверка за пределами train · <b>К1 · К2</b></p>
   <h1 class="slide-title">Прогноз на 2025-H1 против официального ряда: <span class="hl">MAE 1.48 п.п.</span>, у Prophet-B* — 2.83</h1>
   <div style="display: grid; grid-template-columns: 380px 1fr; gap: 40px; margin-top: 28px; align-items: start;">
     <div>
       <div class="hero-num" style="font-size: 108px; color: var(--green);">1.48<span style="font-size: 34px;"> п.п.</span></div>
-      <div class="stat-cap" style="font-size: 16px;">MAE чемпиона (DriftAdjSNaive) против официального ряда Лаборатории, агрегат «Все категории» · 6/6 месяцев факта внутри 80%-полосы · Продовольствие 1.36 п.п.</div>
+      <div class="stat-cap" style="font-size: 16px;">MAE чемпиона (DriftAdjSNaive) против официального ряда Лаборатории, агрегат «Все категории» · 6/6 месяцев факта внутри 80%-полосы (обещание — 4 из 5) · Продовольствие 1.36 п.п. · п.п. = процентные пункты г/г-роста</div>
       <div style="margin-top: 20px; font-size: 15px; color: var(--muted);">Контроль: Prophet-B* на тех же 24 мес — <span class="mono">2.83 п.п.</span> (Продовольствие 4.25). Преимущество воспроизводится за пределами train, не артефакт бэктест-сетки.</div>
     </div>
     <div>
@@ -585,14 +611,14 @@ body.notes #notes { display: block; }
 
 <!-- 13 · ФИНАЛ: ГРАНИЦЫ + ВОСПРОИЗВОДИМОСТЬ (dark hero) -->
 <section class="slide" style="justify-content: center;" data-notes="Границы названы первыми; каждая связана с тем, что её снимает. Всё восстанавливается одной командой.">
-  <div class="ruler"><span class="num">13/13</span><span class="sec">границы · воспроизводимость</span></div>
+  <div class="ruler"><span class="num">14/14</span><span class="sec">границы · воспроизводимость</span></div>
   <p class="kicker">ограничения · воспроизводимость · <b>К1</b></p>
   <h1 class="slide-title">24 месяца — один годовой цикл, и цену этого мы назвали первыми. <span class="hl">Всё восстанавливается одной командой</span></h1>
   <div style="display: grid; grid-template-columns: 1.25fr 1fr; gap: 40px; margin-top: 30px; align-items: start;">
     <div class="card">
       <h3>Чего мы не обещаем — и почему</h3>
       <ul class="tick copper">
-        <li><b>Забегающего предупреждения шоков</b> на месячной сетке — его там нет, это измерено тремя механизмами (слайд 9)</li>
+        <li><b>Забегающего предупреждения шоков</b> на месячной сетке — его там нет, это измерено тремя механизмами (слайд 10)</li>
         <li><b>Временной статистики h=12</b>: один origin = один переход 2023→2024; мощность — только кросс-секция из 2 016 парных ошибок</li>
         <li><b>Точности МО-уровня на 2025</b>: валидации не существует — данных нет; форвард проверен только на агрегате</li>
         <li><b>TSFM на месячных панелях</b> и универсальной модели: разные горизонты — разные победители</li>
