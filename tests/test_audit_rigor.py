@@ -257,3 +257,24 @@ def test_forward_2025_pi80_coverage():
     assert len(all_cat) == 6, f"Ожидалось 6 месяцев 2025-H1, найдено {len(all_cat)}"
     assert (all_cat["in_pi80"] == "да").all(), "Не все 6 точек 'Все категории' лежат в 80% PI"
 
+
+def test_deck_test_counter_matches_suite():
+    """Число пройденных тестов на слайдах 4 и 14 обязано в точности совпадать с числом тестов в сьюте."""
+    deck_html = ROOT / "reports" / "presentation.html"
+    content = deck_html.read_text(encoding="utf-8")
+
+    # Считаем количество функций test_* во всех файлах tests/test_*.py
+    import ast
+    test_count = 0
+    for p in (ROOT / "tests").glob("test_*.py"):
+        tree = ast.parse(p.read_text(encoding="utf-8"))
+        funcs = [n.name for n in tree.body if isinstance(n, ast.FunctionDef) and n.name.startswith("test_")]
+        test_count += len(funcs)
+
+    expected_marker = f"tests {test_count}/{test_count}"
+    assert expected_marker in content, (
+        f"В presentation.html ожидался маркер '{expected_marker}', "
+        f"но фактический счетчик не найден. Проверьте слайды 4 и 14."
+    )
+
+
