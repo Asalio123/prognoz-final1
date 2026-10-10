@@ -14,10 +14,10 @@
 
 | Материал | Формат | Описание |
 |---|:---:|---|
-| **[Презентация исследования](reports/presentation.pdf)** | `PDF` | Официальная презентация решения (14 слайдов, архитектура, сравнительный бенчмарк с Prophet-B*, детекция сдвигов и форвард-2025) |
+| **[Презентация исследования](reports/presentation.pdf)** | `PDF` | 14 слайдов: архитектура, бенчмарк моделей, детекция сдвигов и форвард-2025 |
 | **[Методологический отчёт](reports/methodology.md)** | `Markdown` | Полный академический отчёт со всеми разделами регламента (К1–К7) |
 | **[Индекс воспроизводимости](reports/number_index.md)** | `Markdown` | Сквозной реестр: каждое число отчёта $\to$ скрипт и строка в кодовой базе |
-| **[Закоммиченные витрины](outputs/headline/)** | `CSV` | 14 закоммиченных таблиц результатов для мгновенной сверки (`make verify`) |
+| **[Закоммиченные витрины](outputs/headline/)** | `CSV` | 14 закоммиченных витрин для мгновенной сверки ключевых чисел (`make verify`) |
 
 ---
 
@@ -95,15 +95,15 @@ flowchart TD
 
 ## 3. Матрица соответствия критериям конкурса
 
-| Критерий | Вес | Результат | Файл-доказательство |
+| Критерий | Вес | Результат исследования | Подтверждение |
 |---|:---:|---|---|
-| **К1 Методология и воспроизводимость** | 20% | Строгий expanding rolling-origin бэктест; единые matched-ячейки; журнал решений `decision.json`; 22 теста; мгновенная сверка витрин за 0.5 сек. | `Makefile`, `tests/`, `reports/number_index.md`, `configs/MANIFEST.sha256` |
-| **К2 Сравнение моделей** | 20% | 20 моделей в 5 слоях; DriftAdjSNaive превосходит Prophet-B* на «Все категории» (1 322 ₽ vs 1 877 ₽); Prophet-B* лидирует на пуле 6 категорий (597 ₽ vs 635 ₽). | `reports/methodology.md` §2, `outputs/headline/T1_model_x_horizon.csv`, `outputs/headline/T3_significance.csv` |
-| **К3 Точки изменений (CPD)** | 20% | Фронтир F1×FAR; BOCPD лучший (F1=0.67 при FAR≤2‰); отсечение сезонности (0.0% ложных тревог); доказана локальность шоков (лифт 1.08). | `reports/methodology.md` §3–4, `outputs/headline/cpd_frontier_v2.csv`, `scripts/13_downstream_dmae.py` |
-| **К4 Foundation-модели** | 15% | Двусторонняя оценка Chronos-2 и TimesFM 2.5 (Apache-2.0); ковариаты улучшают RelMAE (−0.04…−0.08); по абсолютной MAE уступают статистике из-за короткой истории (24 мес). | `reports/methodology.md` §5, `outputs/headline/cost_timings.csv`, `scripts/25_run_timesfm25.py` |
-| **К5 Новостные данные** | 15% | 27 806 заголовков; словарь κ=0.926; функциональное разделение: шум в прогнозе (+11…+21% к MAE), но точный контекст в детекции; временно́е плацебо p=0.84. | `reports/methodology.md` §6, `outputs/headline/news_ablation_N0N3.csv`, `outputs/news_kappa_v2.md` |
-| **К6 Метрики качества** | 10% | Абсолютная MAE в рублях/чел.; сопоставимый RelMAE vs seasonal naive; конформные интервалы 88–94%; обоснован отказ от sMAPE и MAPE. | `reports/methodology.md` §1, `outputs/headline/intervals_coverage.csv`, `src/metrics.py` |
-| **К7 Интерпретация результатов** | — | Практические инсайты: волна маркетплейсов (Богородский +402%, Дальнереченский +504%), 4 сезонных календаря, реальный рост трат +5–6% против номинала +15.1%. | `reports/methodology.md` §7, `outputs/headline/T2_slice_category.csv`, `reports/figures/` |
+| **К1 Методология** | 20% | Expanding rolling-origin бэктест; matched-ячейки; 22 теста; сверка за 0.5 с | `Makefile`, `tests/` |
+| **К2 Точность моделей** | 20% | DriftAdjSNaive чемпион «Все кат» (1 322 ₽ vs 1 877 ₽ Prophet); pooled 597 ₽ | `outputs/headline/T1_model_x_horizon.csv` |
+| **К3 Детекция сдвигов** | 20% | BOCPD (F1=0.67 при FAR$\le$2‰); 0.0% ложных декабрей; лаг опережения 1–2 мес | `outputs/headline/cpd_frontier_v2.csv` |
+| **К4 Foundation-модели** | 15% | Chronos-2 и TimesFM 2.5; выигрыш на «Здоровье» (RelMAE 0.28 / 93 ₽) | `outputs/headline/cost_timings.csv` |
+| **К5 Новостной контекст** | 15% | 27 806 новостей, $\kappa=0.926$; разделение числового прогноза и детекции | `outputs/headline/news_ablation_N0N3.csv` |
+| **К6 Метрики и риски** | 10% | Conformal покрытие 88–94%; Mondrian для малых МО; Linlin loss: −20…−34% потерь | `outputs/headline/intervals_coverage.csv` |
+| **К7 Форвард 2025-H1** | — | Прогноз +13.3% vs Факт +14.5% (MAE 1.48 п.п., 2.0× точнее 2024); 6/6 мес в полосе | `reports/methodology.md` §7 |
 
 ---
 
