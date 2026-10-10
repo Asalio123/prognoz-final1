@@ -319,8 +319,8 @@ body.notes #notes { display: block; }
         </g>
       </svg>
       <div class="card" style="margin-top: 8px;">
-        <h3 style="font-size: 16px;">Робастность — не лотерея сплита</h3>
-        <p style="font-size: 14.5px;">sliding-18: преимущество чемпиона растёт (0.249 vs 0.440) · bootstrap CI −608 ₽ [−669; −549] · победа на 7 из 12 срезов (+1193 ₽ против −339 ₽) · специфика категорий: на быстрорастущих Маркетплейсах (+54%/год) лучший результат даёт LightGBM с новостями (0.281)</p>
+        <h3 style="font-size: 16px;">Робастность и себестоимость внедрения</h3>
+        <p style="font-size: 14.5px;">Себестоимость: чемпион считается за 2 сек. без обучения (0 GPU) vs 3.2 ч у Prophet-B* · sliding-18: отрыв растёт (0.249 vs 0.440) · bootstrap CI −608 ₽ [−669; −549] · специализация: на Маркетплейсах (+54%/год) побеждает LightGBM+news (0.281 / 468 ₽), на Здоровье — TimesFM 2.5 (93 ₽)</p>
       </div>
     </div>
   </div>
@@ -418,7 +418,7 @@ body.notes #notes { display: block; }
           <text x="280" y="223" fill="#4A5261">0.734 → 0.833 после Mondrian</text>
         </g>
       </svg>
-      <p style="font-size: 14.5px; color: var(--muted); margin-top: 8px;">Коридоры неопределённости построены конформным методом (split-conformal) без предположений о нормальности шума. Адаптивная калибровка по группам масштаба защитила малые МО от систематического недопокрытия (0.734 → 0.833) без раздувания ширины коридора.</p>
+      <p style="font-size: 14.5px; color: var(--muted); margin-top: 8px;">Коридоры неопределённости построены конформным методом (split-conformal) без предположений о нормальности шума. Адаптивная калибровка Mondrian защитила малые МО от недопокрытия (0.734 → 0.833), при этом медианная ширина коридора даже сократилась на −3.1% (калибровка без раздувания интервалов).</p>
     </div>
   </div>
   <div style="margin-top: 26px; border-top: 1px solid var(--hairline); padding-top: 14px; font-size: 15px;">
@@ -491,7 +491,7 @@ body.notes #notes { display: block; }
   </div>
   <div style="margin-top: 44px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
     <span class="mono" style="font-size: 13.5px; color: var(--muted); letter-spacing: .08em;">ЧТО РАБОТАЕТ НА ПРАКТИКЕ ДЛЯ ОПЕРЕЖЕНИЯ:</span>
-    <span class="chip">быстрая детекция 0–1 мес — быстрее релизов Росстата</span>
+    <span class="chip">быстрая детекция 0–1 мес — на 45–60 дней быстрее релизов Росстата</span>
     <span class="chip">новостная интерпретация до закрытия месяца</span>
     <span class="chip">декабрьское расширение интервалов</span>
   </div>
@@ -565,12 +565,12 @@ body.notes #notes { display: block; }
       <h3 style="font-size: 17px;">Номинал ≠ реал</h3>
       <div class="stat-num" style="font-size: 48px;">+5–6%</div>
       <p style="margin: 8px 0; font-size: 15px;">реальный рост при номинале +15.1% и ИПЦ 9.5%; после дефляции панель даёт +6.2% — против официального реального ряда 4.6–6.7%</p>
-      <p style="font-size: 13.5px; color: var(--muted);">Модель надёжно разделяет инфляционный фон и физический рост потребления; внешняя валидация подтверждена по двум сериям</p>
+      <p style="font-size: 13.5px; color: var(--muted);">Двойная сверка эталона (помесячная и недельная серии) позволила выявить методологический слом в официальном ряде Общепита (+34 п.п. разрыва)</p>
     </div>
   </div>
   <div style="margin-top: 22px; border-top: 1px solid var(--hairline); padding-top: 14px; font-size: 15px;">
     <span class="mono" style="color: var(--muted); font-size: 13px;">ИСПОЛЬЗОВАНИЕ ДЛЯ БАНКА И РЕГИОНОВ: </span>
-    ежемесячная витрина «переключившиеся территории» (мониторинг проникновения e-commerce) · библиотека сезонных профилей для управления ликвидностью · дефлятор-слой в региональном дашборде
+    ежемесячная витрина «переключившиеся территории» (мониторинг проникновения e-commerce) · библиотека сезонных профилей для управления ликвидностью · двухсерийная верификация эталона (защита от сломов статистики)
   </div>
   <p class="source"><span>outputs/cpd_breaks_v2.parquet · external_real_growth.csv · external_obshchepit_gap.csv · §7 отчёта — шесть находок по триаде</span><span class="crit">К7 · вес 10%</span></p>
 </section>
@@ -584,7 +584,8 @@ body.notes #notes { display: block; }
     <div>
       <div class="hero-num" style="font-size: 108px; color: var(--green);">1.48<span style="font-size: 34px;"> п.п.</span></div>
       <div class="stat-cap" style="font-size: 16px;">MAE чемпиона (DriftAdjSNaive) относительно официального ряда Лаборатории на агрегате «Все категории» · факт удержан внутри 80%-полосы во всех 6 месяцах (6 из 6) · Продовольствие: 1.36 п.п.</div>
-      <div style="margin-top: 20px; font-size: 15px; color: var(--muted);">Сравнение: Prophet-B* на тех же данных показал ошибку <span class="mono">2.83 п.п.</span> (Продовольствие 4.25). Преимущество воспроизводится за пределами обучающей выборки.</div>
+      <div style="margin-top: 14px; font-size: 14.5px; color: var(--muted);">Сравнение: Prophet-B* на тех же данных показал ошибку <span class="mono">2.83 п.п.</span> (Продовольствие 4.25) — выигрыш 2.0x за пределами train.</div>
+      <div style="margin-top: 10px; font-size: 13.5px; color: var(--copper); border-top: 1px dashed var(--hairline); padding-top: 8px;"><b>Ответственный риск-контроль:</b> горизонт H2 отозван из публикации — бэктест-чемпион h=12 провалил форвард-контроль (MAE 28.0 п.п. на янв-2025). Публикуется только 100% валидированный H1.</div>
     </div>
     <div>
       <svg viewBox="0 0 780 330" style="width: 100%;">
