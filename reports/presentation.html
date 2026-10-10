@@ -163,7 +163,7 @@ body.notes #notes { display: block; }
   <p class="source"><span>configs/validation.yaml · champion.yaml — заморожены коммитом e3aa46e до первого прогона (04.10) · decision.json — журнал решений (с 06.10)</span><span class="crit">процесс · К1</span></p>
 </section>
 
-<!-- 02 · ДАННЫЕ (stats + sparkline) -->
+<!-- 03 · ДАННЫЕ (stats + sparkline) -->
 <section class="slide" data-notes="Данные лаборатории. Номинал не реал: +15.1% при ИПЦ 9.5% даёт реальные 5-6%, что совпадает с реальным рядом самой лаборатории — это внешняя валидация панели.">
   <div class="ruler"><span class="num">03/14</span><span class="sec">данные</span></div>
   <p class="kicker">данные и задача · <b>К1</b></p>
@@ -183,21 +183,21 @@ body.notes #notes { display: block; }
       <!-- agg median series, min 20632 max 32496 -->
       <polyline fill="none" stroke="#2456A6" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"
         points="0,127 58,110 116,90 174,118 232,112 290,109 348,97 406,95 464,115 522,107 580,102 638,61 696,123 754,98 812,77 870,84 928,81 986,74 1044,71 1102,87 1160,77 1218,78 1276,42"/>
-      <circle cx="638" cy="61" r="5" fill="#9A6700"/><text x="646" y="56" font-family="IBM Plex Mono" font-size="13" fill="#4A5261">дек-2023</text>
-      <circle cx="1276" cy="42" r="5" fill="#9A6700"/><text x="1208" y="34" font-family="IBM Plex Mono" font-size="13" fill="#4A5261">дек-2024</text>
+      <circle cx="638" cy="61" r="5" fill="#9A6700"/><text x="646" y="56" font-family="PT Mono" font-size="13" fill="#4A5261">дек-2023</text>
+      <circle cx="1276" cy="42" r="5" fill="#9A6700"/><text x="1208" y="34" font-family="PT Mono" font-size="13" fill="#4A5261">дек-2024</text>
     </svg>
     <p style="font-size: 15px; color: var(--muted); margin-top: 6px;">Все величины — номинальные рубли; ценовой и объёмный сдвиги различаем по контексту ИПЦ, не по знаку ряда. Внешние ряды: ставка и ИПЦ ЦБ РФ, курс USD/RUB, производственный календарь.</p>
   </div>
   <p class="source"><span>data/raw (пакет хакатона СберИндекс) · external_real_growth.csv · сверка границ честно: +15.1% против официальных +16.0% — различие в базе-2023</span><span class="crit">К1</span></p>
 </section>
 
-<!-- 03 · АРХИТЕКТУРА (full-bleed SVG) -->
+<!-- 04 · АРХИТЕКТУРА (full-bleed SVG) -->
 <section class="slide" data-notes="Одна диаграмма: предрегистрация до прогонов, три стенда, форвард. Тёмная шина внизу — воспроизводимость.">
   <div class="ruler"><span class="num">04/14</span><span class="sec">архитектура</span></div>
   <p class="kicker">архитектура решения · <b>К1</b></p>
   <h1 class="slide-title">Правила валидации и гейты заморожены до первого прогона — <span class="hl">дальше только измерения</span>; методология полностью воспроизводима</h1>
   <p class="gloss" style="margin-top: 10px;">origin — месяц отсечения: обучение строго на прошлом, тест — в будущем; expanding — окно обучения растёт · matched cells — все модели сравнены на одном пересечении ячеек · CPD — детекция точек структурных изменений · бэктест — проверка на прошлом · гейт — правило отбора, записанное до прогонов</p>
-  <svg viewBox="0 0 1330 505" style="width: 100%; margin-top: 26px;" font-family="IBM Plex Mono">
+  <svg viewBox="0 0 1330 505" style="width: 100%; margin-top: 26px;" font-family="PT Mono">
     <defs>
       <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
         <path d="M0,0 L10,5 L0,10 z" fill="#4A5261"/>
@@ -261,7 +261,7 @@ body.notes #notes { display: block; }
   <p class="source"><span>configs/validation.yaml · champion.yaml · decision.json · reports/number_index.md (число → команда)</span><span class="crit">К1</span></p>
 </section>
 
-<!-- 04 · МОДЕЛИ (split: таблица + dumbbell) -->
+<!-- 05 · МОДЕЛИ (split: таблица + dumbbell) -->
 <section class="slide" data-notes="Два прочтения К2: на сводной категории бьём B* на всех горизонтах; на полном пуле подтверждаем силу B* измерением. Оба теста с именами.">
   <div class="ruler"><span class="num">05/14</span><span class="sec">модели</span></div>
   <p class="kicker">сравнение моделей · <b>К2</b></p>
@@ -284,9 +284,9 @@ body.notes #notes { display: block; }
     </div>
     <div>
       <svg viewBox="0 0 480 300" style="width: 100%;">
-        <text x="0" y="16" font-family="IBM Plex Mono" font-size="13" fill="#4A5261">НАШ ЧЕМПИОН vs PROPHET-B* — «ВСЕ КАТЕГОРИИ», RELMAE</text>
+        <text x="0" y="16" font-family="PT Mono" font-size="13" fill="#4A5261">НАШ ЧЕМПИОН vs PROPHET-B* — «ВСЕ КАТЕГОРИИ», RELMAE</text>
         <!-- rows: h=1,3,6,12 ; ours [0.324,0.361,0.422,0.513], B* [0.460,0.398,0.494,0.617] ; x: 0.3..0.65 -->
-                  <g font-family="IBM Plex Mono" font-size="13.5">
+                  <g font-family="PT Mono" font-size="13.5">
 <text x="0" y="60" fill="#4A5261">h=1</text>
           <line x1="87" y1="55" x2="239" y2="55" stroke="#1E9E42" stroke-width="2.5"/>
           <circle cx="87" cy="55" r="7" fill="#1E9E42"/><circle cx="239" cy="55" r="7" fill="#FFFFFF" stroke="#4A5261" stroke-width="2"/>
@@ -304,7 +304,7 @@ body.notes #notes { display: block; }
           <circle cx="298" cy="265" r="7" fill="#1E9E42"/><circle cx="414" cy="265" r="7" fill="#FFFFFF" stroke="#4A5261" stroke-width="2"/>
           <text x="274" y="252" fill="#1E9E42" font-weight="600">0.513</text><text x="398" y="252" fill="#4A5261">0.617</text>
         </g>
-        <g font-family="IBM Plex Mono" font-size="12.5">
+        <g font-family="PT Mono" font-size="12.5">
           <circle cx="60" cy="292" r="6" fill="#1E9E42"/><text x="72" y="296" fill="#4A5261">наш чемпион</text>
           <circle cx="220" cy="292" r="6" fill="#FFFFFF" stroke="#4A5261" stroke-width="2"/><text x="232" y="296" fill="#4A5261">Prophet-B*</text>
         </g>
@@ -318,7 +318,7 @@ body.notes #notes { display: block; }
   <p class="source"><span>outputs/T1 · T2_slice_category · T3_significance · robustness_*.csv — matched cells, 140 184 ячейки на h=1</span><span class="crit">К2 · вес 20%</span></p>
 </section>
 
-<!-- 05 · ЛОВУШКА ЭНСЕМБЛЯ (dark hero) -->
+<!-- 06 · ЛОВУШКА ЭНСЕМБЛЯ (dark hero) -->
 <section class="slide" style="justify-content: center;" data-notes="Гейт предрегистрации спасает от post-hoc: на полной сетке энсембль выглядит на 22% лучше, на отложенных origins разворачивается в +46.5% вреда. Мы её не взяли.">
   <div class="ruler"><span class="num">06/14</span><span class="sec">дисциплина</span></div>
   <p class="kicker">предрегистрация на практике · <b>К1 · К2</b></p>
@@ -335,10 +335,10 @@ body.notes #notes { display: block; }
     </div>
   </div>
   <p style="margin-top: 48px; font-size: 19px; max-width: 1250px; color: var(--ink);">Гейт включения энсембля заморожен в configs/champion.yaml до прогонов (e3aa46e, 04.10): ΔMAE ≤ −1% против лучшей одиночной на co-primary горизонтах. Ни одна из 8 проверенных конструкций его не прошла. MCS-90 (семейство моделей, статистически неотличимых от лучшей) на h=1: чемпион статистически неотличим от 7 ближайших соперников из 26 — поэтому выбор опирается на замороженное правило, а не точечную разность.</p>
-  <p class="source"><span>outputs/rc1_o1_*.csv · block bootstrap по 73 регионам, 1000 реплик · scripts/rc1_o1_*.py</span><span class="crit">К1 · К2 · гейт: configs/decision.json</span></p>
+  <p class="source"><span>outputs/rc1_o1_*.csv · block bootstrap по 73 регионам, 1000 реплик · scripts/rc1_o1_*.py</span><span class="crit">К1 · К2 · гейт: configs/champion.yaml</span></p>
 </section>
 
-<!-- 06 · FOUNDATION -->
+<!-- 07 · FOUNDATION -->
 <section class="slide" data-notes="К4 — тай-брейк. Двусторонне: ковариаты и квантили работают, по MAE проигрыш везде, холодный старт не подтвердился, в энсембле помогает только на h=1 pooled.">
   <div class="ruler"><span class="num">07/14</span><span class="sec">foundation</span></div>
   <p class="kicker">foundation-модели · <b>К4 · тай-брейк</b></p>
@@ -373,7 +373,7 @@ body.notes #notes { display: block; }
   <p class="source"><span>preds_chronos2_* · preds_timesfm25_zs_log · coldstart_chronos.csv · rc1_o3_tsfm_ensemble.csv · cost_timings.csv</span><span class="crit">К4 · вес 15% + тай-брейк</span></p>
 </section>
 
-<!-- 07 · МЕТРИКИ (list + coverage bars) -->
+<!-- 08 · МЕТРИКИ (list + coverage bars) -->
 <section class="slide" data-notes="MAE контрактная, показана в рублях. Каждая метрика с интерпретацией. Интервалы: Mondrian починил малые МО без роста ширины.">
   <div class="ruler"><span class="num">08/14</span><span class="sec">метрики</span></div>
   <p class="kicker">метрики качества — полный анализ с интерпретацией всех метрик · <b>К6</b></p>
@@ -381,7 +381,7 @@ body.notes #notes { display: block; }
   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; margin-top: 26px; align-items: start;">
     <div>
       <ul class="tick">
-        <li><b>MAE (₽)</b> — контрактная, все горизонты: чемпион h=1 на «Все категории» = <span class="mono">1 322 ₽</span>; на полном пуле 6 категорий — 635 ₽ против 597 ₽ у Prophet-B* (там сильнее он — оба чтения показаны честно)</li>
+        <li><b>MAE (₽)</b> — контрактная, все горизонты: чемпион h=1 на «Все категории» = <span class="mono">1 322 ₽</span> против 1 877 ₽ у Prophet-B* (−555 ₽); на полном пуле 6 категорий — 635 ₽ против 597 ₽ у Prophet-B* (там сильнее он — оба чтения показаны честно)</li>
         <li><b>median nMAE</b> — устойчивость к масштабу МО (чемпион h=1: 0.078) · <b>RelMAE</b> — сравнимость между разрезами · <b>win rate</b> · <b>skill-R²</b> вместо pooled R²</li>
         <li><b>sMAPE исключена осознанно</b> (асимметрия: Goodwin–Lawton 1999; Hyndman–Koehler 2006); <b>MAPE</b> не определена при нулевых тратах малых МО</li>
         <li><b>Асимметричная цена ошибки</b>: лидеры не меняются на всём k ∈ [1; 10]; при цене недопрогноза k правильная реакция — сдвиг на квантиль τ = k/(1+k) прошлых остатков (−20…34% pooled-потери при k=2, без переобучения)</li>
@@ -389,11 +389,11 @@ body.notes #notes { display: block; }
     </div>
     <div>
       <svg viewBox="0 0 520 240" style="width: 100%;">
-        <text x="0" y="16" font-family="IBM Plex Mono" font-size="13" fill="#4A5261">ПОКРЫТИЕ 80% PI, SPLIT-CONFORMAL (ANCHOR-СЕТКА)</text>
+        <text x="0" y="16" font-family="PT Mono" font-size="13" fill="#4A5261">ПОКРЫТИЕ 80% PI, SPLIT-CONFORMAL (ANCHOR-СЕТКА)</text>
         <!-- nominal line at 0.80; scale 0.6..1.0 → x = 60 + (v-0.6)/0.4*420 -->
         <line x1="270" y1="34" x2="270" y2="205" stroke="#9A6700" stroke-width="1.5" stroke-dasharray="5 4"/>
-        <text x="276" y="48" font-family="IBM Plex Mono" font-size="12.5" fill="#9A6700">номинал 0.80 · шкала от 0.60</text>
-        <g font-family="IBM Plex Mono" font-size="13.5">
+        <text x="276" y="48" font-family="PT Mono" font-size="12.5" fill="#9A6700">номинал 0.80 · шкала от 0.60</text>
+        <g font-family="PT Mono" font-size="13.5">
           <text x="0" y="72" fill="#4A5261">h = 1</text>
           <rect x="60" y="56" width="289" height="24" rx="4" fill="#2456A6"/>
           <text x="356" y="73" fill="#2456A6" font-weight="600">0.875</text>
@@ -419,7 +419,7 @@ body.notes #notes { display: block; }
   <p class="source"><span>configs/validation.yaml · outputs/intervals_coverage.csv · rc1_o8_linlin.csv · T1_model_x_horizon.csv</span><span class="crit">К6 · вес 10%</span></p>
 </section>
 
-<!-- 08 · ДЕТЕКЦИЯ (bars + 2-panel showcase) -->
+<!-- 09 · ДЕТЕКЦИЯ (bars + 2-panel showcase) -->
 <section class="slide" data-notes="Бюджет ложных тревог задан до измерения recall. BOCPD лидирует на matched-rate; голосование хуже одиночки 10/10. Refit не помогает — детектор это мониторинг.">
   <div class="ruler"><span class="num">09/14</span><span class="sec">детекция</span></div>
   <p class="kicker">детекция структурных изменений · <b>К3</b></p>
@@ -427,9 +427,9 @@ body.notes #notes { display: block; }
   <div style="display: grid; grid-template-columns: 0.9fr 1.3fr; gap: 32px; margin-top: 24px; align-items: start;">
     <div>
       <svg viewBox="0 0 500 235" style="width: 100%;">
-        <text x="0" y="16" font-family="IBM Plex Mono" font-size="13" fill="#4A5261">MATCHED-RATE F1 · равный бюджет срабатываний всем</text>
+        <text x="0" y="16" font-family="PT Mono" font-size="13" fill="#4A5261">MATCHED-RATE F1 · равный бюджет срабатываний всем</text>
         <!-- bars: BOCPD 0.668, Window 0.637, PELT/BinSeg 0.401, EWMA 0.381, CUSUM 0.277 ; x = 90 + v/0.75*374 -->
-        <g font-family="IBM Plex Mono" font-size="13.5">
+        <g font-family="PT Mono" font-size="13.5">
           <text x="0" y="52" fill="#1D2530" font-weight="600">BOCPD</text>
           <rect x="90" y="36" width="333" height="22" fill="#2456A6"/><text x="431" y="53" fill="#2456A6" font-weight="600">0.67</text>
           <text x="0" y="86" fill="#4A5261">Window</text>
@@ -441,7 +441,7 @@ body.notes #notes { display: block; }
           <text x="0" y="188" fill="#4A5261">CUSUM</text>
           <rect x="90" y="172" width="138" height="22" rx="4" fill="#C9CDD4"/><text x="236" y="189" fill="#4A5261">0.28</text>
         </g>
-        <text x="0" y="222" font-family="IBM Plex Mono" font-size="12.5" fill="#4A5261">голосование «≥2 из 3» хуже BOCPD-одиночки в 10/10 ячеек</text>
+        <text x="0" y="222" font-family="PT Mono" font-size="12.5" fill="#4A5261">голосование «≥2 из 3» хуже BOCPD-одиночки в 10/10 ячеек</text>
       
       </svg>
       <p class="gloss" style="margin-top: 6px;">BOCPD — байесовский онлайн-детектор: вероятность сдвига после каждой точки · F1 — баланс точности и полноты · FAR — ложные тревоги на 1000 МО-мес</p>
@@ -460,7 +460,7 @@ body.notes #notes { display: block; }
   <p class="source"><span>outputs/cpd_frontier_v2.csv · cpd_matched_rate_v3.csv · rc1_o4_*.csv · src/cpd.py</span><span class="crit">К3 · вес 20%</span></p>
 </section>
 
-<!-- 09 · ЧЕСТНЫЙ НОЛЬ (dark триптих без карточек) -->
+<!-- 10 · ЧЕСТНЫЙ НОЛЬ (dark триптих без карточек) -->
 <section class="slide" data-notes="Главный отрицательный результат: три механизма измерены и отвергнуты с посчитанной мощностью. Закрыто целое направление мёртвой работы.">
   <div class="ruler"><span class="num">10/14</span><span class="sec">честные границы</span></div>
   <p class="kicker">раннее выявление шоков · <b>К3 · К7</b></p>
@@ -492,7 +492,7 @@ body.notes #notes { display: block; }
   <p class="source"><span>scripts/12–14 · outputs/spatial_propagation.csv · radar_metrics.csv · контроли: 0.0% ложных тревог у PELT/BinSeg на якутских декабрях</span><span class="crit">К3 · К7</span></p>
 </section>
 
-<!-- 10 · НОВОСТИ -->
+<!-- 11 · НОВОСТИ -->
 <section class="slide" data-notes="К5: механизм и в прогноз, и в детекцию. Прогнозный слой монотонно вредит и исключён по замороженному гейту; словарь κ=0.926; burst×CPD — структура без значимости (p=0.84 честно).">
   <div class="ruler"><span class="num">11/14</span><span class="sec">новости</span></div>
   <p class="kicker">новостные данные · <b>К5</b></p>
@@ -530,7 +530,7 @@ body.notes #notes { display: block; }
   <p class="source"><span>outputs/news_ablation_N0N3.csv · news_cpd_matrix_v2.csv · news_theme_headlines.md · configs/news_taxonomy.yaml (v3)</span><span class="crit">К5 · вес 15%</span></p>
 </section>
 
-<!-- 11 · ИНТЕРПРЕТАЦИЯ (3 находки + sparkline) -->
+<!-- 12 · ИНТЕРПРЕТАЦИЯ (3 находки + sparkline) -->
 <section class="slide" data-notes="Поимённые находки по триаде. Богородский +402% удержан до конца панели. Четыре сезонных календаря. Номинал-реал калибровка.">
   <div class="ruler"><span class="num">12/14</span><span class="sec">интерпретация</span></div>
   <p class="kicker">интерпретация на реальных примерах · <b>К7</b></p>
@@ -544,7 +544,7 @@ body.notes #notes { display: block; }
         <polyline fill="none" stroke="#1D2530" stroke-width="1.8" stroke-linejoin="round"
           points="0,52 17,58 34,54 52,64 69,63 86,66 103,64 120,58 138,66 155,45 172,55 190,58 207,67 224,34 241,32 259,20 276,28 293,23 310,22 328,19 345,20 362,15 379,12"/>
         <circle cx="224" cy="34" r="4" fill="#2456A6"/>
-        <text x="215" y="82" font-family="IBM Plex Mono" font-size="11.5" fill="#2456A6">2024-02</text>
+        <text x="215" y="82" font-family="PT Mono" font-size="11.5" fill="#2456A6">2024-02</text>
       </svg>
       <p style="font-size: 13.5px; color: var(--muted); margin-top: 4px;">Доверие: PELT/BinSeg ловят с лагом 0–2 мес; сумма категорий ≤ «Все категории» — переключение канала, не артефакт суммы</p>
     </div>
@@ -568,7 +568,7 @@ body.notes #notes { display: block; }
   <p class="source"><span>outputs/cpd_breaks_v2.parquet · external_real_growth.csv · external_obshchepit_gap.csv · §7 отчёта — шесть находок по триаде</span><span class="crit">К7 · вес 10%</span></p>
 </section>
 
-<!-- 12 · ФОРВАРД (hero + fan SVG) -->
+<!-- 13 · ФОРВАРД (hero + fan SVG) -->
 <section class="slide" data-notes="Продуктовый артефакт: форвард выдержал сверку с официальным рядом; Prophet-B* в том же форварде хуже вдвое. Общепит — провал, показан.">
   <div class="ruler"><span class="num">13/14</span><span class="sec">форвард 2025</span></div>
   <p class="kicker">форвард 2025-H1 — проверка за пределами train · <b>К1 · К2</b></p>
@@ -581,7 +581,7 @@ body.notes #notes { display: block; }
     </div>
     <div>
       <svg viewBox="0 0 780 330" style="width: 100%;">
-        <text x="0" y="16" font-family="IBM Plex Mono" font-size="13" fill="#4A5261">РОСТ г/г, % · 2025-01…06 · ФАКТ vs ПРОГНОЗ vs PROPHET-B*</text>
+        <text x="0" y="16" font-family="PT Mono" font-size="13" fill="#4A5261">РОСТ г/г, % · 2025-01…06 · ФАКТ vs ПРОГНОЗ vs PROPHET-B*</text>
         <!-- y: 0..26% → y = 300 - v/26*270 ; x: 6 months -->
         <!-- PI80 band lo [5.30,4.69,4.08,3.58,3.09,2.59] hi [21.92,22.63,23.35,23.94,24.54,25.14] -->
         <polygon fill="rgba(36,86,166,.10)" stroke="none"
@@ -594,10 +594,10 @@ body.notes #notes { display: block; }
         <!-- fact [15.58,12.44,14.55,15.06,15.06,14.32] -->
         <polyline fill="none" stroke="#1D2530" stroke-width="2.8" stroke-linejoin="round"
           points="70,138.2 190,170.8 310,148.9 430,143.6 550,143.6 670,151.3"/>
-        <g font-family="IBM Plex Mono" font-size="12.5" fill="#4A5261">
+        <g font-family="PT Mono" font-size="12.5" fill="#4A5261">
           <text x="52" y="322">янв</text><text x="172" y="322">фев</text><text x="292" y="322">мар</text><text x="412" y="322">апр</text><text x="532" y="322">май</text><text x="652" y="322">июн</text>
         </g>
-        <g font-family="IBM Plex Mono" font-size="13">
+        <g font-family="PT Mono" font-size="13">
           <line x1="430" y1="52" x2="460" y2="52" stroke="#1D2530" stroke-width="2.8"/><text x="466" y="56" fill="#1D2530">факт (офиц. ряд)</text>
           <line x1="430" y1="72" x2="460" y2="72" stroke="#2456A6" stroke-width="2.5"/><text x="466" y="76" fill="#2456A6">наш прогноз (+13.3%)</text>
           <line x1="430" y1="92" x2="460" y2="92" stroke="#9A6700" stroke-width="2" stroke-dasharray="6 4"/><text x="466" y="96" fill="#9A6700">Prophet-B*</text>
@@ -610,7 +610,7 @@ body.notes #notes { display: block; }
   <p class="source"><span>outputs/forecast_2025H1.parquet · forecast_2025_check.csv · rc1_o7_forward_*.csv</span><span class="crit">К1 · К2</span></p>
 </section>
 
-<!-- 13 · ФИНАЛ: ГРАНИЦЫ + ВОСПРОИЗВОДИМОСТЬ (dark hero) -->
+<!-- 14 · ФИНАЛ: ГРАНИЦЫ + ВОСПРОИЗВОДИМОСТЬ (dark hero) -->
 <section class="slide" style="justify-content: center;" data-notes="Границы названы первыми; каждая связана с тем, что её снимает. Всё восстанавливается одной командой.">
   <div class="ruler"><span class="num">14/14</span><span class="sec">границы · воспроизводимость</span></div>
   <p class="kicker">ограничения · воспроизводимость · <b>К1</b></p>

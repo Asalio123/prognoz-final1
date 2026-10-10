@@ -19,7 +19,7 @@ import pandas as pd
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-NEWS = Path("/Users/said/сбериндекс/data/external/news")
+NEWS = ROOT / "data" / "external" / "news"
 TOPICS = ["prices_inflation", "fx_ruble", "rate_credit",
           "sanctions_shocks", "consumer_sentiment", "emergencies_regional"]
 

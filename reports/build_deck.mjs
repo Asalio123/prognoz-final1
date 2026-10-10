@@ -8,13 +8,66 @@ import { homedir } from 'os';
 import { fileURLToPath } from 'url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const root = join(homedir(), 'Library/Caches/ms-playwright');
-const dir = readdirSync(root).find(d => d.startsWith('chromium_headless_shell'));
-if (!dir) throw new Error('chrome-headless-shell не найден в ms-playwright');
-const exe = join(root, dir, 'chrome-headless-shell-mac-arm64', 'chrome-headless-shell');
-if (!existsSync(exe)) throw new Error('chrome-headless-shell exe не найден: ' + exe);
+function findExecutable() {
+  if (process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH && existsSync(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH)) {
+    return process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
+  }
+  if (process.env.CHROME_PATH && existsSync(process.env.CHROME_PATH)) {
+    return process.env.CHROME_PATH;
+  }
 
-const browser = await chromium.launch({ executablePath: exe });
+  // Поиск в кэше ms-playwright (macOS, Linux, Windows)
+  const playwrightCacheDirs = [
+    join(homedir(), 'Library/Caches/ms-playwright'),
+    join(homedir(), '.cache/ms-playwright'),
+    process.env.LOCALAPPDATA ? join(process.env.LOCALAPPDATA, 'ms-playwright') : null,
+  ].filter(Boolean);
+
+  for (const pDir of playwrightCacheDirs) {
+    if (!existsSync(pDir)) continue;
+    try {
+      const entries = readdirSync(pDir);
+      // Ищем headless-shell или chromium
+      const shellDirs = entries.filter(d => d.startsWith('chromium_headless_shell') || d.startsWith('chromium-'));
+      for (const sd of shellDirs) {
+        const fullSd = join(pDir, sd);
+        const subdirs = readdirSync(fullSd);
+        for (const sub of subdirs) {
+          const candidateFiles = [
+            join(fullSd, sub, 'chrome-headless-shell'),
+            join(fullSd, sub, 'chrome-headless-shell.exe'),
+            join(fullSd, sub, 'chrome-mac/Chromium.app/Contents/MacOS/Chromium'),
+            join(fullSd, sub, 'chrome-linux/chrome'),
+            join(fullSd, sub, 'chrome-win/chrome.exe'),
+            join(fullSd, 'chrome-headless-shell'),
+          ];
+          for (const cand of candidateFiles) {
+            if (existsSync(cand)) return cand;
+          }
+        }
+      }
+    } catch {}
+  }
+
+  // Поиск системных браузеров
+  const systemPaths = [
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '/Applications/Chromium.app/Contents/MacOS/Chromium',
+    '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/chromium',
+    '/usr/bin/chromium-browser',
+  ];
+  for (const sp of systemPaths) {
+    if (existsSync(sp)) return sp;
+  }
+
+  return null;
+}
+
+const exe = findExecutable();
+const launchOpts = exe ? { executablePath: exe } : {};
+const browser = await chromium.launch(launchOpts);
 const page = await browser.newPage({ viewport: { width: 1600, height: 900 } });
 await page.goto('file://' + join(HERE, 'presentation.html'), { waitUntil: 'networkidle' });
 await page.evaluate(() => document.fonts.ready);
