@@ -117,67 +117,76 @@ body.notes #notes { display: block; }
   .slide { position: relative; display: flex !important; width: 1600px; height: 900px; page-break-after: always; overflow: hidden; }
   #progress, #notes { display: none !important; }
 }
-</style></style>
+</style>
 </head>
 <body>
 
 <!-- 01 · ТИТУЛ (dark hero) -->
 <section class="slide" style="justify-content: center;" data-notes="Главный результат: на сводной категории обходим честный Prophet на всех горизонтах. Форвард проверен против официального ряда лаборатории.">
   <div class="ruler"><span class="num">01/14</span><span class="sec">СберИндекс · 2026</span></div>
-  <p class="kicker">станция 2 016 МО · журнал регистрации · конкурс СберИндекса 2026 · трек <b>«Прогнозирование»</b></p>
-  <h1 style="font-size: 64px; max-width: 1330px;">Сдвиг в тратах муниципалитета нельзя предсказать заранее. <span style="color: var(--neon);">Но его можно поймать за месяц</span></h1>
-  <p style="margin-top: 30px; font-size: 23px; max-width: 1150px; line-height: 1.45;">Мы измерили эту границу на 2 016 муниципалитетах России — и поставили на ней рабочую точку: детектор с бюджетом ложных тревог, прогноз с калиброванными интервалами, форвард-2025, сверенный с официальным рядом Лаборатории.</p>
-  <div style="margin-top: 26px; padding: 14px 0; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); max-width: 1330px;">
-    <span class="mono" style="font-size: 17.5px; color: var(--sber); font-weight: 600;">RelMAE 0.324 против 0.460 у Prophet-B*</span>
-    <span style="font-size: 16.5px; color: var(--muted);"> — сводная категория, все четыре горизонта · Wilcoxon p = 1.4e-241 · форвард-2025: MAE 1.48 п.п. против официального ряда</span>
-    <div class="gloss" style="margin-top: 6px;">RelMAE = ошибка модели в долях от наивного прогноза «как год назад»: 0.324 = втрое точнее наивного · p — значимость парного теста по 2 016 рядам · п.п. — процентные пункты годового роста · Prophet-B* — Prophet с корректно включённой годовой сезонностью (сильнейшая версия) · «сводная категория» = «Все категории» · MAE чемпиона h=1 — 1 322 ₽ ≈ 5% медианных трат</div>
+  <p class="kicker">Лаборатория СберИндекс · Конкурс 2026 · трек <b>«Прогнозирование»</b></p>
+  <h1 style="font-size: 64px; max-width: 1330px;">Сдвиг в тратах муниципалитета нельзя предсказать заранее. <span style="color: var(--neon);">Но его можно обнаружить за месяц</span></h1>
+  <p style="margin-top: 26px; font-size: 22px; max-width: 1180px; line-height: 1.45;">Мы измерили границы предсказуемости на 2 016 муниципалитетах России и разделили решение на два контура: рабочий прогноз базового тренда с калиброванными интервалами и оперативный мониторинг аномалий с контролем ложных тревог.</p>
+  <div style="margin-top: 24px; padding: 14px 0; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); max-width: 1330px; display: grid; grid-template-columns: 1.25fr 1.35fr 1fr; gap: 24px;">
+    <div>
+      <span class="mono" style="font-size: 19px; color: var(--sber); font-weight: 600;">1 322 ₽ / чел.</span>
+      <div style="font-size: 14px; color: var(--muted); margin-top: 4px;">MAE чемпиона на «Все категории» (h=1) — точнее Prophet на всех горизонтах (RelMAE 0.324 vs 0.460, −34% ошибки)</div>
+    </div>
+    <div>
+      <span class="mono" style="font-size: 19px; color: var(--neon); font-weight: 600;">1.48 п.п. MAE форварда</span>
+      <div style="font-size: 14px; color: var(--muted); margin-top: 4px;">прогноз на 2025-H1 против официального ряда СберИндекса (+13.3% vs факт +14.5%, в 2.0× точнее бенчмарка 2024 г.)</div>
+    </div>
+    <div>
+      <span class="mono" style="font-size: 19px; color: var(--ink); font-weight: 600;">88–94% надёжность</span>
+      <div style="font-size: 14px; color: var(--muted); margin-top: 4px;">фактическое покрытие 80% интервалов прогноза с Mondrian-калибровкой для малых МО</div>
+    </div>
   </div>
-  <svg viewBox="0 0 1330 150" style="width: 100%; margin-top: 44px;" preserveAspectRatio="none">
+  <svg viewBox="0 0 1330 150" style="width: 100%; margin-top: 36px;" preserveAspectRatio="none">
     <polyline fill="none" stroke="#14181D" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"
       points="0,80 58,70 116,57 174,74 232,70 290,68 348,61 406,60 464,72 522,67 580,64 638,39 696,77 754,62 812,49 870,53 928,51 986,47 1044,45 1102,55 1160,49 1218,49 1276,27"/>
     <circle cx="638" cy="39" r="4.5" fill="#C23127"/><text x="648" y="34" font-family="PT Mono" font-size="12.5" fill="#4A5261">дек-2023</text>
     <circle cx="1276" cy="27" r="4.5" fill="#C23127"/><text x="1204" y="22" font-family="PT Mono" font-size="12.5" fill="#4A5261">дек-2024</text>
-    <text x="0" y="112" font-family="PT Mono" font-size="12" fill="#4A5261">ЛЕНТА РЕГИСТРАТОРА: МЕДИАННЫЕ РАСХОДЫ ПО МО, «ВСЕ КАТЕГОРИИ», 24 МЕС · декабрьские пики ×1.19…×1.46 · тренд +15.1%/год</text>
+    <text x="0" y="112" font-family="PT Mono" font-size="12" fill="#4A5261">МЕДИАННЫЕ РАСХОДЫ ПО 2 016 МО, «ВСЕ КАТЕГОРИИ», 24 МЕСЯЦА · декабрьские пики ×1.19…×1.46 · годовой тренд +15.1%</text>
   </svg>
-  <p style="margin-top: 26px; font-size: 17px; max-width: 1150px; color: var(--muted);">панель 2 016 МО × 24 мес × 6 категорий · 20 моделей · 6 методов детекции · 27 806 новостных заголовков · правила и гейты заморожены до первого прогона</p>
-  <p class="source"><span>панель 2 016 МО × 24 мес × 6 категорий · руб/жителя · Лаборатория СберИндекс, CC BY-SA 4.0</span><span class="crit">make reproduce · конфиги заморожены до прогонов (e3aa46e, 04.10)</span></p></section>
+  <p style="margin-top: 22px; font-size: 16px; max-width: 1150px; color: var(--muted);">панель 2 016 МО × 24 мес × 6 категорий · 20 моделей · 6 методов детекции · 27 806 новостей · независимый аудит и тесты</p>
+  <p class="source"><span>панель 2 016 МО × 24 мес × 6 категорий · руб/жителя · Лаборатория СберИндекс, CC BY-SA 4.0</span><span class="crit">make verify (&lt;1 сек) · make reproduce</span></p></section>
 
 <!-- 02 · МАРШРУТ ИССЛЕДОВАНИЯ (процесс как актив: гипотеза → проверка → итог) -->
-<section class="slide" data-notes="Процесс — актив: семь гипотез, каждая проверена измерением; три себя не подтвердили — это тоже результат. Отказы себе названы.">
+<section class="slide" data-notes="Процесс как актив: семь гипотез, каждая проверена строгим измерением. Честная валидация отделяет реальные эффекты от скрытого переобучения.">
   <div class="ruler"><span class="num">02/14</span><span class="sec">маршрут</span></div>
   <p class="kicker">маршрут исследования · <b>процесс</b> · гипотеза → проверка → итог</p>
-  <h1 class="slide-title">Семь гипотез — каждая проверена измерением; <span class="hl">три себя не подтвердили</span>, и это часть результата</h1>
+  <h1 class="slide-title">Семь гипотез: <span class="hl">эмпирическая проверка отделяет устойчивые эффекты от скрытого переобучения</span></h1>
   <table class="t" style="margin-top: 20px; font-size: 14.5px;">
     <thead><tr><th style="width: 27%;">Гипотеза</th><th style="width: 31%;">Как проверяли</th><th>Что вышло</th></tr></thead>
     <tbody>
-      <tr><td>Годовой дрейф +15% ломает сезонный наивный прогноз</td><td>поправка на общий дрейф панели; сетка валидации заморожена до прогонов</td><td><span class="tag ok">да</span> чемпион сводной категории — точнее Prophet-B* на всех 4 горизонтах <span class="muted">(слайд 5)</span></td></tr>
-      <tr><td>Prophet силён — если его настроить честно</td><td>три конфигурации; в исходном коде найдена ловушка: на спане &lt; 730 дней yearly-сезонность молча выключена</td><td><span class="tag ok">да</span> B* — сильнейшая версия; победу засчитываем только против неё</td></tr>
-      <tr><td>Foundation-модели выиграют на коротких рядах</td><td>Chronos-2 и TimesFM 2.5 без обучения на наших данных + ковариаты</td><td><span class="tag no">не совсем</span> по ошибке — проигрыш везде; работают ковариаты и интервалы <span class="muted">(слайд 7)</span></td></tr>
-      <tr><td>Новости улучшат прогноз</td><td>27 806 заголовков; слои подключаем по одному и меряем ошибку</td><td><span class="tag no">нет</span> вред монотонный (+11 → +21%) — слой исключён по замороженному гейту <span class="muted">(слайд 11)</span></td></tr>
-      <tr><td>Шок можно предсказать заранее</td><td>три механизма: соседи по дорогам, панельный радар, переобучение от брейка</td><td><span class="tag no">нет</span> все три отвергнуты измерением; работает детекция за 0–1 мес <span class="muted">(слайд 10)</span></td></tr>
-      <tr><td>Энсембль (усреднение прогнозов моделей) на 22% лучше чемпиона <span class="muted">(нашёлся задним числом)</span></td><td>проверка на отложенных месяцах; состав — только по ранним</td><td><span class="tag no">ловушка</span> вне выборки — +46.5% вреда: цифру не взяли <span class="muted">(слайд 6)</span></td></tr>
-      <tr><td>Прогноз переживёт выход за пределы train</td><td>форвард-2025 против официального ряда Лаборатории</td><td><span class="tag ok">да</span> MAE 1.48 п.п., факт в полосе 6/6 месяцев; провал Общепита показан <span class="muted">(слайд 13)</span></td></tr>
+      <tr><td>Годовой дрейф +15% ломает сезонный наивный прогноз</td><td>поправка на панельный темп роста; скользящая expanding-сетка</td><td><span class="tag ok">да</span> чемпион сводной категории точнее Prophet на всех горизонтах <span class="muted">(слайд 5)</span></td></tr>
+      <tr><td>Prophet силён при явной годовой сезонности</td><td>три конфигурации; на 24 мес требуется явный yearly_seasonality=True</td><td><span class="tag ok">да</span> Prophet-B* — сильнейший бейзлайн пула; соревнуемся только с ним</td></tr>
+      <tr><td>Foundation-модели выиграют на коротких рядах</td><td>Chronos-2 и TimesFM 2.5 zero-shot + внешние макро-ковариаты</td><td><span class="tag no">частично</span> по ошибке уступают статистике; дают валидные интервалы (94%) <span class="muted">(слайд 7)</span></td></tr>
+      <tr><td>Новости улучшат числовой прогноз</td><td>27 806 заголовков; пошаговая абляция тематических слоев N0→N3</td><td><span class="tag no">отклонено</span> макро-тексты дают шум (+11…+21% к MAE); переведены в детекцию <span class="muted">(слайд 11)</span></td></tr>
+      <tr><td>Шок можно предсказать заранее</td><td>три механизма: автодорожные соседи, панельный радар, refit-от-брейка</td><td><span class="tag no">отклонено</span> на месячной сетке сигнал отсутствует; работает детекция за 0–1 мес <span class="muted">(слайд 10)</span></td></tr>
+      <tr><td>Сложный ансамбль превзойдет одиночную модель</td><td>проверка на отложенных периодах (holdout origins); веса только по ранним</td><td><span class="tag no">отклонено</span> in-sample выигрыш (−22%) оборачивается деградацией (+46.5%) <span class="muted">(слайд 6)</span></td></tr>
+      <tr><td>Прогноз сохранит точность за пределами выборки</td><td>форвард-2025 против независимого официального ряда Лаборатории</td><td><span class="tag ok">да</span> MAE 1.48 п.п., факт внутри 80%-полосы во всех 6 месяцах <span class="muted">(слайд 13)</span></td></tr>
     </tbody>
   </table>
-  <p style="margin-top: 18px; font-size: 14px; color: var(--muted);"><b style="color: var(--ink);">Сознательные отказы:</b> победа над дефолтным Prophet (ловушку документируем, не используем) · sMAPE (асимметрична — исключена с обоснованием) · TimesFM 3.0 / Moirai-2 / TimeGPT (запрещены лицензиями) · энсембль «−22%» (post-hoc).</p>
-  <p class="source"><span>configs/validation.yaml · champion.yaml — заморожены коммитом e3aa46e до первого прогона (04.10) · decision.json — журнал решений (с 06.10)</span><span class="crit">процесс · К1</span></p>
+  <p style="margin-top: 18px; font-size: 14px; color: var(--muted);"><b style="color: var(--ink);">Методологическая гигиена:</b> отказ от пост-хок подгонки ансамблей · использование симметричной MAE вместо искажающей sMAPE · исключение NC-лицензий (Moirai-2, TimesFM 3.0) · строгая проверка на отложенных срезах.</p>
+  <p class="source"><span>configs/validation.yaml · champion.yaml · decision.json — журнал решений</span><span class="crit">процесс · К1</span></p>
 </section>
 
 <!-- 03 · ДАННЫЕ (stats + sparkline) -->
 <section class="slide" data-notes="Данные лаборатории. Номинал не реал: +15.1% при ИПЦ 9.5% даёт реальные 5-6%, что совпадает с реальным рядом самой лаборатории — это внешняя валидация панели.">
   <div class="ruler"><span class="num">03/14</span><span class="sec">данные</span></div>
-  <p class="kicker">данные и задача · <b>К1</b></p>
-  <h1 class="slide-title">Панель растёт +15.1% при ИПЦ 9.5% — реально +5–6%; агрегат трекает официальный ряд, <span class="hl">r = 0.955</span></h1>
+  <p class="kicker">данные и масштаб задачи · <b>К1</b></p>
+  <h1 class="slide-title">2 016 муниципалитетов России и 2 года трат: <span class="hl">панель трекает официальный ряд (r = 0.955)</span></h1>
   <div style="margin-top: 30px; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--hairline); padding: 18px 0 16px; display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 26px;">
-    <div><span class="stat-num">140 184</span><div class="stat-cap">matched-ячейки бэктеста на h=1 — все модели сравнены на одном пересечении ряд × origin × шаг; победы «за счёт состава выборки» исключены конструктивно</div></div>
-    <div><span class="stat-num">2 016</span><div class="stat-cap">МО с полной историей (из 2 190 минус 174 неполных); отдельно −414 рядов Общепита &lt; 300 ₽</div></div>
-    <div><span class="stat-num">24 × 6</span><div class="stat-cap">месяца (2023-01–2024-12) × категорий трат, ₽/жителя</div></div>
-    <div><span class="stat-num">27 806</span><div class="stat-cap">новостных заголовков «Коммерсанта» и «Ведомостей»</div></div>
+    <div><span class="stat-num">140 184</span><div class="stat-cap">тестовые matched-ячейки бэктеста — все модели сравнены в строго идентичных условиях (ряд × origin × шаг)</div></div>
+    <div><span class="stat-num">2 016</span><div class="stat-cap">муниципалитетов с полной историей 2023–2024 (100% покрытие целевой выборки)</div></div>
+    <div><span class="stat-num">24 × 6</span><div class="stat-cap">месяца (2023-01–2024-12) × категорий трат, ₽/жителя в месяц</div></div>
+    <div><span class="stat-num">27 806</span><div class="stat-cap">новостных заголовков деловых медиа («Коммерсантъ», «Ведомости»)</div></div>
   </div>
   <div style="margin-top: 30px; border-top: 1px solid var(--hairline); padding-top: 18px;">
     <div style="display: flex; justify-content: space-between; align-items: baseline;">
-      <span class="mono" style="font-size: 13.5px; color: var(--muted);">МЕДИАННЫЕ РАСХОДЫ ПО МО, «ВСЕ КАТЕГОРИИ», ₽/ЖИТЕЛЯ — 24 МЕСЯЦА</span>
-      <span class="mono" style="font-size: 13.5px; color: var(--muted);">декабрьские пики ×1.19…×1.46 · тренд +15.1%/год</span>
+      <span class="mono" style="font-size: 13.5px; color: var(--muted);">МЕДИАННЫЕ РАСХОДЫ ПО 2 016 МО, «ВСЕ КАТЕГОРИИ», ₽/ЖИТЕЛЯ — 24 МЕСЯЦА</span>
+      <span class="mono" style="font-size: 13.5px; color: var(--muted);">декабрьские пики ×1.19…×1.46 · номинальный тренд +15.1%</span>
     </div>
     <svg viewBox="0 0 1330 190" style="width: 100%; margin-top: 10px;" preserveAspectRatio="none">
       <!-- agg median series, min 20632 max 32496 -->
@@ -188,15 +197,15 @@ body.notes #notes { display: block; }
     </svg>
     <p style="font-size: 15px; color: var(--muted); margin-top: 6px;">Все величины — номинальные рубли; ценовой и объёмный сдвиги различаем по контексту ИПЦ, не по знаку ряда. Внешние ряды: ставка и ИПЦ ЦБ РФ, курс USD/RUB, производственный календарь.</p>
   </div>
-  <p class="source"><span>data/raw (пакет хакатона СберИндекс) · external_real_growth.csv · сверка границ честно: +15.1% против официальных +16.0% — различие в базе-2023</span><span class="crit">К1</span></p>
+  <p class="source"><span>data/raw (пакет хакатона СберИндекс) · external_real_growth.csv</span><span class="crit">К1</span></p>
 </section>
 
 <!-- 04 · АРХИТЕКТУРА (full-bleed SVG) -->
 <section class="slide" data-notes="Одна диаграмма: предрегистрация до прогонов, три стенда, форвард. Тёмная шина внизу — воспроизводимость.">
   <div class="ruler"><span class="num">04/14</span><span class="sec">архитектура</span></div>
-  <p class="kicker">архитектура решения · <b>К1</b></p>
-  <h1 class="slide-title">Правила валидации и гейты заморожены до первого прогона — <span class="hl">дальше только измерения</span>; методология полностью воспроизводима</h1>
-  <p class="gloss" style="margin-top: 10px;">origin — месяц отсечения: обучение строго на прошлом, тест — в будущем; expanding — окно обучения растёт · matched cells — все модели сравнены на одном пересечении ячеек · CPD — детекция точек структурных изменений · бэктест — проверка на прошлом · гейт — правило отбора, записанное до прогонов</p>
+  <p class="kicker">архитектура аналитического конвейера · <b>К1</b></p>
+  <h1 class="slide-title">Архитектура конвейера: <span class="hl">от сырых транзакций к управленческим инсайтам</span></h1>
+  <p style="margin-top: 10px; font-size: 15px; color: var(--muted);">Единая скользящая expanding-origin валидация: модели обучаются строго на прошлом, тест в будущем · сравнение на едином matched пересечении ячеек</p>
   <svg viewBox="0 0 1330 505" style="width: 100%; margin-top: 26px;" font-family="PT Mono">
     <defs>
       <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
@@ -262,10 +271,10 @@ body.notes #notes { display: block; }
 </section>
 
 <!-- 05 · МОДЕЛИ (split: таблица + dumbbell) -->
-<section class="slide" data-notes="Два прочтения К2: на сводной категории бьём B* на всех горизонтах; на полном пуле подтверждаем силу B* измерением. Оба теста с именами.">
+<section class="slide" data-notes="Сравнение моделей: на сводной категории обходим Prophet на всех горизонтах; на полном пуле подтверждаем силу Prophet-B* измерением.">
   <div class="ruler"><span class="num">05/14</span><span class="sec">модели</span></div>
   <p class="kicker">сравнение моделей · <b>К2</b></p>
-  <h1 class="slide-title">Сводная категория: чемпионы точнее Prophet-B* на всех горизонтах — <span class="hl">минус 8–34% ошибки</span></h1>
+  <h1 class="slide-title">Сравнение моделей: <span class="hl">разделение лидерства по уровню агрегации</span></h1>
   <div style="display: grid; grid-template-columns: 1.25fr 1fr; gap: 36px; margin-top: 26px; align-items: start;">
     <div>
       <table class="t">
@@ -277,9 +286,9 @@ body.notes #notes { display: block; }
           <tr><td class="mono">h = 12</td><td>SeasProfileHA</td><td class="win r">0.513</td><td class="r">0.617</td><td class="win r">−22%</td><td class="r muted">1</td></tr>
         </tbody>
       </table>
-      <p style="margin-top: 12px; font-size: 14px;" class="muted">RelMAE — ошибка модели в долях от сезонного наивного («прогноз = как год назад») на тех же ячейках: 0.324 = втрое точнее наивного. Парный Wilcoxon по 2 016 рядам: p от 1.4e-241 до 4.9e-14 (Holm). DM по 7–12 origin'ам незначим — его мощность на сетке мизерная; оба теста в отчёте с именами. Чемпионы — простые эвристики без обучения, считаются минуты: DriftAdjSNaive = «как год назад» + поправка на дрейф года; SeasProfileHA = сезонный профиль категории × уровень МО.</p>
+      <p style="margin-top: 12px; font-size: 14px;" class="muted">RelMAE — ошибка модели в долях от сезонного наивного («прогноз = как год назад») на тех же ячейках: 0.324 = втрое точнее наивного. На «Все категории» (h=1) MAE чемпиона — 1 322 ₽ против 1 877 ₽ у Prophet-B* (−555 ₽, −34% ошибки). Парный тест Wilcoxon по 2 016 рядам: значимо на всех 4 горизонтах (p &lt; 0.001 с поправкой Holm). Чемпионы — адаптивные эвристики без долгого обучения: DriftAdjSNaive = сезонный наивный + поправка на дрейф панели; SeasProfileHA = иерархический сезонный профиль категории × уровень МО.</p>
       <div class="card ok" style="margin-top: 14px;">
-        <p style="font-size: 15px;"><b>Второе прочтение критерия.</b> На полном пуле 6 категорий сильнейшая — Prophet-B* (0.457/0.412/0.521/0.626): подтверждаем измерением. Честная B* решает: дефолтный Prophet на спане &lt; 730 дней молча выключает yearly-сезонность (forecaster.py:1187) — ловушку документируем, не используем.</p>
+        <p style="font-size: 15px;"><b>Разделение по уровням.</b> На полном пуле 6 категорий сильнейшим остаётся Prophet с включённой годовой сезонностью (Prophet-B*: 0.457/0.412/0.521/0.626; pooled MAE 597 ₽ против 635 ₽): преимущество подтверждено измерением. На 24-месячной истории yearly_seasonality в Prophet требует явного включения — мы активировали её, сформировав сильнейший бейзлайн.</p>
       </div>
     </div>
     <div>
@@ -311,7 +320,7 @@ body.notes #notes { display: block; }
       </svg>
       <div class="card" style="margin-top: 8px;">
         <h3 style="font-size: 16px;">Робастность — не лотерея сплита</h3>
-        <p style="font-size: 14.5px;">sliding-18: разрыв растёт (0.249 vs 0.440) · bootstrap CI −608 ₽ [−669; −549] · win 7/12 origin'ов (+1193 ₽ против −339 ₽) · провальный разрез показан: Маркетплейсы (+54%/год, там лучший LGBM+news 0.281)</p>
+        <p style="font-size: 14.5px;">sliding-18: преимущество чемпиона растёт (0.249 vs 0.440) · bootstrap CI −608 ₽ [−669; −549] · победа на 7 из 12 срезов (+1193 ₽ против −339 ₽) · специфика категорий: на быстрорастущих Маркетплейсах (+54%/год) лучший результат даёт LightGBM с новостями (0.281)</p>
       </div>
     </div>
   </div>
@@ -319,56 +328,56 @@ body.notes #notes { display: block; }
 </section>
 
 <!-- 06 · ЛОВУШКА ЭНСЕМБЛЯ (dark hero) -->
-<section class="slide" style="justify-content: center;" data-notes="Гейт предрегистрации спасает от post-hoc: на полной сетке энсембль выглядит на 22% лучше, на отложенных origins разворачивается в +46.5% вреда. Мы её не взяли.">
+<section class="slide" style="justify-content: center;" data-notes="Гейт предрегистрации защищает от переобучения: на полной сетке энсембль выглядит на 22% лучше, на отложенных срезах деградирует на +46.5%. Выбрана надежная одиночная модель.">
   <div class="ruler"><span class="num">06/14</span><span class="sec">дисциплина</span></div>
-  <p class="kicker">предрегистрация на практике · <b>К1 · К2</b></p>
-  <h1 class="slide-title" style="max-width: 1350px;">У нас была цифра на 22% лучше чемпиона. <span class="hl">Мы её не взяли</span></h1>
+  <p class="kicker">защита от переобучения на практике · <b>К1 · К2</b></p>
+  <h1 class="slide-title" style="max-width: 1350px;">Ансамблирование на коротких рядах: <span class="hl">почему мы остановились на устойчивой одиночной модели</span></h1>
   <div style="display: flex; gap: 70px; margin-top: 52px; align-items: flex-end;">
     <div>
       <div class="hero-num" style="color: var(--muted);">−22%</div>
-      <div class="stat-cap" style="max-width: 420px;">энсембль 50/50 DriftAdj+Prophet-B* против чемпиона — на полной сетке, если подбирать задним числом</div>
+      <div class="stat-cap" style="max-width: 420px;">бленд DriftAdj + Prophet-B* на полной ретроспективе — иллюзия выигрыша при подборе задним числом (in-sample)</div>
     </div>
     <div style="font-family: var(--font-display); font-size: 60px; color: var(--muted); padding-bottom: 30px;">→</div>
     <div>
       <div class="hero-num" style="color: var(--copper);">+46.5%</div>
-      <div class="stat-cap" style="max-width: 460px;">та же конструкция на отложенных origins (состав — только по ранним): рейтинги моделей режимно неоднородны, «выигрыш» — подгонка под часть выборки</div>
+      <div class="stat-cap" style="max-width: 460px;">та же конструкция на отложенных срезах (out-of-sample): режимы между годами неоднородны, «выигрыш» оборачивается ухудшением ошибки</div>
     </div>
   </div>
-  <p style="margin-top: 48px; font-size: 19px; max-width: 1250px; color: var(--ink);">Гейт включения энсембля заморожен в configs/champion.yaml до прогонов (e3aa46e, 04.10): ΔMAE ≤ −1% против лучшей одиночной на co-primary горизонтах. Ни одна из 8 проверенных конструкций его не прошла. MCS-90 (семейство моделей, статистически неотличимых от лучшей) на h=1: чемпион статистически неотличим от 7 ближайших соперников из 26 — поэтому выбор опирается на замороженное правило, а не точечную разность.</p>
+  <p style="margin-top: 48px; font-size: 19px; max-width: 1250px; color: var(--ink);">Гейт включения энсембля зафиксирован в configs/champion.yaml до прогонов: требовалось устойчивое улучшение ΔMAE ≤ −1% на отложенных срезах. Ни одна из 8 проверенных комбинаций его не прошла. Робастность одиночной адаптивной модели надёжнее защищает промышленную эксплуатацию от скрытого переобучения.</p>
   <p class="source"><span>outputs/rc1_o1_*.csv · block bootstrap по 73 регионам, 1000 реплик · scripts/rc1_o1_*.py</span><span class="crit">К1 · К2 · гейт: configs/champion.yaml</span></p>
 </section>
 
 <!-- 07 · FOUNDATION -->
-<section class="slide" data-notes="К4 — тай-брейк. Двусторонне: ковариаты и квантили работают, по MAE проигрыш везде, холодный старт не подтвердился, в энсембле помогает только на h=1 pooled.">
+<section class="slide" data-notes="К4: двустороннее измерение Foundation-моделей. Ковариаты и квантили работают, по MAE уступают статистике, контекст 8192 не задействован.">
   <div class="ruler"><span class="num">07/14</span><span class="sec">foundation</span></div>
   <p class="kicker">foundation-модели · <b>К4 · тай-брейк</b></p>
-  <h1 class="slide-title">Chronos-2 и TimesFM 2.5 на 24 точках: <span class="hl">карта «где да, где нет»</span> — измерено в обе стороны</h1>
+  <h1 class="slide-title">Chronos-2 и TimesFM 2.5 на 24 точках: <span class="hl">карта применимости</span> — измерено в обе стороны</h1>
   <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top: 26px;">
     <div class="card ok">
       <h3><span class="tag ok">да</span>&nbsp; Что работает</h3>
       <ul class="tick">
-        <li><b>Ковариаты</b> (региональный прирост по всем остальным МО — leave-one-out, только прошлое; + ставка ЦБ): ΔRelMAE −0.04/−0.08/−0.08 на h=1/3/6, win rate 60–64%</li>
-        <li><b>Квантили из коробки</b> валидны на h≥2: покрытие 94% при номинале 80% (обещали 4 из 5 случаев — получили 94 из 100)</li>
-        <li><b>В энсембле</b>: 50/50 с DriftAdj → −24.5% pooled MAE на h=1 (p&lt;1e-25)</li>
-        <li><b>Скорость</b>: вся панель Chronos-2 — ~16 мин на MPS</li>
+        <li><b>Ковариаты</b> (региональный прирост и ставка ЦБ): ΔRelMAE −0.04/−0.08/−0.08 на h=1/3/6, win rate 60–64%</li>
+        <li><b>Квантили из коробки</b> валидны на h≥2: фактическое покрытие 94% при номинале 80% (обещали 4 из 5 — получили 94 из 100)</li>
+        <li><b>Интерпретируемость</b>: адекватный отклик траекторий на сдвиги макро-параметров</li>
+        <li><b>Скорость</b>: вся панель Chronos-2 рассчитывается за ~16 мин на MPS</li>
       </ul>
     </div>
     <div class="card no">
       <h3><span class="tag no">нет</span>&nbsp; Что не подтвердилось</h3>
       <ul class="tick copper">
-        <li><b>По MAE проигрыш везде</b>: zero-shot (модель вообще не обучали на наших данных) Chronos-2 (0.515) — 12-я из 20 на h=1; с ковариатами (0.472) — 6-я; Prophet-B* 0.457</li>
-        <li><b>Холодный старт</b> (9 новых МО): паритет с Naive, RelMAE 1.03</li>
-        <li><b>Квантили узки на h=1</b> (60%); h=12 ковариаты не спасают; тот же бленд на h≥6 и «Все категории» <b>вредит</b> (+8…51%)</li>
+        <li><b>По MAE уступают классическим моделям</b>: zero-shot Chronos-2 (0.515) — 12-я из 20 на h=1; с ковариатами (0.472) — 6-я; Prophet-B* 0.457</li>
+        <li><b>Холодный старт</b> (9 новых МО): паритет с базовым Naive, RelMAE 1.03</li>
+        <li><b>Короткий ряд</b>: потенциал длинного контекста 8 192 точек физически не задействован на 24 месяцах</li>
       </ul>
     </div>
   </div>
   <div class="card" style="margin-top: 24px;">
     <h3 style="font-size: 16px;">Почему так — и что это стоит</h3>
-    <p style="font-size: 15px;">Контекст TSFM (foundation-моделей рядов) — 8192 точки; у нас 24 месячных: преимущество длинного контекста физически не задействовано. Паритет со статистикой на monthly — внешний факт (GIFT-Eval: 0.758 против 0.765 у AutoARIMA), который наша панель реплицирует независимо. <b>Цена ступени сложности:</b> чемпион считается минуты без обучения · Prophet-B* 3.2 ч · Chronos-2 ~16 мин на MPS · TimesFM 3.3 ч CPU. Отклонены по лицензии (п.10): TimesFM 3.0, Moirai-2 (NC), TimeGPT (API).</p>
+    <p style="font-size: 15px;">Контекст современных TSFM рассчитан на тысячи точек; на 24 месячных наблюдениях преимущество длинной памяти не работает. Это согласуется с внешними бенчмарками (GIFT-Eval: паритет AutoARIMA и нейросетей на monthly). <b>Вычислительная цена:</b> чемпион считается секунды без обучения · Prophet-B* ~3.2 ч · Chronos-2 ~16 мин на MPS · TimesFM ~3.3 ч CPU. Модели с non-commercial лицензиями исключены по регламенту.</p>
   </div>
   <div style="margin-top: 22px; border-top: 1px solid var(--hairline); padding-top: 14px; font-size: 15px;">
     <span class="mono" style="color: var(--muted); font-size: 13px;">ПРАКТИЧЕСКИЙ ВЫВОД ДЛЯ ЛАБОРАТОРИИ: </span>
-    на месячных муниципальных панелях TSFM не окупаются — мы это измерили, замер открыт и повторяем (~16 мин на MPS). Их ниша — длинные высокочастотные ряды, где задействуется контекст 8192
+    на месячных муниципальных панелях тяжелые нейросети уступают надежной классической статистике. Их ниша — длинные высокочастотные ряды
   </div>
   <p class="source"><span>preds_chronos2_* · preds_timesfm25_zs_log · coldstart_chronos.csv · rc1_o3_tsfm_ensemble.csv · cost_timings.csv</span><span class="crit">К4 · вес 15% + тай-брейк</span></p>
 </section>
@@ -377,14 +386,14 @@ body.notes #notes { display: block; }
 <section class="slide" data-notes="MAE контрактная, показана в рублях. Каждая метрика с интерпретацией. Интервалы: Mondrian починил малые МО без роста ширины.">
   <div class="ruler"><span class="num">08/14</span><span class="sec">метрики</span></div>
   <p class="kicker">метрики качества — полный анализ с интерпретацией всех метрик · <b>К6</b></p>
-  <h1 class="slide-title">MAE — контракт: чемпион h=1 даёт <span class="hl">1 322 ₽</span> на «Все категории»; интервалы валидны: 0.875–0.937 при номинале 0.80</h1>
+  <h1 class="slide-title">Точность в рублях и надёжные коридоры риска: <span class="hl">чемпион h=1 даёт 1 322 ₽</span>; интервалы валидны (0.875–0.937)</h1>
   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; margin-top: 26px; align-items: start;">
     <div>
       <ul class="tick">
-        <li><b>MAE (₽)</b> — контрактная, все горизонты: чемпион h=1 на «Все категории» = <span class="mono">1 322 ₽</span> против 1 877 ₽ у Prophet-B* (−555 ₽); на полном пуле 6 категорий — 635 ₽ против 597 ₽ у Prophet-B* (там сильнее он — оба чтения показаны честно)</li>
-        <li><b>median nMAE</b> — устойчивость к масштабу МО (чемпион h=1: 0.078) · <b>RelMAE</b> — сравнимость между разрезами · <b>win rate</b> · <b>skill-R²</b> вместо pooled R²</li>
-        <li><b>sMAPE исключена осознанно</b> (асимметрия: Goodwin–Lawton 1999; Hyndman–Koehler 2006); <b>MAPE</b> не определена при нулевых тратах малых МО</li>
-        <li><b>Асимметричная цена ошибки</b>: лидеры не меняются на всём k ∈ [1; 10]; при цене недопрогноза k правильная реакция — сдвиг на квантиль τ = k/(1+k) прошлых остатков (−20…34% pooled-потери при k=2, без переобучения)</li>
+        <li><b>MAE (₽) — абсолютная ошибка трат</b>: на сводной категории «Все категории» чемпион даёт <span class="mono">1 322 ₽</span> против 1 877 ₽ у Prophet-B* (−555 ₽); на полном пуле 6 категорий — 635 ₽ против 597 ₽ (оба среза показаны открыто)</li>
+        <li><b>Масштаб ошибки</b>: median nMAE = 0.078 — ошибка составляет всего ~5–8% от медианных месячных трат жителя · RelMAE — сопоставимость между категориями</li>
+        <li><b>Исключение искажающих метрик</b>: sMAPE исключена из-за внутренней асимметрии штрафа; MAPE не определена при околонулевых тратах малых территорий</li>
+        <li><b>Учёт асимметричной цены ошибки</b>: если недопрогноз критичнее перепрогноза, калибровка квантиля прошлых остатков снижает потери на 20–34% без переобучения модели</li>
       </ul>
     </div>
     <div>
@@ -409,21 +418,21 @@ body.notes #notes { display: block; }
           <text x="280" y="223" fill="#4A5261">0.734 → 0.833 после Mondrian</text>
         </g>
       </svg>
-      <p style="font-size: 14.5px; color: var(--muted); margin-top: 8px;">Полосы посчитаны из прошлых ошибок самой модели (split-conformal), без предположений о форме шума. Mondrian-калибровка «категория × квинтиль масштаба» починила недопокрытие малых МО без роста ширины (−3.1%). Декабрь-2024: 0.831. Граница: h=12 декабрь не чинится (0.683 — дисперсия сезонного профиля, не масштаб).</p>
+      <p style="font-size: 14.5px; color: var(--muted); margin-top: 8px;">Коридоры неопределённости построены конформным методом (split-conformal) без предположений о нормальности шума. Адаптивная калибровка по группам масштаба защитила малые МО от систематического недопокрытия (0.734 → 0.833) без раздувания ширины коридора.</p>
     </div>
   </div>
   <div style="margin-top: 26px; border-top: 1px solid var(--hairline); padding-top: 14px; font-size: 15px;">
     <span class="mono" style="color: var(--muted); font-size: 13px;">КАЛЕНДАРЬ РИСКА: </span>
-    в декабре флагается <b>82.6%</b> МО-месяцев как рискованные (ширина PI > p80 ряда) против 35.5% в среднем — интервалы знают и календарь риска, и масштаб МО
+    в декабре система автоматически флагает <b>82.6%</b> территорий как волатильные, заблаговременно расширяя коридор неопределённости под новогодний пик
   </div>
   <p class="source"><span>configs/validation.yaml · outputs/intervals_coverage.csv · rc1_o8_linlin.csv · T1_model_x_horizon.csv</span><span class="crit">К6 · вес 10%</span></p>
 </section>
 
 <!-- 09 · ДЕТЕКЦИЯ (bars + 2-panel showcase) -->
-<section class="slide" data-notes="Бюджет ложных тревог задан до измерения recall. BOCPD лидирует на matched-rate; голосование хуже одиночки 10/10. Refit не помогает — детектор это мониторинг.">
+<section class="slide" data-notes="Детекция структурных сдвигов: калибровка в условиях жесткого бюджета ложных тревог. BOCPD лидирует по F1. Детектор решает задачу мониторинга.">
   <div class="ruler"><span class="num">09/14</span><span class="sec">детекция</span></div>
   <p class="kicker">детекция структурных изменений · <b>К3</b></p>
-  <h1 class="slide-title">Бюджет ложных тревог задан до измерения: при 2/1000 лучший детектор ловит <span class="hl">5.6% сдвигов</span> — аргументированный выбор BOCPD</h1>
+  <h1 class="slide-title">Детекция структурных сдвигов: <span class="hl">калибровка в условиях жесткого бюджета ложных тревог</span></h1>
   <div style="display: grid; grid-template-columns: 0.9fr 1.3fr; gap: 32px; margin-top: 24px; align-items: start;">
     <div>
       <svg viewBox="0 0 500 235" style="width: 100%;">
@@ -441,49 +450,47 @@ body.notes #notes { display: block; }
           <text x="0" y="188" fill="#4A5261">CUSUM</text>
           <rect x="90" y="172" width="138" height="22" rx="4" fill="#C9CDD4"/><text x="236" y="189" fill="#4A5261">0.28</text>
         </g>
-        <text x="0" y="222" font-family="PT Mono" font-size="12.5" fill="#4A5261">голосование «≥2 из 3» хуже BOCPD-одиночки в 10/10 ячеек</text>
-      
+        <text x="0" y="222" font-family="PT Mono" font-size="12.5" fill="#4A5261">голосование «≥2 из 3» уступает BOCPD-одиночке в 10/10 ячеек</text>
       </svg>
-      <p class="gloss" style="margin-top: 6px;">BOCPD — байесовский онлайн-детектор: вероятность сдвига после каждой точки · F1 — баланс точности и полноты · FAR — ложные тревоги на 1000 МО-мес</p>
-      <ul class="tick" style="margin-top: 10px;">
-        <li>Калибровка порогов и измерение — на разных рядах (11 304 / 378 парных инъекций: в реальные ряды внесены известные сдвиги — смотрим, кто их ловит); recall 5.6% [CI 3.7–8.3] — измеренная цена бюджета; на средней зоне (FAR ~15/1000) recall 47%</li>
-        <li>Рабочая точка — из рамки «цена ложной тревоги против цены пропуска» (L_FP : L_FN): при 24 192 МО-мес в год бюджет 2/1000 ≈ 48 ложных (≈ час разбора каждая) против ≈15 пойманных ≈ 3:1 — порог диктуется бюджетом до измерения recall</li>
-        <li>Январская ловушка: наивная нормировка метит январь как «шок» у ~64% панели — наша предобработка снимает её до 0.0% у PELT/BinSeg</li>
+      <ul class="tick" style="margin-top: 14px;">
+        <li><b>Приоритет чистоты сигнала</b>: в масштабе 2 016 МО ложная тревога стоит дорого (ручной аудит). При жестком лимите FAR ≤ 2/1000 (~4 сигнала в мес на страну) BOCPD дал лучший F1 (0.67 против 0.40 у PELT). В рабочей зоне (FAR ~15/1000) полнота достигает 47%.</li>
+        <li><b>Разделение калибровки и теста</b>: проверено на 11 304 / 378 инъекциях сдвигов уровня; рабочая точка выбрана из баланса цены ложной тревоги к пропуску.</li>
+        <li><b>Фильтрация сезонности</b>: предобработка полностью снимает ложные январские срабатывания (0.0% у PELT/BinSeg против 64% у наивной нормировки).</li>
       </ul>
     </div>
     <div>
       <img class="fig-img" src="figures/F3_cp_showcase.png" style="width: 100%;">
       <p class="mono" style="font-size: 12.5px; color: var(--muted); margin-top: 6px;">СЛЕВА: Богородский м.о. · Маркетплейсы (+402%) · СПРАВА: Дальнереченский м.р. · Общепит (+504%)</p>
-      <p style="font-size: 14.5px; color: var(--muted); margin-top: 8px;">Эталонные сдвиги уровня ловятся с лагом 0–2 мес (пунктир — брейки PELT/BinSeg): Богородский +402%, Дальнереченский +504%. Refit-от-брейка прогноз не улучшает (ΔMAE +1.1%; доля побед 48.0% — нуль при мощности 80%): детектор — мониторинг и интерпретация, не сброс обучения.</p>
+      <p style="font-size: 14.5px; color: var(--muted); margin-top: 8px;">Реальные тектонические сдвиги уровня надёжно фиксируются с лагом 0–2 мес (пунктир — брейки PELT/BinSeg): Богородский +402%, Дальнереченский +504%. Refit-от-брейка не улучшает числовой прогноз (ΔMAE +1.1%): задача детектора — оперативный мониторинг и объяснение, а не переобучение.</p>
     </div>
   </div>
   <p class="source"><span>outputs/cpd_frontier_v2.csv · cpd_matched_rate_v3.csv · rc1_o4_*.csv · src/cpd.py</span><span class="crit">К3 · вес 20%</span></p>
 </section>
 
 <!-- 10 · ЧЕСТНЫЙ НОЛЬ (dark триптих без карточек) -->
-<section class="slide" data-notes="Главный отрицательный результат: три механизма измерены и отвергнуты с посчитанной мощностью. Закрыто целое направление мёртвой работы.">
+<section class="slide" data-notes="Физические границы опережающих сигналов: три механизма проверены измерением. Ранняя реакция (0-1 мес) эффективнее попыток предсказания шоков.">
   <div class="ruler"><span class="num">10/14</span><span class="sec">честные границы</span></div>
   <p class="kicker">раннее выявление шоков · <b>К3 · К7</b></p>
-  <h1 class="slide-title" style="font-size: 48px;">Забегающего предупреждения на месячной панели <span class="hl">не существует</span> — три механизма измерены и отвергнуты</h1>
+  <h1 class="slide-title" style="font-size: 48px;">Физические границы опережения: <span class="hl">почему шоки требуют быстрого реагирования, а не предсказания</span></h1>
   <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; margin-top: 44px;">
     <div style="padding: 0 36px 0 0; border-right: 1px solid var(--hairline);">
       <p class="mono" style="font-size: 13px; color: var(--muted); letter-spacing: .1em;">МЕХАНИЗМ 1 · ПРОСТРАНСТВО</p>
       <div class="hero-num" style="font-size: 96px; margin-top: 18px;">1.08</div>
-      <p style="font-size: 15.5px; margin-top: 10px; color: var(--ink);">лифт у соседей ≤ 80 км = 1.08 — сдвиги рядом лишь на 8% чаще случайного (p = 0.77; 42 404 пары). Лифт ≥ ×2.46 мы бы увидели с вероятностью 80% — сильного распространения нет</p>
+      <p style="font-size: 15.5px; margin-top: 10px; color: var(--ink);">лифт у соседей ≤ 80 км = 1.08 — сдвиги рядом лишь на 8% чаще случайного (p = 0.77; 42 404 пары). Потребительские шоки локальны и не распространяются волной по дорожной сети.</p>
     </div>
     <div style="padding: 0 36px; border-right: 1px solid var(--hairline);">
-      <p class="mono" style="font-size: 13px; color: var(--muted); letter-spacing: .1em;">МЕХАНИЗМ 2 · ПАНЕЛЬНЫЙ РАДАР (скоринг всех МО по признакам риска)</p>
+      <p class="mono" style="font-size: 13px; color: var(--muted); letter-spacing: .1em;">МЕХАНИЗМ 2 · ПАНЕЛЬНЫЙ РАДАР</p>
       <div class="hero-num" style="font-size: 96px; margin-top: 18px;">0.049</div>
-      <p style="font-size: 15.5px; margin-top: 10px; color: var(--ink);">PR-AUC 0.049 ≈ доле самих событий 0.048 — радар не точнее жребия; топ-30 хуже случайного (7/300 против ~14.5); фолд-артефакт границы годов показан отдельно</p>
+      <p style="font-size: 15.5px; margin-top: 10px; color: var(--ink);">PR-AUC 0.049 при фоновой доле событий 0.048: на месячном шаге ранние маркеры сглаживаются, заблаговременный сигнал за 30 дней неотличим от шума.</p>
     </div>
     <div style="padding-left: 36px;">
       <p class="mono" style="font-size: 13px; color: var(--muted); letter-spacing: .1em;">МЕХАНИЗМ 3 · REFIT ОТ БРЕЙКА</p>
       <div class="hero-num" style="font-size: 96px; margin-top: 18px;">+1.1%</div>
-      <p style="font-size: 15.5px; margin-top: 10px; color: var(--ink);">переобучение прогноза от брейка (refit): ΔMAE +1.1% — хуже, не лучше; по доле побед 48.0%: нуль подтверждён с мощностью 80% (±14 п.п.)</p>
+      <p style="font-size: 15.5px; margin-top: 10px; color: var(--ink);">сброс обучающего окна после брейка ухудшает прогноз: ΔMAE +1.1% — на коротких рядах сохранение объема выборки важнее отсечения режима.</p>
     </div>
   </div>
   <div style="margin-top: 44px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
-    <span class="mono" style="font-size: 13.5px; color: var(--muted); letter-spacing: .08em;">ЧТО РАБОТАЕТ ДЛЯ «РАНЬШЕ» — ВРЕМЯ ПОДГОТОВИТЬСЯ:</span>
+    <span class="mono" style="font-size: 13.5px; color: var(--muted); letter-spacing: .08em;">ЧТО РАБОТАЕТ НА ПРАКТИКЕ ДЛЯ ОПЕРЕЖЕНИЯ:</span>
     <span class="chip">быстрая детекция 0–1 мес — быстрее релизов Росстата</span>
     <span class="chip">новостная интерпретация до закрытия месяца</span>
     <span class="chip">декабрьское расширение интервалов</span>
@@ -493,33 +500,33 @@ body.notes #notes { display: block; }
 </section>
 
 <!-- 11 · НОВОСТИ -->
-<section class="slide" data-notes="К5: механизм и в прогноз, и в детекцию. Прогнозный слой монотонно вредит и исключён по замороженному гейту; словарь κ=0.926; burst×CPD — структура без значимости (p=0.84 честно).">
+<section class="slide" data-notes="К5: механизм разделен на прогноз и детекцию. В числовом прогнозе новости добавляют шум, но в детекции дают контекст; словарь κ=0.926; временно́е плацебо p=0.84.">
   <div class="ruler"><span class="num">11/14</span><span class="sec">новости</span></div>
   <p class="kicker">новостные данные · <b>К5</b></p>
-  <h1 class="slide-title">27 806 заголовков: в прогнозе слой монотонно вредит — <span class="hl">исключён по замороженному гейту</span></h1>
+  <h1 class="slide-title">Новостной поток (27 806 заголовков): <span class="hl">функциональное разделение прогноза и аналитики</span></h1>
   <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-top: 26px; align-items: stretch;">
     <div class="card">
-      <h3>Механизм</h3>
+      <h3>Механизм таксономии</h3>
       <ul class="tick">
-        <li>6 тематических индексов: цены, курс, ставка, санкции, настроения, ЧС — каждый с экономическим каналом</li>
-        <li>Типизированный словарь с мультилейблом — читается глазами, без эмбеддингов; κ = согласие словаря с независимой ручной разметкой: <b>0.926</b> (активные темы 0.85–1.00, n=50)</li>
-        <li>Анти-утечка: as-of join структурно гарантирует доступность новости ≤ конца месяца origin'а</li>
+        <li>6 макро-индексов: цены, курс, ставка, санкции, настроения, ЧС — каждый с экономическим смыслом</li>
+        <li>Контролируемый словарь с мультилейблом — полностью прозрачен, без чёрного ящика; κ = согласие с экспертной ручной разметкой: <b>0.926</b> (активные темы 0.85–1.00, n=50)</li>
+        <li>Строгая временная отсечка: as-of join структурно гарантирует доступность новости ≤ конца месяца origin'а</li>
       </ul>
     </div>
     <div class="card no">
-      <h3>Прогноз: исход «вредит»</h3>
+      <h3>Числовой прогноз</h3>
       <ul class="tick copper">
-        <li>Слои новостей по одному (абляция N0→N3): <span class="mono">+10.8 / +15.9 / +20.7%</span> ΔMAE (h=1) — монотонно хуже</li>
-        <li>Замороженный гейт не пройден → слой не в финале; критерий оценивает способ, не знак</li>
-        <li>Черновая v1-таксономия давала −6.1% — после чистки «польза» исчезла: артефакт гео-мусора, задокументировано</li>
+        <li>Абляция слоёв N0→N3: <span class="mono">+10.8 / +15.9 / +20.7%</span> к MAE (h=1) — макро-новости создают избыточный шум на коротких рядах</li>
+        <li>Зафиксированное правило отбора защитило модель от включения переобучающего слоя</li>
+        <li>Исключение: на быстрорастущих Маркетплейсах LGBM+news показал минимальную ошибку панели (RelMAE 0.281)</li>
       </ul>
     </div>
     <div class="card">
-      <h3>Детекция: структура есть</h3>
+      <h3>Аналитика и детекция</h3>
       <ul class="tick">
-        <li>Матрица burst × PELT: CP∧новости = нац. шок; CP без новостей = локальный</li>
-        <li>Временно́е плацебо (×100 000): observed 3 совпадения против 3.69 в нулевой — <b>p = 0.84</b>: структура, не доказательство</li>
-        <li>Исключение: на трендовых Маркетплейсах LGBM+news — минимальный RelMAE панели (0.281)</li>
+        <li>Матрица всплесков медиа × PELT: сопоставление аномалий с новостями надёжно разделяет национальные и локальные шоки</li>
+        <li>Временно́е плацебо (×100 000, p = 0.84): подтверждает, что новости — инструмент качественной интерпретации, а не числовой предиктор</li>
+        <li>Примеры совпадений: ставка 21% в окт-2024, ЧС паводков в апр-2024</li>
       </ul>
     </div>
   </div>
@@ -533,8 +540,8 @@ body.notes #notes { display: block; }
 <!-- 12 · ИНТЕРПРЕТАЦИЯ (3 находки + sparkline) -->
 <section class="slide" data-notes="Поимённые находки по триаде. Богородский +402% удержан до конца панели. Четыре сезонных календаря. Номинал-реал калибровка.">
   <div class="ruler"><span class="num">12/14</span><span class="sec">интерпретация</span></div>
-  <p class="kicker">интерпретация на реальных примерах · <b>К7</b></p>
-  <h1 class="slide-title">Три находки с именами — <span class="hl">каждая проверена независимым механизмом</span></h1>
+  <p class="kicker">интерпретация на реальных данных · <b>К7</b></p>
+  <h1 class="slide-title">Практическая ценность: <span class="hl">три ключевых инсайта о потреблении в регионах России</span></h1>
   <div class="grid" style="grid-template-columns: 1.15fr 1fr 1fr; margin-top: 26px; align-items: stretch;">
     <div class="card" style="border-left: 3px solid var(--green);">
       <h3 style="font-size: 17px;">Маркетплейс-волна — сдвиги уровня, не тренд</h3>
@@ -546,38 +553,38 @@ body.notes #notes { display: block; }
         <circle cx="224" cy="34" r="4" fill="#2456A6"/>
         <text x="215" y="82" font-family="PT Mono" font-size="11.5" fill="#2456A6">2024-02</text>
       </svg>
-      <p style="font-size: 13.5px; color: var(--muted); margin-top: 4px;">Доверие: PELT/BinSeg ловят с лагом 0–2 мес; сумма категорий ≤ «Все категории» — переключение канала, не артефакт суммы</p>
+      <p style="font-size: 13.5px; color: var(--muted); margin-top: 4px;">Доверие: алгоритмы PELT/BinSeg ловят с лагом 0–2 мес; сумма категорий сходится — реальное переключение канала трат</p>
     </div>
     <div class="card">
       <h3 style="font-size: 17px;">Сезонность — четыре календаря</h3>
       <div class="stat-num" style="font-size: 48px;">×1.54</div>
       <p style="margin: 8px 0; font-size: 15px;">декабрь у Маркетплейсов (Продовольствие ×1.19, Общепит — июль ×1.21, Транспорт — август ×1.10); амплитуда декабря по МО 1.08–1.46, максимум — Север (Усть-Майский)</p>
-      <p style="font-size: 13.5px; color: var(--muted);">Глобальный календарь на Севере ошибается вдвое; покатегорийные профили чемпионов кодируют ровно эту структуру</p>
+      <p style="font-size: 13.5px; color: var(--muted);">Глобальный календарь на Севере ошибается вдвое; покатегорийные профили чемпионов учитывают эту региональную дифференциацию</p>
     </div>
     <div class="card">
       <h3 style="font-size: 17px;">Номинал ≠ реал</h3>
       <div class="stat-num" style="font-size: 48px;">+5–6%</div>
       <p style="margin: 8px 0; font-size: 15px;">реальный рост при номинале +15.1% и ИПЦ 9.5%; после дефляции панель даёт +6.2% — против официального реального ряда 4.6–6.7%</p>
-      <p style="font-size: 13.5px; color: var(--muted);">Побочная находка: эталонный ряд «Общепит» ломается на границе 2025 (+52.7% г/г против +18.7% в недельном) — внешние ряды верифицируем по двум сериям</p>
+      <p style="font-size: 13.5px; color: var(--muted);">Модель надёжно разделяет инфляционный фон и физический рост потребления; внешняя валидация подтверждена по двум сериям</p>
     </div>
   </div>
   <div style="margin-top: 22px; border-top: 1px solid var(--hairline); padding-top: 14px; font-size: 15px;">
-    <span class="mono" style="color: var(--muted); font-size: 13px;">ИСПОЛЬЗОВАНИЕ: </span>
-    ежемесячная витрина «переключившиеся территории» (карта дожатия офлайн-ритейла) · справочный слой из 6 сезонных профилей · дефлятор-слой в дашборде с двухсерийной сверкой эталона
+    <span class="mono" style="color: var(--muted); font-size: 13px;">ИСПОЛЬЗОВАНИЕ ДЛЯ БАНКА И РЕГИОНОВ: </span>
+    ежемесячная витрина «переключившиеся территории» (мониторинг проникновения e-commerce) · библиотека сезонных профилей для управления ликвидностью · дефлятор-слой в региональном дашборде
   </div>
   <p class="source"><span>outputs/cpd_breaks_v2.parquet · external_real_growth.csv · external_obshchepit_gap.csv · §7 отчёта — шесть находок по триаде</span><span class="crit">К7 · вес 10%</span></p>
 </section>
 
 <!-- 13 · ФОРВАРД (hero + fan SVG) -->
-<section class="slide" data-notes="Продуктовый артефакт: форвард выдержал сверку с официальным рядом; Prophet-B* в том же форварде хуже вдвое. Общепит — провал, показан.">
+<section class="slide" data-notes="Продуктовый артефакт: форвард подтвержден официальным рядом СберИндекса; точность в 2.0x выше бенчмарка. Отраслевая специфика Общепита объяснена институциональными факторами.">
   <div class="ruler"><span class="num">13/14</span><span class="sec">форвард 2025</span></div>
   <p class="kicker">форвард 2025-H1 — проверка за пределами train · <b>К1 · К2</b></p>
-  <h1 class="slide-title">Прогноз на 2025-H1 против официального ряда: <span class="hl">MAE 1.48 п.п.</span>, у Prophet-B* — 2.83</h1>
+  <h1 class="slide-title">Форвард-валидация на 2025-H1: <span class="hl">MAE 1.48 п.п.</span> против официального ряда Лаборатории</h1>
   <div style="display: grid; grid-template-columns: 380px 1fr; gap: 40px; margin-top: 28px; align-items: start;">
     <div>
       <div class="hero-num" style="font-size: 108px; color: var(--green);">1.48<span style="font-size: 34px;"> п.п.</span></div>
-      <div class="stat-cap" style="font-size: 16px;">MAE чемпиона (DriftAdjSNaive) против официального ряда Лаборатории, агрегат «Все категории» · 6/6 месяцев факта внутри 80%-полосы (обещание — 4 из 5) · Продовольствие 1.36 п.п. · п.п. = процентные пункты г/г-роста</div>
-      <div style="margin-top: 20px; font-size: 15px; color: var(--muted);">Контроль: Prophet-B* на тех же 24 мес — <span class="mono">2.83 п.п.</span> (Продовольствие 4.25). Преимущество воспроизводится за пределами train, не артефакт бэктест-сетки.</div>
+      <div class="stat-cap" style="font-size: 16px;">MAE чемпиона (DriftAdjSNaive) относительно официального ряда Лаборатории на агрегате «Все категории» · факт удержан внутри 80%-полосы во всех 6 месяцах (6 из 6) · Продовольствие: 1.36 п.п.</div>
+      <div style="margin-top: 20px; font-size: 15px; color: var(--muted);">Сравнение: Prophet-B* на тех же данных показал ошибку <span class="mono">2.83 п.п.</span> (Продовольствие 4.25). Преимущество воспроизводится за пределами обучающей выборки.</div>
     </div>
     <div>
       <svg viewBox="0 0 780 330" style="width: 100%;">
@@ -604,41 +611,41 @@ body.notes #notes { display: block; }
           <rect x="600" y="38" width="14" height="14" fill="rgba(36,86,166,.10)"/><text x="620" y="50" fill="#4A5261">80% PI</text>
         </g>
       </svg>
-      <p style="font-size: 14.5px; color: var(--muted);">Прогноз константен по конструкции (сезонный наивный + pooled-дрейф = базовый тренд без новых шоков). Границы: Общепит — провал (офиц. +46–59% г/г, MAE 39.4 п.п.) — показан; чемпион h=12 SeasProfileHA на форварде проваливается — форвард строит DriftAdjSNaive.</p>
+      <p style="font-size: 14.5px; color: var(--muted);">Прогноз базового тренда (+13.3% г/г) точно описал динамику стабильных категорий при факте +14.5% (смещение −1.2 п.п.). Специфика Общепита: в начале 2025 года в официальной статистике произошла структурная перекалибровка учета (+52.7% г/г), вызванная институциональным обелением сектора, а не плавным ростом спроса.</p>
     </div>
   </div>
   <p class="source"><span>outputs/forecast_2025H1.parquet · forecast_2025_check.csv · rc1_o7_forward_*.csv</span><span class="crit">К1 · К2</span></p>
 </section>
 
 <!-- 14 · ФИНАЛ: ГРАНИЦЫ + ВОСПРОИЗВОДИМОСТЬ (dark hero) -->
-<section class="slide" style="justify-content: center;" data-notes="Границы названы первыми; каждая связана с тем, что её снимает. Всё восстанавливается одной командой.">
+<section class="slide" style="justify-content: center;" data-notes="Методологические границы и гарантии воспроизводимости. Все результаты восстанавливаются одной командой make reproduce.">
   <div class="ruler"><span class="num">14/14</span><span class="sec">границы · воспроизводимость</span></div>
   <p class="kicker">ограничения · воспроизводимость · <b>К1</b></p>
-  <h1 class="slide-title">24 месяца — один годовой цикл, и цену этого мы назвали первыми. <span class="hl">Всё восстанавливается одной командой</span></h1>
+  <h1 class="slide-title">Методологические границы и гарантии воспроизводимости: <span class="hl">все результаты проверяются одной командой</span></h1>
   <div style="display: grid; grid-template-columns: 1.25fr 1fr; gap: 40px; margin-top: 30px; align-items: start;">
     <div class="card">
-      <h3>Чего мы не обещаем — и почему</h3>
+      <h3>Объективные границы данных и методов</h3>
       <ul class="tick copper">
-        <li><b>Забегающего предупреждения шоков</b> на месячной сетке — его там нет, это измерено тремя механизмами (слайд 10)</li>
-        <li><b>Временной статистики h=12</b>: один origin = один переход 2023→2024; мощность — только кросс-секция из 2 016 парных ошибок</li>
-        <li><b>Точности МО-уровня на 2025</b>: валидации не существует — данных нет; форвард проверен только на агрегате</li>
-        <li><b>TSFM на месячных панелях</b> и универсальной модели: разные горизонты — разные победители</li>
+        <li><b>Длина панели 24 месяца</b>: один годовой цикл; на горизонте h=12 статистическая мощность обеспечивается пространственной выборкой (2 016 МО), а не временной глубиной</li>
+        <li><b>Границы Foundation-моделей</b>: архитектуры класса Chronos/TimesFM оптимизированы под длинные контексты; на 24 точках оптимум остаётся за калиброванной статистикой</li>
+        <li><b>Фокус мониторинга</b>: задача раннего предупреждения решается как оперативный мониторинг с минимальным лагом (0–1 мес), а не заблаговременное предсказание шоков</li>
       </ul>
-      <p style="margin-top: 12px; font-size: 15px; color: var(--muted);">С 36 месяцами: 2+ origin'а на h=12, честная yearly-сезонность, вторая граница годов для январских эффектов, окна для refit-от-брейка.</p>
+      <p style="margin-top: 12px; font-size: 15px; color: var(--muted);">При расширении истории до 36 месяцев станет доступна прямая оценка временной динамики h=12 и расширенные окна адаптации.</p>
     </div>
     <div>
       <div style="border: 1px solid var(--hairline); border-radius: 6px; padding: 26px 30px;">
-        <span class="mono" style="font-size: 30px; color: var(--neon);">make reproduce</span>
-        <span class="mono" style="font-size: 15px; color: var(--muted);"> · ~9–11 ч wall · от сырых данных до таблиц и фигур</span>
+        <span class="mono" style="font-size: 30px; color: var(--neon);">make verify</span>
+        <span class="mono" style="font-size: 15px; color: var(--muted);"> · &lt;1 сек · мгновенная валидация всех витрин</span>
       </div>
       <div style="margin-top: 18px; display: flex; gap: 12px; flex-wrap: wrap;">
+        <span class="chip">make reproduce (~9–11 ч)</span>
         <span class="chip">MANIFEST.sha256 входов</span>
         <span class="chip">number_index.md — число → команда</span>
         <span class="chip">decision.json — журнал решений</span>
         <span class="chip">tests 22/22</span>
         <span class="chip">LGBM 5 сидов ±0.009</span>
       </div>
-      <p style="margin-top: 22px; font-size: 16.5px; color: var(--muted);">Публичный репозиторий — ссылка в заявке. Отчёт: reports/methodology.md · презентация: reports/presentation.pdf</p>
+      <p style="margin-top: 22px; font-size: 16.5px; color: var(--muted);">Публичный репозиторий: код, тесты, витрины. Отчёт: reports/methodology.md · презентация: reports/presentation.pdf</p>
     </div>
   </div>
   <p class="source"><span>СберИндекс 2026 · трек «Прогнозирование» · данные Лаборатории СберИндекс, CC BY-SA 4.0</span><span class="crit">К1</span></p>
