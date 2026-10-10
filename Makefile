@@ -1,7 +1,7 @@
 PY := .venv/bin/python
 N_CHUNKS := 6
 
-.PHONY: data panel news-corpus stats prophet prophet-bfix lgbm seasadj ensemble cpd downstream news news-cpd chronos timesfm radar tables figures test reproduce clean-outputs
+.PHONY: data panel news-corpus stats prophet prophet-bfix lgbm seasadj ensemble cpd downstream news news-cpd chronos timesfm radar tables figures test verify reproduce clean-outputs
 
 data:        ## скачать сырые данные СберИндекса с официальных URL (CC BY-SA 4.0, sha256)
 	$(PY) scripts/01_download_data.py
@@ -73,6 +73,9 @@ figures:     ## 7 фигур отчёта в reports/figures/
 
 test:        ## тесты целостности (утечки, matched cells, схемы, новостный гейт)
 	$(PY) -m pytest tests/ -q
+
+verify:      ## мгновенная сверка заглавных чисел отчёта из outputs/headline/ (~0.5 сек)
+	$(PY) scripts/verify_headline.py
 
 # Полный прогон от сырых данных до таблиц и фигур. Реалистично: ~9–11 ч wall на 8 ядрах
 # (доминируют stats ~2.6 ч и prophet ~4.5–5 ч; timesfm ~3 ч CPU — можно закомментировать).

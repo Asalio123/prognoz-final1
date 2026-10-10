@@ -1,6 +1,8 @@
 .venv/
 data/
-outputs/
+outputs/*
+!outputs/headline/
+!outputs/headline/**
 __pycache__/
 *.pyc
 .DS_Store

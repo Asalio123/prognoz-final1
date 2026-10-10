@@ -1,0 +1,25 @@
+model,stage,seconds,basis,source,note
+stat-stack-8,"полная сетка, CPU-сумма 6 чанков",56068.0,measured,outputs/logs/stats_grid_chunk{0..5}.log,"chunks=[9385, 9342, 9118, 9502, 9113, 9608]; wall=max=9608с (6 параллельно); h=1 Σ26547с, h=3 Σ15514с, h=6 Σ12716с, h=12 Σ1285с"
+stat-stack-8,"полная сетка, wall (6 потоков)",9608.0,measured,outputs/logs/stats_grid_chunk{0..5}.log,максимум по чанку
+CES-fix,перегон после фикса utilsforecast,48.0,measured,outputs/stats_ces_chunk{0..5}.log,"chunks=[9, 7, 8, 8, 8, 8]"
+Prophet-A,все origins (wall),4636.0,measured,outputs/prophet_A.log,"11682 рядов, 0.40 с/ряд"
+Prophet-B,все origins (wall),6949.0,measured,outputs/prophet_B.log,"11682 рядов, 0.59 с/ряд"
+Prophet-B*,splice A(origin12)+B(13..23),,unverified,scripts/03b_prophet_b_fixed.py,нового compute нет — merge двух parquet; секунды. Полная цена B* = A+B = 11585с
+LightGBM-s271,"12 origins, полный прогон",368.0,measured,outputs/logs/lgbm_seed271.log,
+LightGBM-s314,"12 origins, полный прогон",505.0,measured,outputs/logs/lgbm_seed314.log,
+LightGBM-s1618,"12 origins, полный прогон",639.0,measured,outputs/logs/lgbm_seed1618.log,
+LightGBM-news_v2,"12 origins, полный прогон",341.0,measured,outputs/logs/lgbm_news_v2.log,
+LightGBM-s137,упал,0.0,measured,outputs/logs/lgbm_seed137.log,SyntaxError: global SEED — 0 полезного compute
+LightGBM-direct,основной прогон (preds_lgbm.parquet),,estimated,mtime 10-06 10:08; кросс-раны 341–639с,лога нет; по четырём полным кросс-ранам ~6–11 мин
+Chronos-2+cov,"12 origins, MPS",990.0,measured,outputs/logs/f1_cov_run.log,load 4с; origins 65–98с (5.5–8.4 мс/ряд/origin)
+Chronos-2-zs,"12 origins, MPS (preds_chronos2_zs_log)",,estimated,экстраполяция f1_cov_run.log (та же сетка),лога нет; по ковариантному прогону ≈990с (~16 мин)
+Chronos-coldstart,вспомогательный прогон,,unverified,mtime preds_coldstart.parquet,лога нет; по mtime-соседям — минуты
+Chronos-quant/raw-o12,вспомогательный прогон,,unverified,mtime preds_chronos2_quant_o12.parquet,лога нет; по mtime-соседям — минуты
+TimesFM-2.5-zs,"12 origins, последовательно",11712.0,measured,outputs/timesfm_run.log,origins 538–2483с (46–212 мс/ряд/origin)
+CPD (06),полный скрипт,250.0,measured,outputs/logs/06_v2.log,
+CPD-фронтир (06b),полный скрипт,222.0,measured,outputs/logs/06b_v2.log,
+CPD-контроли (06c),полный скрипт,57.0,measured,outputs/logs/06c_v2.log,
+downstream-ΔMAE (13),полный скрипт,47.0,measured,outputs/logs/13_v2.log,
+DriftAdjSNaive/SeasProfileHA (08),"свои эвристики, вся сетка",,unverified,лога нет,векторные операции над панелью; оценка — минуты
+Ensemble-median3 (07),медиана 3 preds,,unverified,лога нет,merge+median; секунды–минуты
+Новости (11/15/16),фичи+абляции,,unverified,лога нет,

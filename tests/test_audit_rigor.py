@@ -278,3 +278,76 @@ def test_deck_test_counter_matches_suite():
     )
 
 
+def test_headline_outputs_tracked_and_valid():
+    """Каталог outputs/headline/ обязан содержать ровно 14 валидных, непустых CSV-файлов."""
+    headline_dir = ROOT / "outputs" / "headline"
+    assert headline_dir.exists(), "outputs/headline/ не найден"
+
+    expected_files = [
+        "T1_model_x_horizon.csv",
+        "T2_slice_category.csv",
+        "T2_slice_scale.csv",
+        "T3_significance.csv",
+        "t5_category_champions.csv",
+        "intervals_coverage.csv",
+        "cpd_frontier_v2.csv",
+        "cpd_matched_rate_v3.csv",
+        "cpd_controls_v2.csv",
+        "news_ablation_N0N3.csv",
+        "news_cpd_matrix_v2.csv",
+        "forecast_2025_check.csv",
+        "rc1_o7_forward_by_category.csv",
+        "cost_timings.csv",
+    ]
+
+    for fname in expected_files:
+        fpath = headline_dir / fname
+        assert fpath.exists(), f"Файл {fname} отсутствует в outputs/headline/"
+        assert fpath.stat().st_size > 0, f"Файл {fname} пуст"
+        df = pd.read_csv(fpath)
+        assert len(df) > 0, f"Файл {fname} не содержит строк данных"
+
+
+def test_verify_headline_script_executes(capsys):
+    """Скрипт scripts/verify_headline.py обязан выполняться без исключений и печатать подтверждение."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("verify_headline", ROOT / "scripts" / "verify_headline.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    mod.main()
+    captured = capsys.readouterr()
+    assert "ВСЕ ЗАГЛАВНЫЕ ЧИСЛА ПОДТВЕРЖДЕНЫ" in captured.out
+
+
+def test_forward_bias_and_benchmark_numbers():
+    """Сверка смещения −1.2 п.п. и преимущества 2.0x относительно наивного бенчмарка 2024 (2.94 п.п.)."""
+    fwd_path = ROOT / "outputs" / "headline" / "rc1_o7_forward_by_category.csv"
+    df = pd.read_csv(fwd_path)
+    all_cat = df[df["category"] == "Все категории"]
+
+    fact_mean = all_cat["official_yoy_pct"].mean()
+    fc_mean = all_cat["fc_yoy_pct"].mean()
+    mae_pp = all_cat["abs_err_pp"].mean()
+
+    assert round(fact_mean, 1) == 14.5, f"Факт {fact_mean:.2f} != 14.5%"
+    assert round(fc_mean, 1) == 13.3, f"Прогноз {fc_mean:.2f} != 13.3%"
+
+    bias = fc_mean - fact_mean
+    assert round(bias, 1) == -1.2, f"Смещение {bias:.2f} != −1.2 п.п."
+    assert round(mae_pp, 2) == 1.48, f"MAE {mae_pp:.2f} != 1.48 п.п."
+
+    benchmark_mae = 2.94
+    ratio = benchmark_mae / mae_pp
+    assert round(ratio, 1) == 2.0, f"Соотношение к бенчмарку {ratio:.2f} != 2.0x"
+
+
+def test_methodology_has_ruble_mae_and_framework_clause():
+    """В reports/methodology.md обязаны быть столбцы MAE (₽) и рамка Положения §6.2."""
+    doc = (ROOT / "reports" / "methodology.md").read_text(encoding="utf-8")
+    assert "MAE (₽)" in doc, "В methodology.md отсутствуют столбцы MAE (₽)"
+    assert "Положение §6.2" in doc, "В methodology.md отсутствует рамка Положения §6.2"
+    assert "597 ₽" in doc, "В таблице T1 отсутствует MAE Prophet-B* 597 ₽"
+    assert "1 322 ₽" in doc, "В таблице отсутствует MAE чемпиона 1 322 ₽"
+    assert "временно́е плацебо" in doc, "В методологии отсутствует термин временно́е плацебо"
+
+
